@@ -1,0 +1,16 @@
+services:
+  db:
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile  # Dockerfile を指定
+    container_name: db
+    restart: always
+    ports:
+      - "13306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: internalbooks
+      MYSQL_INIT_CONNECT: "SET NAMES utf8mb4;"
+    volumes:
+      - ./mysql/data:/var/lib/mysql  # データ永続化
+      - ./mysql/init-sql:/docker-entrypoint-initdb.d  # 初回実行SQL
