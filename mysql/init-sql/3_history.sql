@@ -16,29 +16,31 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `m_user`
+-- Table structure for table `history`
 --
 
-DROP TABLE IF EXISTS `m_user`;
+DROP TABLE IF EXISTS `history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `m_user` (
-  `id` int NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role_id` int NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `history` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `book_id` int NOT NULL,
+  `lending_data` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `return_data_schedule` timestamp NULL DEFAULT NULL,
+  `return_data` timestamp NULL DEFAULT NULL,
+  `user_id` int NOT NULL,
+  PRIMARY KEY (`id`,`book_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `m_user`
+-- Dumping data for table `history`
 --
 
-LOCK TABLES `m_user` WRITE;
-/*!40000 ALTER TABLE `m_user` DISABLE KEYS */;
-INSERT INTO `m_user` VALUES (1,'admin@gmail.com','$2a$10$QNW1k/8Ngi8cX0i6Zel2HOwFVZPmW9Qn1SGizlEizKzKIkOIzO/Tq',1),(2,'normal@gmail.com','$2a$10$MfXs8fYi6cpJdtRb9ZoCgecOLru6gvLyGUA9CSh8GVetVzEfs8WCS',2);
-/*!40000 ALTER TABLE `m_user` ENABLE KEYS */;
+LOCK TABLES `history` WRITE;
+/*!40000 ALTER TABLE `history` DISABLE KEYS */;
+INSERT INTO `history` VALUES (1,1,'2025-06-03 13:21:09','2025-05-29 15:00:00','2025-05-28 15:00:00',1),(2,2,'2025-06-03 13:21:09','2025-06-01 15:00:00','2025-06-02 15:00:00',2),(3,3,'2025-06-03 13:21:11','2025-06-03 15:00:00',NULL,1);
+/*!40000 ALTER TABLE `history` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -50,4 +52,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-03  7:25:08
+-- Dump completed on 2025-06-05 21:23:15
