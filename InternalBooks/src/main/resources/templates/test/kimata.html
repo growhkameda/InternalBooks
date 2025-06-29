@@ -3,13 +3,53 @@
       th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-    <title>木俣テストページ</title>
+    <title>図書館システム</title>
+    <!-- BootstrapのCSSを読み込み（CDNから） -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
 <section>
-    <h1>こんにちは！</h1>
-    <p>木俣テストページ</p>
+    <div class="container">
+        <!-- 中央揃えと上部マージンを設定(margin-topとmargin-bottomで上下のマージンを指定している) -->
+        <div class="row justify-content-center mt-5" style="margin-top: 5rem !important; margin-bottom: 5rem !important;">
+            <!-- 徳田さんの話に出てたやつ！mdとlgで画面サイズによって幅を変更する。中サイズ画面で6カラム、大サイズ画面で4カラム-->
+            <div class="col-md-6 col-lg-4">
+                <!-- 白背景のボックス -->
+                <div class="card shadow">
+                    <!-- ボックスの内部コンテンツ(paddingでcard内上下のマージンを指定している) -->
+                    <div class="card-body" style="padding-top: 4rem !important; padding-bottom: 4rem !important;">
+                        <!-- 中央揃えとマージンを設定 -->
+                        <h3 class="card-title text-center mb-5" style="margin-bottom: 4rem !important;">図書館システム</h3>
+                        <!-- レイアウト図通りログイン画面と一応表示させてる -->
+                        <h4 class="text-center mb-4" style="margin-bottom: 4rem !important;">ログイン画面</h4>
+                        <!-- ログインフォーム -->
+                        <form>
+                            <!-- ユーザーID入力フィールド(fw-boldはbootstrapのクラスで太字にする) -->
+                            <div class="mb-3">
+                                <div class="col-10 mx-auto">
+                                    <label for="userId" class="form-label fw-bold">ユーザーID</label>
+                                    <input type="userId" class="form-control" id="userId" required>
+                                </div>
+                            </div>
+                            <!-- パスワード入力フィールド(mbが無いのはmargin-bottomを指定してるため) -->
+                            <div style="margin-bottom: 4rem !important;">
+                                <div class="col-10 mx-auto">
+                                    <label for="password" class="form-label fw-bold">パスワード</label>
+                                    <input type="password" class="form-control" id="password" required>
+                                </div>
+                            </div>
+                            <!-- ログインボタン(col-7でボタンサイズ) -->
+                            <div class="d-grid col-7 mx-auto">
+                                <button type="submit" class="btn text-white" style="background-color: #3385e8;">ログイン</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

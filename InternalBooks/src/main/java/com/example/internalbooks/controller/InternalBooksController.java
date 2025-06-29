@@ -44,4 +44,9 @@ public class InternalBooksController {
     	logger.info("★★★★★★★★★★★amemiya() にアクセスされました");
         return "test/amemiya";
     }
+    @GetMapping("/test/qr_test")
+    public String qrTest() {
+    	logger.info("★★★★★★★★★★★qrTest() にアクセスされました");
+        return "test/qr_test";
+    }
 }

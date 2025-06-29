@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<!-- Thymeleafテンプレートエンジンを使用してレイアウトを継承 -->
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout/layout :: layout(~{::title}, ~{::content})">
+
+<!-- ページタイトル設定 -->
+<title>QRコード読み取り</title>
+
+<!-- メインコンテンツ部分 -->
+<div th:fragment="content">
+    <!-- Bootstrap グリッドシステムでレスポンシブ対応 -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- メインカード -->
+            <div class="card shadow">
+                
+                <!-- カードヘッダー（青色背景） -->
+                <div class="card-header bg-success text-white text-center">
+                    <h2><i class="bi bi-qr-code-scan"></i> QRコード読み取り</h2>
+                </div>
+                
+                <!-- カードボディ（メインコンテンツエリア） -->
+                <div class="card-body">
+                    
+                    <!-- ===== カメラ選択セクション ===== -->
+                    <div class="mb-3">
+                        <label for="cameraSelect" class="form-label">カメラを選択:</label>
+                        <!-- ドロップダウンでカメラを選択 -->
+                        <select id="cameraSelect" class="form-select">
+                            <option value="">カメラを読み込み中...</option>
+                        </select>
+                    </div>
+
+                    <!-- ===== 操作ボタンセクション ===== -->
+                    <div class="mb-3 text-center">
+                        <!-- カメラ開始ボタン（青色） -->
+                        <button id="startButton" class="btn btn-primary me-2">
+                            <i class="bi bi-camera"></i> カメラ開始
+                        </button>
+                        <!-- カメラ停止ボタン（赤色、初期状態は無効） -->
+                        <button id="stopButton" class="btn btn-danger" disabled>
+                            <i class="bi bi-stop-circle"></i> カメラ停止
+                        </button>
+                    </div>
+
+                    <!-- ===== カメラ映像表示エリア ===== -->
+                    <div class="text-center mb-3">
+                        <!-- ビデオ要素（カメラ映像を表示、初期状態は非表示） -->
+                        <video id="video" width="100%" height="300" 
+                               style="border: 2px solid #ccc; border-radius: 8px; display: none;"></video>
+                        <!-- キャンバス要素（QRコード解析用、非表示） -->
+                        <canvas id="canvas" style="display: none;"></canvas>
+                    </div>
+
+                    <!-- ===== 読み取り結果表示エリア ===== -->
+                    <div id="result" class="alert alert-info" style="display: none;">
+                        <h5><i class="bi bi-check-circle"></i> 読み取り結果:</h5>
+                        <!-- QRコードの内容がここに表示される -->
+                        <div id="resultText" class="mt-2"></div>
+                    </div>
+
+                    <!-- ===== エラー表示エリア ===== -->
+                    <div id="error" class="alert alert-danger" style="display: none;">
+                        <h5><i class="bi bi-exclamation-triangle"></i> エラー:</h5>
+                        <!-- エラーメッセージがここに表示される -->
+                        <div id="errorText" class="mt-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 外部ライブラリの読み込み ===== -->
+    <!-- jsQRライブラリ（QRコード解析用） -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    
+    <!-- ===== JavaScript メイン処理 ===== -->
+    <script>
+        // ===== DOM要素の取得 =====
+        // HTML要素をJavaScript変数に格納（後で操作するため）
+        let video = document.getElementById('video');              // ビデオ要素
+        let canvas = document.getElementById('canvas');            // キャンバス要素
+        let context = canvas.getContext('2d');                    // キャンバスの2D描画コンテキスト
+        let startButton = document.getElementById('startButton');  // 開始ボタン
+        let stopButton = document.getElementById('stopButton');    // 停止ボタン
+        let cameraSelect = document.getElementById('cameraSelect');// カメラ選択ドロップダウン
+        let resultDiv = document.getElementById('result');         // 結果表示エリア
+        let resultText = document.getElementById('resultText');    // 結果テキスト
+        let errorDiv = document.getElementById('error');           // エラー表示エリア
+        let errorText = document.getElementById('errorText');      // エラーテキスト
+        
+        // ===== グローバル変数 =====
+        let stream = null;      // カメラストリーム（カメラを停止するために保存）
+        let scanning = false;   // スキャン中かどうかのフラグ
+
+        // ===== カメラリスト取得関数 =====
+        /**
+         * 利用可能なカメラデバイスを取得してドロップダウンに表示
+         * 複数カメラがある場合（前面・背面カメラなど）に選択できるようにする
+         */
+        async function getCameras() {
+            try {
+                // デバイス一覧を取得（マイク、カメラ、スピーカーなど）
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                // ビデオ入力デバイス（カメラ）のみをフィルタ
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                
+                // ドロップダウンの中身をクリア
+                cameraSelect.innerHTML = '';
+                
+                // カメラが見つからない場合の処理
+                if (videoDevices.length === 0) {
+                    cameraSelect.innerHTML = '<option value="">カメラが見つかりません</option>';
+                    return;
+                }
+
+                // 見つかったカメラをドロップダウンに追加
+                videoDevices.forEach((device, index) => {
+                    const option = document.createElement('option');
+                    option.value = device.deviceId;  // カメラのID
+                    // カメラ名がある場合はそれを使用、なければ「カメラ1」「カメラ2」など
+                    option.text = device.label || `カメラ ${index + 1}`;
+                    cameraSelect.appendChild(option);
+                });
+            } catch (error) {
+                // カメラ取得でエラーが発生した場合
+                showError('カメラの取得に失敗しました: ' + error.message);
+            }
+        }
+
+        // ===== エラー表示関数 =====
+        /**
+         * エラーメッセージを赤いボックスで表示
+         * @param {string} message - 表示するエラーメッセージ
+         */
+        function showError(message) {
+            errorText.textContent = message;      // エラーテキストを設定
+            errorDiv.style.display = 'block';     // エラーボックスを表示
+            resultDiv.style.display = 'none';     // 結果ボックスは非表示
+        }
+
+        // ===== 結果表示関数 =====
+        /**
+         * QRコード読み取り結果を青いボックスで表示
+         * @param {string} text - QRコードの内容
+         */
+        function showResult(text) {
+            resultText.textContent = text;        // 結果テキストを設定
+            resultDiv.style.display = 'block';    // 結果ボックスを表示
+            errorDiv.style.display = 'none';      // エラーボックスは非表示
+        }
+
+        // ===== カメラ開始関数 =====
+        /**
+         * 選択されたカメラを起動してビデオ表示を開始
+         * QRコードスキャンも開始する
+         */
+        async function startCamera() {
+            try {
+                // 選択されたカメラのIDを取得
+                const selectedCamera = cameraSelect.value;
+                if (!selectedCamera) {
+                    showError('カメラを選択してください');
+                    return;
+                }
+
+                // カメラの制約設定（解像度など）
+                const constraints = {
+                    video: {
+                        deviceId: selectedCamera,     // 選択されたカメラを使用
+                        width: { ideal: 640 },        // 理想的な幅
+                        height: { ideal: 480 }        // 理想的な高さ
+                    }
+                };
+
+                // カメラストリームを取得
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;          // ビデオ要素にストリームを設定
+                video.style.display = 'block';     // ビデオを表示
+                video.play();                      // ビデオ再生開始
+
+                // キャンバスサイズをビデオサイズに合わせる
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                // ボタンの状態を変更
+                startButton.disabled = true;       // 開始ボタンを無効化
+                stopButton.disabled = false;       // 停止ボタンを有効化
+                scanning = true;                   // スキャンフラグをON
+                
+                // エラー表示をクリア
+                errorDiv.style.display = 'none';
+                
+                // QRコードスキャンを開始
+                requestAnimationFrame(scanQR);
+            } catch (error) {
+                // カメラ開始でエラーが発生した場合
+                showError('カメラの開始に失敗しました: ' + error.message);
+            }
+        }
+
+        // ===== カメラ停止関数 =====
+        /**
+         * カメラを停止してリソースを解放
+         * UIの状態も初期状態に戻す
+         */
+        function stopCamera() {
+            scanning = false;                      // スキャンフラグをOFF
+            
+            // カメラストリームが存在する場合は停止
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());  // 全トラックを停止
+                stream = null;                     // ストリーム変数をクリア
+            }
+            
+            // ビデオ要素をリセット
+            video.style.display = 'none';         // ビデオを非表示
+            video.srcObject = null;               // ストリームを解除
+            
+            // ボタンの状態を初期状態に戻す
+            startButton.disabled = false;         // 開始ボタンを有効化
+            stopButton.disabled = true;           // 停止ボタンを無効化
+        }
+
+        // ===== QRコードスキャン関数 =====
+        /**
+         * ビデオフレームからQRコードを検出する
+         * この関数は連続的に呼び出されてリアルタイムスキャンを実現
+         */
+        function scanQR() {
+            // スキャンが停止されている場合は処理終了
+            if (!scanning) return;
+
+            // ビデオデータが十分に読み込まれている場合のみ処理
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                // キャンバスサイズをビデオサイズに合わせる
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                
+                // ビデオフレームをキャンバスに描画
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                // キャンバスから画像データを取得
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                
+                // jsQRライブラリでQRコードを解析
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                // QRコードが検出された場合
+                if (code) {
+                    showResult(code.data);         // 結果を表示
+                    
+                    // ===== オプション設定 =====
+                    // QRコードが読み取れたら自動停止したい場合は下記のコメントを外す
+                    // stopCamera();
+                }
+            }
+
+            // スキャンが継続中の場合、次のフレームで再度実行
+            if (scanning) {
+                requestAnimationFrame(scanQR);
+            }
+        }
+
+        // ===== イベントリスナー設定 =====
+        // ボタンクリック時の動作を設定
+        startButton.addEventListener('click', startCamera);    // 開始ボタン
+        stopButton.addEventListener('click', stopCamera);      // 停止ボタン
+
+        // ===== ページ初期化処理 =====
+        // ページが完全に読み込まれた時にカメラリストを取得
+        window.addEventListener('load', getCameras);
+
+        // ===== クリーンアップ処理 =====
+        // ページを離れる時にカメラを確実に停止（リソース解放）
+        window.addEventListener('beforeunload', stopCamera);
+
+    </script>
+</div>
+
+</html>
