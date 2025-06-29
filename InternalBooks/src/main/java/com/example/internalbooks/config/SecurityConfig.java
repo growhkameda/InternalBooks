@@ -41,12 +41,11 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())  // CSRFを無効化
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/test/**", "/webjars/**").permitAll()  // 認証不要のエンドポイント
-                .requestMatchers("/api/alluserinfo").authenticated()  // 認証が必要なエンドポイント
+                .requestMatchers("/", "/page/**", "/action/**","/test/**", "/webjars/**", "/logo/**","/favicon.ico").permitAll()  // 認証不要のエンドポイント
                 .anyRequest().authenticated()  // 他のエンドポイントは認証が必要
             )
             .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // セッションをステートレスに
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED )
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // フィルターを追加;
 

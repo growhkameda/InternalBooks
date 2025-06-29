@@ -27,6 +27,12 @@ public class JwtUtil {
         Claims claims = extractAllClaims(token);
         return claims.get("userId", Integer.class);
     }
+    
+    // isAdminを取得する
+    public Boolean extractIsAdmin(String token) {
+        Claims claims = extractAllClaims(token);
+        return claims.get("isAdmin", Boolean.class);
+    }
 
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
