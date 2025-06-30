@@ -5,8 +5,6 @@
 機能概要:
 - カメラを使用したリアルタイムQRコード読み取り機能
 - jsQRライブラリによる高速・高精度スキャン処理
-- 読み取り完了後、自動的にダミーページ(/page/dummy)に遷移
-- モバイル・タブレット・デスクトップ対応のレスポンシブデザイン
 
 技術仕様:
 - MediaDevices API (カメラアクセス)
@@ -15,20 +13,6 @@
 - Bootstrap 5 (レスポンシブUI)
 - Thymeleaf (テンプレートエンジン)
 
-認証:
-- JWT認証必要（セッション維持）
-- 認証失敗時は自動的にログインページにリダイレクト
-
-使用方法:
-1. スキャン開始ボタンでカメラ起動
-2. ブラウザのカメラ使用許可を承認
-3. QRコードを画面中央の枠内に合わせる
-4. 自動的に読み取り・ダミーページに遷移
-
-保守・開発時の注意:
-- カメラ権限が必要なため、HTTPSまたはlocalhostでの動作が必要
-- ブラウザごとのMediaDevices API対応状況を確認
-- QRコード読み取り精度はカメラ性能と照明状況に依存
 -->
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
@@ -62,21 +46,6 @@
                 
                 <!-- カードボディ（メインコンテンツエリア） -->
                 <div class="card-body p-4">
-                    
-                    <!-- 操作ボタンセクション -->
-                    <div class="text-center mb-4">
-                        <!-- スキャン開始ボタン（青色、全幅） -->
-                        <button id="start-scan-btn" class="btn btn-primary btn-lg w-100 mb-3" type="button" onclick="startScanning();">
-                            <i class="bi bi-camera me-2"></i>
-                            スキャン開始
-                        </button>
-                        
-                        <!-- スキャン停止ボタン（赤色、全幅、初期状態は無効） -->
-                        <button id="stop-scan-btn" class="btn btn-danger btn-lg w-100" type="button" disabled onclick="stopScanning();">
-                            <i class="bi bi-stop-circle me-2"></i>
-                            スキャン停止
-                        </button>
-                    </div>
                     
                     <!-- カメラ映像表示エリア -->
                     <div class="text-center mb-4">
@@ -132,6 +101,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 操作ボタンセクション -->
+                    <div class="text-center mb-4">
+                        <!-- スキャン開始ボタン（青色、全幅） -->
+                        <button id="start-scan-btn" class="btn btn-primary btn-lg w-100 mb-3" type="button" onclick="startScanning();">
+                            <i class="bi bi-camera me-2"></i>
+                            スキャン開始
+                        </button>
+                        
+                        <!-- スキャン停止ボタン（赤色、全幅、初期状態は無効） -->
+                        <button id="stop-scan-btn" class="btn btn-danger btn-lg w-100" type="button" disabled onclick="stopScanning();">
+                            <i class="bi bi-stop-circle me-2"></i>
+                            スキャン停止
+                        </button>
+                    </div>
                     
                     <!-- 使用方法の説明 -->
                     <div class="mt-4">
@@ -162,10 +146,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 戻るボタン -->
+                    <div class="col-12 border-0 mt-3">
+                        <a href="/page/top" class="text-black ms-2">
+                            TOPに戻る
+                            <i class="bi bi-arrow-return-left ms-1"></i>
+                        </a>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
+
+
 
     <!-- jsQRライブラリ（QRコード解析用） -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
