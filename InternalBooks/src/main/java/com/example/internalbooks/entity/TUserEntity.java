@@ -33,6 +33,9 @@ public class TUserEntity implements UserDetails {
     
     @Column(name = Const.ROLE)
     private Integer role;
+    
+    @Column(name = Const.DEPARTMENT_ID)
+    private Integer departmentId;
 
     @Override
     /**
