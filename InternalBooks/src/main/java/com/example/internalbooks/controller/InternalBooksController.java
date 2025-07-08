@@ -36,49 +36,16 @@ public class InternalBooksController {
     @Autowired
 	private TBookService tBookService;
     
+    //トップページとしてloginを設定
     @GetMapping("/")
     public String index() {
-        return "index";
-    }
-    @GetMapping("/test/kimata")
-    public String kimata() {
-    	logger.info("★★★★★★★★★★★kimata() にアクセスされました");
-        return "test/kimata";
-    }
-    @GetMapping("/test/matunaga")
-    public String matunaga() {
-    	logger.info("★★★★★★★★★★★matunaga() にアクセスされました");
-        return "test/matunaga";
-    }
-    @GetMapping("/test/mutou")
-    public String mutou() {
-    	logger.info("★★★★★★★★★★★mutou() にアクセスされました");
-        return "test/mutou";
-    }
-    @GetMapping("/test/sano")
-    public String sano() {
-    	logger.info("★★★★★★★★★★★sano() にアクセスされました");
-        return "test/sano";
-    }
-    @GetMapping("/test/kameda")
-    public String kameda() {
-    	logger.info("★★★★★★★★★★★kameda() にアクセスされました");
-        return "test/kameda";
-    }
-    @GetMapping("/test/amemiya")
-    public String amemiya() {
-    	logger.info("★★★★★★★★★★★amemiya() にアクセスされました");
-        return "test/amemiya";
-    }
-    @GetMapping("/test/qr_test")
-    public String qrTest() {
-    	logger.info("★★★★★★★★★★★qrTest() にアクセスされました");
-        return "test/qr_test";
+        return "redirect:/page/login";
     }
     
+    //ログインページ
     @GetMapping("/page/login")
     public String Login() {
-    	logger.info("★★★★★★★★★★★Loginされました");
+    	logger.info("★★★★★★★★★★★Loginされました★★★★★★★★★★★");
         return "page/login";
     }
     
@@ -156,29 +123,24 @@ public class InternalBooksController {
     }
     
     /**
-     * QRコードスキャナーページを表示
-     * 社内図書館システム用のQRコード読み取り機能を提供
-     * 
-     * 機能概要:
-     * - カメラを使用したQRコード読み取り
-     * - 読み取り後、自動的にダミーページに遷移
-     * - 認証が必要（JWT認証）
+     * QRコードサーチページを表示
      * 
      * @param session HTTPセッション（JWT認証トークン取得用）
      * @param model モデル
      * @param redirectAttributes 認証失敗時のリダイレクト用
-     * @return QRスキャナーページのテンプレート名 または 認証エラー時のリダイレクト
+     * @return QRスキャナーページのテンプレート名(page/qrsearch) または 認証エラー時のリダイレクト
      */
-    @GetMapping("/page/qr_scanner")
+    @GetMapping("/page/qrsearch")
     public String qrScanner(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
     	try {
     		// JWT認証トークンの検証
     		String token = (String) session.getAttribute("token");
             jwtUtil.extractUserId(token);
             
+            //デバッグ用ログ
             logger.info("QRスキャナーページにアクセスされました");
 
-            return "page/qr_scanner";
+            return "page/qrsearch";
     	}
     	catch (Exception e) {
     		// 認証失敗時はログインページにリダイレクト
@@ -187,25 +149,14 @@ public class InternalBooksController {
     }
     
     /**
-     * QRコード読み取り結果表示ページ（ダミーページ）
-     * 社内図書館システム用のQRスキャン結果表示機能
-     * 
-     * 機能概要:
-     * - QRスキャナーから遷移してきたQRデータを表示
-     * - URLの場合は外部リンクとして開くボタンを提供
-     * - データのコピー機能を提供
-     * - QRスキャナーページに戻る機能を提供
-     * - 将来的にはQRパラメータに応じた表示内容の変更が可能
-     * 
-     * データ取得方法:
-     * 1. URLパラメータから取得 (GETメソッド)
-     * 2. セッションから取得 (POSTリダイレクト方式)
+     * QRコード読み取り結果表示ページ
+     * テストのためダミーページにしている
      * 
      * @param qrData QRコードから読み取ったデータ（URLパラメータ）
      * @param session HTTPセッション（JWT認証トークン・セッションデータ取得用）
      * @param model Thymeleafテンプレートに渡すモデル
      * @param redirectAttributes 認証失敗時のリダイレクト用
-     * @return ダミーページのテンプレート名 または 認証エラー時のリダイレクト
+     * @return ダミーページのテンプレート名(page/dummy) または 認証エラー時のリダイレクト
      */
     @GetMapping("/page/dummy")
     public String dummy(@RequestParam(name = "qrData", required = false) String qrData, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
@@ -226,44 +177,7 @@ public class InternalBooksController {
             // QRコードデータをThymeleafテンプレートに渡す
             model.addAttribute("qrData", finalQrData);
 
-            return "page/dummy";
-    	}
-    	catch (Exception e) {
-    		// 認証失敗時はログインページにリダイレクト
-            return error(redirectAttributes);
-    	}
-    }
-    
-    /**
-     * QRコード読み取り結果をPOSTで受信してダミーページにリダイレクト
-     * POST-Redirect-GET パターンによる安全なデータ遷移を実現
-     * 
-     * 機能概要:
-     * - QRスキャナーページからPOSTでQRデータを受信
-     * - データをセッションに一時保存
-     * - ダミーページにリダイレクト
-     * - ダミーページでセッションからデータを取得して表示
-     * 
-     * メリット:
-     * - ブラウザの戻る/更新時の重複送信を防止
-     * - セッション利用により確実なデータ引き継ぎ
-     * 
-     * @param qrData QRコードから読み取ったデータ
-     * @param session HTTPセッション（JWT認証トークン・データ保存用）
-     * @param redirectAttributes 認証失敗時のリダイレクト用
-     * @return ダミーページへのリダイレクト または 認証エラー時のリダイレクト
-     */
-    @PostMapping("/action/qr_result")
-    public String qrResult(@RequestParam(name = "qrData") String qrData, HttpSession session, RedirectAttributes redirectAttributes) {
-    	try {
-    		// JWT認証トークンの検証
-    		String token = (String) session.getAttribute("token");
-            jwtUtil.extractUserId(token);
-            
-            // QRデータをセッションに一時保存（POST-Redirect-GET パターン）
-            session.setAttribute("qrData", qrData);
-            
-            return "redirect:/page/dummy";
+            return "page/dummy";    //テストのためdummyにしている
     	}
     	catch (Exception e) {
     		// 認証失敗時はログインページにリダイレクト

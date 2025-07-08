@@ -83,9 +83,27 @@ public class SecurityConfig {
      */
     protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of( "*")); // 許可するオリジン
+        
+        // ========== ngrok用CORS設定 START ==========
+        // 本番環境では以下をコメントアウトして "list.of(*)" に戻すこと
+        // テスト環境で動かすときはngrokのURLを設定する
+        configuration.setAllowedOrigins(List.of(
+            "http://localhost:8080", 
+            "https://a476e2ff19fa.ngrok-free.app",    // 新ngrok用URL（本番時削除）
+            "https://*.ngrok-free.app"                // ngrok用ワイルドカード（本番時削除）
+        )); // 許可するオリジン
+        
+        // 本番環境用設定（現在はコメントアウト）
+        // configuration.setAllowedOrigins(List.of("*")); // 本番環境用
+        // ========== ngrok用CORS設定 END ==========
+        
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 許可するメソッド
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type")); // 許可するヘッダー
+        
+        // ========== ngrok用ヘッダー設定 START ==========
+        // 本番環境では "X-Requested-With" を削除可能
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With")); // 許可するヘッダー
+        // ========== ngrok用ヘッダー設定 END ==========
+        
         configuration.setAllowCredentials(true); // 認証情報を含むリクエストを許可
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

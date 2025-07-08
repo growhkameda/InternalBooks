@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- 
-社内図書館システム - QRコード読み取り結果表示ページ（ダミーページ）
+社内図書館システム - QRコード読み取り結果表示ページ
+現在はダミーページにしている
 
 機能概要:
 - QRスキャナーページから遷移してきたQRデータの表示機能(将来的に検索結果詳細ページにて書籍表示)
@@ -8,11 +9,6 @@
 データ取得方法:
 1. URLパラメータから取得 (GETメソッド): /page/dummy?qrData=xxx
 2. セッションから取得 (POST-Redirect-GET方式): /action/qr_result → /page/dummy
-
-技術仕様:
-- Thymeleaf (テンプレートエンジン・条件分岐)
-- Bootstrap 5 (レスポンシブUI・アイコン)
-- Bootstrap Icons (アイコン表示)
 -->
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
@@ -85,7 +81,7 @@
 
                     <!-- 戻るボタン -->
                     <div class="border-0">
-                        <a href="/page/qr_scanner" class="text-black ms-1">
+                        <a href="/page/qrsearch" class="text-black ms-1">
                             QRスキャナーに戻る
                             <i class="bi bi-arrow-return-left ms-1"></i>
                         </a>
@@ -94,61 +90,11 @@
                 </div>
             </div>
         </div>
-    </div>
-    
-    
+    </div>   
+
 </section>
 
-<!-- JavaScript - クリップボードコピー機能 -->
-<script th:if="${qrData != null and !#strings.isEmpty(qrData)}">
-    /**
-     * QRデータをクリップボードにコピーする関数
-     * 
-     * 機能:
-     * - 最新のClipboard APIを優先使用
-     * - 古いブラウザ用のフォールバック機能付き
-     * - コピー成功時の視覚的フィードバック（ボタンの色・テキスト変更）
-     * - エラーハンドリング
-     * 
-     * 対応環境:
-     * - Clipboard API: HTTPS環境、モダンブラウザ
-     * - フォールバック: HTTP環境、古いブラウザ
-     */
-    function copyToClipboard() {
-        // ThymeleafからqrDataを取得
-        const qrData = /*[[${qrData}]]*/ '';
-        const copyBtn = document.getElementById('copy-btn');
-        
-        // モダンブラウザ：Clipboard API使用
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(qrData).then(function() {
-                // コピー成功時の視覚的フィードバック
-                const originalText = copyBtn.innerHTML;
-                copyBtn.innerHTML = '<i class="bi bi-check me-2"></i>コピー完了！';
-                copyBtn.classList.remove('btn-outline-primary');
-                copyBtn.classList.add('btn-success');
-                
-                // 2秒後に元の状態に戻す
-                setTimeout(function() {
-                    copyBtn.innerHTML = originalText;
-                    copyBtn.classList.remove('btn-success');
-                    copyBtn.classList.add('btn-outline-primary');
-                }, 2000);
-            }).catch(function(err) {
-                console.error('コピーに失敗しました:', err);
-                alert('コピーに失敗しました');
-            });
-        } else {
-            // フォールバック：古いブラウザ対応（execCommand使用）
-            const textArea = document.createElement('textarea');
-            textArea.value = qrData;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-            alert('コピーしました: ' + qrData);
-        }
-    }
+
 </script>
 </body>
 </html>

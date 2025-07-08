@@ -9,7 +9,8 @@
 <body>
 <section class="vh-100 d-flex justify-content-center align-items-center">
     <main class="form-signin w-100" style="max-width: 330px;">
-        <form th:action="@{/action/login}" method="post" class="text-center">
+        <!-- ngrok用設定：enctype="application/x-www-form-urlencoded" は本番環境では削除可能 -->
+        <form th:action="@{/action/login}" method="post" enctype="application/x-www-form-urlencoded" class="text-center">
             <img class="mb-4" th:src="@{/logo/titlelogo.png}" alt="Title Logo" width="200" height="100">
             <h1 class="h3 mb-3 fw-normal">ログイン</h1>
 
