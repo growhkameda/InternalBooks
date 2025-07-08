@@ -9,6 +9,7 @@ public class Const {
 	public final static String MAILADDRESS = "mail_address";
 	public final static String PASSWORD = "password";
 	public final static String ROLE = "role";
+	public final static String DEPARTMENT_ID = "department_id";
 	public final static String BOOK_ID = "book_id";
 	public final static String TITLE = "title";
 	public final static String CATEGORIES = "categories";
