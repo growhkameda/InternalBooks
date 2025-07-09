@@ -26,8 +26,8 @@ CREATE TABLE `t_book` (
   `book_id` int NOT NULL,
   `title` varchar(255) NOT NULL,
   `categories` varchar(255) NOT NULL,
-  `lending_flag` int DEFAULT '0',
-  `provider` varchar(255) DEFAULT NULL,
+  `borrower_id` int DEFAULT NULL,
+  `provider_id` int DEFAULT NULL,
   `provider_comment` varchar(255) DEFAULT NULL,
   `memo` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`book_id`)
@@ -40,7 +40,7 @@ CREATE TABLE `t_book` (
 
 LOCK TABLES `t_book` WRITE;
 /*!40000 ALTER TABLE `t_book` DISABLE KEYS */;
-INSERT INTO `t_book` VALUES (1,'初めてのJava','Java,プログラミング',0,'鈴木一郎','目指せJavaシルバー','勉強になる'),(2,'合格できる基本情報','基本情報,資格',0,'山田二郎','基本情報とらせたい！','一度読んでほしい'),(3,'未経験からのITパスポート','ITパスポート',0,'田中三郎','この1冊で合格できる！','必須');
+INSERT INTO `t_book` VALUES (1,'初めてのJava','Java,プログラミング',1,2,'目指せJavaシルバー','勉強になる'),(2,'合格できる基本情報','基本情報,資格',2,3,'基本情報とらせたい！','一度読んでほしい'),(3,'未経験からのITパスポート','ITパスポート',1,3,'この1冊で合格できる！','必須');
 /*!40000 ALTER TABLE `t_book` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

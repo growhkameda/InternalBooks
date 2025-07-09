@@ -26,11 +26,11 @@ public class TBookEntity {
     @Column(name = Const.CATEGORIES)
     private String categories;
     
-    @Column(name = Const.LENDING_FLAG)
-    private Integer lendingFlag;
+    @Column(name = Const.BORROWER_ID)
+    private Integer borrowerId;
     
-    @Column(name = Const.PROVIDER)
-    private String provider;
+    @Column(name = Const.PROVIDER_ID)
+    private String providerId;
     
     @Column(name = Const.PROVIDER_COMMENT)
     private String providerComment;
