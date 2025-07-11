@@ -16,23 +16,23 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "m_user")
+@Table(name = "t_user")
 /**
  * MUserテーブルからデータを受け取るためのEntity
  */
-public class MUserEntity implements UserDetails {
+public class TUserEntity implements UserDetails {
     @Id
-    @Column(name = Const.ID)
-    private Integer id;
+    @Column(name = Const.USER_ID)
+    private Integer userId;
     
-    @Column(name = Const.EMAIL)
-    private String email;
+    @Column(name = Const.MAILADDRESS)
+    private String mailAddress;
     
     @Column(name = Const.PASSWORD)
     private String password;
     
-    @Column(name = Const.ROLE_ID)
-    private Integer roleId;
+    @Column(name = Const.ROLE)
+    private Integer role;
 
     @Override
     /**
@@ -49,7 +49,7 @@ public class MUserEntity implements UserDetails {
      * @return ユーザ名(メールアドレス)
      */
     public String getUsername() {
-        return email;
+        return mailAddress;
     }
 
     @Override

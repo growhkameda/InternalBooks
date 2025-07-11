@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>BookList</title>
+</head>
+
+<body>
+<section class="vh-100 d-flex justify-content-center align-items-center">
+	<div class="container vh-100 d-flex justify-content-center align-items-center">
+	  <div class="w-100" style="max-width: 330px;">
+	    <h1 class="mb-4 text-center" th:if="${categoryName != null}" th:text="'カテゴリ：' + ${categoryName}"></h1>
+
+		<div class="row g-3">
+	      	<!-- 2列レイアウト -->
+			<div class="col-6" style="margin-bottom: 60px; line-height: 190px;">
+				<a th:href="@{/page/bookID(bookID=${ID})}">
+					<img class="" th:src="@{/image/Java.jpg}" style="margin-bottom: 60px; width: 130px">
+				</a>
+			</div>
+			
+			<div class="col-6" style="margin-bottom: 60px; line-height: 190px;">
+				<a th:href="@{/page/bookID(bookID=${ID})}">
+					<img class="" th:src="@{/image/Java.jpg}" style="margin-bottom: 60px; width: 130px">
+				</a>
+			</div>
+      	</div>
+	  
+	  	<div class="row g-3">
+	      	<!-- 2列レイアウト -->
+			<div class="col-6" style="margin-bottom: 60px; line-height: 190px;">
+				<a th:href="@{/page/bookID(bookID=${ID})}">
+					<img class="" th:src="@{/image/Java.jpg}" style="margin-bottom: 60px; width: 130px">
+				</a>
+			</div>
+			
+			<div class="col-6" style="margin-bottom: 60px; line-height: 190px;">
+				<a th:href="@{/page/bookID(bookID=${ID})}">
+					<img class="" th:src="@{/image/Java.jpg}" style="margin-bottom: 60px; width: 130px">
+				</a>
+			</div>
+    	</div>
+		
+	  </div>
+	</div>
+</section>
+</body>
+</html>
