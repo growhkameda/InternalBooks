@@ -41,7 +41,7 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())  // CSRFを無効化
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/test/**", "/webjars/**").permitAll()  // 認証不要のエンドポイント
+                .requestMatchers("/", "/test/**", "/library/**","/webjars/**").permitAll()  // 認証不要のエンドポイント
                 .requestMatchers("/api/alluserinfo").authenticated()  // 認証が必要なエンドポイント
                 .anyRequest().authenticated()  // 他のエンドポイントは認証が必要
             )

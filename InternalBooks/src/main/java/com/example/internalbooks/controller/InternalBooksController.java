@@ -44,4 +44,19 @@ public class InternalBooksController {
     	logger.info("★★★★★★★★★★★amemiya() にアクセスされました");
         return "test/amemiya";
     }
+    @GetMapping("/library/user")
+    public String user() {
+    	logger.info("★★★★★★★★★★★user() にアクセスされました");
+        return "library/user";
+    }
+    @GetMapping("/library/usertop")
+    public String usertop() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "library/usertop";
+    }
+    @GetMapping("/library/bookediting")
+    public String bookediting() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "library/bookediting";
+    }
 }
