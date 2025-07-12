@@ -44,4 +44,9 @@ public class InternalBooksController {
     	logger.info("★★★★★★★★★★★amemiya() にアクセスされました");
         return "test/amemiya";
     }
+    @GetMapping("/test/imori")
+    public String imori() {
+    	logger.info("★★★★★★★★★★★imori() にアクセスされました");
+        return "/test/imori";
+    }
 }
