@@ -28,6 +28,8 @@ CREATE TABLE `t_user` (
   `password` varchar(255) NOT NULL,
   `mail_address` varchar(255) DEFAULT NULL,
   `role` int DEFAULT '0',
+  `department_id` int DEFAULT NULL,
+  `delete_flg` int DEFAULT 0,
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -38,7 +40,7 @@ CREATE TABLE `t_user` (
 
 LOCK TABLES `t_user` WRITE;
 /*!40000 ALTER TABLE `t_user` DISABLE KEYS */;
-INSERT INTO `t_user` VALUES (1,'admin','$2a$10$QNW1k/8Ngi8cX0i6Zel2HOwFVZPmW9Qn1SGizlEizKzKIkOIzO/Tq','admin@gmail.com',1),(2,'normal','$2a$10$MfXs8fYi6cpJdtRb9ZoCgecOLru6gvLyGUA9CSh8GVetVzEfs8WCS','normal@gmail.com',0);
+INSERT INTO `t_user` VALUES (1,'admin','$2a$10$QNW1k/8Ngi8cX0i6Zel2HOwFVZPmW9Qn1SGizlEizKzKIkOIzO/Tq','admin@gmail.com',1,3,0),(2,'normal','$2a$10$MfXs8fYi6cpJdtRb9ZoCgecOLru6gvLyGUA9CSh8GVetVzEfs8WCS','normal@gmail.com',0,10,0),(3,'deletenormal','$2a$10$MfXs8fYi6cpJdtRb9ZoCgecOLru6gvLyGUA9CSh8GVetVzEfs8WCS','deletenormal@gmail.com',0,10,1);
 /*!40000 ALTER TABLE `t_user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

@@ -16,32 +16,28 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `t_book`
+-- Table structure for table `m_department`
 --
 
-DROP TABLE IF EXISTS `t_book`;
+DROP TABLE IF EXISTS `m_department`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `t_book` (
-  `book_id` int NOT NULL,
-  `title` varchar(255) NOT NULL,
-  `categories` varchar(255) NOT NULL,
-  `borrower_id` int DEFAULT NULL,
-  `provider_id` int DEFAULT NULL,
-  `provider_comment` varchar(255) DEFAULT NULL,
-  `memo` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`book_id`)
+CREATE TABLE `m_department` (
+  `id` int NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `detail` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `t_book`
+-- Dumping data for table `m_department`
 --
 
-LOCK TABLES `t_book` WRITE;
-/*!40000 ALTER TABLE `t_book` DISABLE KEYS */;
-INSERT INTO `t_book` VALUES (1,'初めてのJava','Java,プログラミング',1,2,'目指せJavaシルバー','勉強になる'),(2,'合格できる基本情報','基本情報,資格',2,3,'基本情報とらせたい！','一度読んでほしい'),(3,'未経験からのITパスポート','ITパスポート',1,3,'この1冊で合格できる！','必須');
-/*!40000 ALTER TABLE `t_book` ENABLE KEYS */;
+LOCK TABLES `m_department` WRITE;
+/*!40000 ALTER TABLE `m_department` DISABLE KEYS */;
+INSERT INTO `m_department` VALUES (1,'CEO',''),(2,'人材サービス事業部',''),(3,'営業部',''),(4,'人材サービス部',''),(5,'人材サービス課',''),(6,'倉庫課',''),(7,'ITソリューション事業部',''),(8,'営業部',''),(9,'ITソリューション部',''),(10,'開発課',''),(11,'評価検証課',''),(12,'ITサポート課',''),(13,'コーポレート事業部',''),(14,'総務',''),(15,'経理',''),(16,'事務',''),(17,'HR推進部',''),(18,'人事',''),(19,'広報',''),(20,'リスキリング事業部',''),(21,'TechGrowUp',''),(22,'技術向上課','');
+/*!40000 ALTER TABLE `m_department` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -53,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-06-05 21:23:15
+-- Dump completed on 2025-03-03  7:25:08
