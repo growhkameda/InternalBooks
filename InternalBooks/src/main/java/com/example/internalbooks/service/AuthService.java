@@ -31,6 +31,12 @@ public class AuthService {
 
             // LoginUserを取得
             TUserEntity loginUser = (TUserEntity) userDetailsService.loadUserByUsername(authRequest.getMailAddress());
+            
+            // 削除されたユーザかの確認
+            if(loginUser.getDeleteFlg() != 0) {
+            	throw new Exception();
+            }
+            
             Integer userId = loginUser.getUserId();  // ユーザーIDを取得
 
             // ユーザーのroleを取得
