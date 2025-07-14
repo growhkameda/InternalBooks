@@ -150,6 +150,49 @@ public class InternalBooksController {
         
     }
     
+    @GetMapping("/page/book")
+    public String booklist(@RequestParam(required = false) String categoryName, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            // カテゴリーリストを取得
+//            List<String> categoryList = tBookService.getAllCategories();
+            
+//            model.addAttribute("categories", categoryList);
+            model.addAttribute("categoryName", categoryName);
+
+            return "page/booklist";
+    	}
+    	catch (Exception e) {
+            return error(redirectAttributes);
+    	}
+        
+    }
+    
+    @GetMapping("/page/bookID")
+    public String bookid(@RequestParam(required = false) String bookID, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            // カテゴリーリストを取得
+//            List<String> categoryList = tBookService.getAllCategories();
+            
+//            model.addAttribute("categories", categoryList);
+            model.addAttribute("bookID", bookID);
+
+            return "page/bookid";
+    	}
+    	catch (Exception e) {
+            return error(redirectAttributes);
+    	}
+        
+    }
+    
+    
     private String error(RedirectAttributes redirectAttributes) {
     	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
         return "redirect:/page/login";

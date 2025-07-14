@@ -15,7 +15,7 @@
 	    <div class="row g-3">
 	      <!-- 2列レイアウト -->
 	      <div class="col-6" th:each="category : ${categories}">
-	        <a class="btn btn-primary w-100" href="#" th:text="${category}">Button</a>
+	        <a class="btn btn-primary w-100" th:href="@{/page/book(categoryName=${category})}" th:text="${category}">Button</a>
 	      </div>
 	    </div>
 		
