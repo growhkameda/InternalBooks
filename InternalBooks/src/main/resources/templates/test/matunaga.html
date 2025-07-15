@@ -3,13 +3,105 @@
       th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-    <title>松永テストページ</title>
+  <title>松永テストページ</title>
 </head>
 
 <body>
-<section>
-    <h1>こんにちは！</h1>
-    <p>松永テストページ</p>
-</section>
+  <section th:fragment="section">
+
+    <style>
+      .fixed-size-img {
+        width: 230px;
+        height: 330px;
+        object-fit: cover;
+      }
+
+      .fixed-page-width {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .pagination-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .pagination-buttons .btn {
+        font-size: 16px;
+      }
+    </style>
+
+    <div class="container text-center fixed-page-width"
+         style="margin-bottom: 60px; font-size: 30px; font-weight: 600;">
+      図書館システム
+    </div>
+
+    <div class="container text-center fixed-page-width"
+         style="margin-bottom: 60px; font-size: 30px;">
+      カテゴリー：Java
+    </div>
+
+    <div class="container fixed-page-width">
+      <div class="row">
+        <a href="/" class="col-auto btn" style="margin-bottom: 10px; font-size: 16px; text-align: left;">
+          カテゴリー選択へ戻る↵
+        </a>
+      </div>
+    </div>
+
+    <div class="container fixed-page-width">
+      <div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
+      </div>
+
+      <div class="pagination-buttons fixed-page-width">
+        <button id="prev-button" class="btn btn-outline-primary">← 前のページ</button>
+        <button id="next-button" class="btn btn-outline-primary">次のページ →</button>
+      </div>
+    </div>
+
+    <script>
+      const imagePages = [
+        ['1.png', '2.png', '3.png', '4.png'],
+        ['5.png', '6.png', '7.png', '8.png'],
+        ['9.png', '10.png']
+      ];
+
+      let currentPage = 0;
+
+      function renderImages() {
+        const gallery = document.getElementById('image-gallery');
+        gallery.innerHTML = '';
+
+        imagePages[currentPage].forEach(imgName => {
+          const anchor = document.createElement('a');
+          anchor.href = '/';
+          anchor.className = 'col-6 btn';
+
+          const img = document.createElement('img');
+          img.className = 'fixed-size-img';
+          img.src = `/images/${imgName}`;
+          img.alt = '画像';
+
+          anchor.appendChild(img);
+          gallery.appendChild(anchor);
+        });
+      }
+
+      window.onload = () => renderImages();
+
+      document.getElementById('next-button').onclick = () => {
+        currentPage = (currentPage + 1) % imagePages.length;
+        renderImages();
+      };
+
+      document.getElementById('prev-button').onclick = () => {
+        currentPage = (currentPage - 1 + imagePages.length) % imagePages.length;
+        renderImages();
+      };
+    </script>
+
+  </section>
 </body>
 </html>

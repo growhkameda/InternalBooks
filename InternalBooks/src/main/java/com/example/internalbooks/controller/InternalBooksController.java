@@ -154,5 +154,27 @@ public class InternalBooksController {
     	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
         return "redirect:/page/login";
     }
+   
+    @GetMapping("/page/book_detail")
+    public String book_detail(@RequestParam("category") String category,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+            
+            // カテゴリーの値
+            model.addAttribute("category", category);
+            
+
+            return "page/book_detail";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
 
 }
