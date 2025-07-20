@@ -41,6 +41,32 @@ public class InternalBooksController {
     public String index() {
         return "redirect:/page/login";
     }
+
+    @GetMapping("/page/user")
+    public String user() {
+    	logger.info("★★★★★★★★★★★user() にアクセスされました");
+        return "page/user";
+    }
+    @GetMapping("/page/adminusertop")
+    public String usertop() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "page/adminusertop";
+    }
+    @GetMapping("/page/bookediting")
+    public String bookediting() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "page/bookediting";
+    }
+    @GetMapping("/page/UserConfir")
+    public String UserConfir() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "page/UserConfir";
+    }
+    @GetMapping("/page/UserRegistrationComplete")
+    public String UserRegistrationComplete() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "page/UserRegistrationComplete";
+    }
     
     //ログインページ
     @GetMapping("/page/login")
