@@ -41,7 +41,7 @@ public class InternalBooksController {
     public String index() {
         return "redirect:/page/login";
     }
-//<<<<<<< HEAD
+
     @GetMapping("/page/user")
     public String user() {
     	logger.info("★★★★★★★★★★★user() にアクセスされました");
@@ -67,6 +67,7 @@ public class InternalBooksController {
     	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
         return "page/UserRegistrationComplete";
     }
+
     @GetMapping("/page/BookingConfirmation")
     public String BookingConfirmation() {
     	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
@@ -77,7 +78,6 @@ public class InternalBooksController {
     	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
         return "page/BookingRegistrationComplete";
     }
-//=======
     
     //ログインページ
     @GetMapping("/page/login")
@@ -250,5 +250,4 @@ public class InternalBooksController {
         return "redirect:/page/login";
     }
 
-//>>>>>>> origin/main
 }
