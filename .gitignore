@@ -1,3 +1,5 @@
+##### 図書館システムメンバー用環境設定 #####
+
 HELP.md
 .gradle
 build/
@@ -35,3 +37,35 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### macOS ###
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+### Windows ###
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+
+### Java ###
+*.class
+*.log
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+
+### Application specific ###
+/logs/
+*.log.*
+application-*.properties
+!application.properties 
