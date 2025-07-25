@@ -36,7 +36,9 @@ public class InternalBooksController {
     @Autowired
 	private TBookService tBookService;
     
-    //トップページとしてloginを設定
+    /**
+     * トップページとしてloginを設定
+     */
     @GetMapping("/")
     public String index() {
         return "redirect:/page/login";
@@ -79,13 +81,18 @@ public class InternalBooksController {
         return "page/BookingRegistrationComplete";
     }
     
-    //ログインページ
+    /**
+     * ログインページに遷移
+     */
     @GetMapping("/page/login")
     public String Login() {
     	logger.info("★★★★★★★★★★★Loginされました★★★★★★★★★★★");
         return "page/login";
     }
-    
+
+    /**
+     * ログイン処理
+     */
     @PostMapping("/action/login")
     public String login(@RequestParam(name = "mailAddress") String mailAddress, @RequestParam(name = "password") String password, HttpSession session, RedirectAttributes redirectAttributes) {
     	
@@ -120,7 +127,10 @@ public class InternalBooksController {
     	}
 
     }
-    
+
+    /**
+     * TOPページに遷移 
+     */
     @GetMapping("/page/top")
     public String top(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
     	try {
@@ -139,6 +149,9 @@ public class InternalBooksController {
         
     }
     
+    /**
+     * カテゴリーリストを表示
+     */
     @GetMapping("/page/categories")
     public String categories(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
     	try {
@@ -158,14 +171,29 @@ public class InternalBooksController {
     	}
         
     }   
+
+    /**
+     * 貸出中書籍ページに遷移 
+     */
+    @GetMapping("/page/checkedout")
+    public String checkedout(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            //この辺に現在の借りてる書籍の情報取得の処理を書く予定
+
+            return "page/checkedout";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}  
+
+    }
     
     /**
      * QRコードサーチページを表示
-     * 
-     * @param session HTTPセッション（JWT認証トークン取得用）
-     * @param model モデル
-     * @param redirectAttributes 認証失敗時のリダイレクト用
-     * @return QRスキャナーページのテンプレート名(page/qrsearch) または 認証エラー時のリダイレクト
      */
     @GetMapping("/page/qrsearch")
     public String qrScanner(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
@@ -183,17 +211,12 @@ public class InternalBooksController {
     		// 認証失敗時はログインページにリダイレクト
             return error(redirectAttributes);
     	}
+
     }
     
     /**
      * QRコード読み取り結果表示ページ
-     * テストのためダミーページにしている
-     * 
-     * @param qrData QRコードから読み取ったデータ（URLパラメータ）
-     * @param session HTTPセッション（JWT認証トークン・セッションデータ取得用）
-     * @param model Thymeleafテンプレートに渡すモデル
-     * @param redirectAttributes 認証失敗時のリダイレクト用
-     * @return ダミーページのテンプレート名(page/dummy) または 認証エラー時のリダイレクト
+     * ★テストのためダミーページにしている★
      */
     @GetMapping("/page/dummy")
     public String dummy(@RequestParam(name = "qrData", required = false) String qrData, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
@@ -214,14 +237,18 @@ public class InternalBooksController {
             // QRコードデータをThymeleafテンプレートに渡す
             model.addAttribute("qrData", finalQrData);
 
-            return "page/dummy";    //テストのためdummyにしている
+            return "page/dummy";    //テストのため遷移先をdummyにしている
     	}
     	catch (Exception e) {
     		// 認証失敗時はログインページにリダイレクト
             return error(redirectAttributes);
     	}
+
     }
    
+    /**
+     * カテゴリー詳細ページに遷移
+     */
     @GetMapping("/page/book_detail")
     public String book_detail(@RequestParam("category") String category,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
     	try {
@@ -244,7 +271,10 @@ public class InternalBooksController {
         
     }
 
-    // エラーページ
+    /**
+     * エラー処理
+     * セッション切れなどの際にloginページにリダイレクト
+     */
     private String error(RedirectAttributes redirectAttributes) {
     	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
         return "redirect:/page/login";

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+  <title>貸出中書籍</title>
+</head>
+
+<body>
+  <section th:fragment="section">
+
+    <!-- ================== ページメインタイトル ================== -->
+    <div class="container text-center" style="max-width: 400px; margin-bottom: 40px;">
+      <h1 class="fw-bold mt-4" style="font-size: 30px;">貸出中書籍</h1>
+    </div>
+
+    <!-- ================== 貸出中書籍なしの場合の表示 ================== -->
+    <div th:if="${checkedOutBooks == null or #lists.isEmpty(checkedOutBooks)}" 
+         class="text-center text-muted" style="margin-top: 100px;">
+      <!-- 本のアイコン表示 -->
+      <i class="bi bi-book" style="font-size: 4em; color: #ccc;"></i>
+      <!-- メッセージ表示 -->
+      <p class="fs-5 mt-4">現在貸出中の書籍はありません</p>
+      <!-- トップページへの戻りボタン -->
+      <div class="col-12 border-0 mt-4">
+        <a href="/page/top" class="text-black ms-2">
+            TOPに戻る
+            <i class="bi bi-arrow-return-left ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- ================== 貸出中書籍ありの場合の表示 ================== -->
+    <div th:if="${checkedOutBooks != null and not #lists.isEmpty(checkedOutBooks)}" 
+         class="container" style="max-width: 400px;">
+      
+      <!-- ========== 書籍表示エリア ========== -->
+      <div class="text-center mb-5">
+        <!-- 書籍画像表示（Thymeleafで現在表示する書籍を制御） -->
+        <img th:src="${currentBook != null ? currentBook.imageUrl : '/images/default-book.png'}" 
+             class="img-fluid rounded shadow-lg mb-4" 
+             style="width: 200px; height: 300px; object-fit: cover;" 
+             alt="書籍画像" />
+        
+        <!-- 書籍情報カード -->
+        <div class="card bg-light border-0 rounded-4 p-4">
+          <!-- 書籍タイトル -->
+          <div class="h5 fw-bold text-dark mb-2" th:text="${currentBook != null ? currentBook.title : '書籍名'}">書籍名</div>
+          <!-- カテゴリーバッジ -->
+          <span class="badge bg-primary rounded-pill px-3 py-2 mb-2" 
+                style="font-size: 14px;" 
+                th:text="${currentBook != null ? currentBook.category : 'カテゴリー'}">カテゴリー</span>
+          <!-- 貸出状況 -->
+          <div class="text-muted" th:text="${currentBook != null ? currentBook.status : '貸出状況'}">貸出状況</div>
+        </div>
+      </div>
+
+      <!-- ========== ナビゲーションボタンエリア ========== -->
+      <!-- 複数冊ある場合のみ表示されるナビゲーションボタン -->
+      <div th:if="${totalBooks != null and totalBooks > 1}" 
+           class="fixed-bottom d-flex justify-content-between p-3" 
+           style="max-width: 400px; left: 50%; transform: translateX(-50%);">
+        
+        <!-- 戻るボタン（1冊目以外で表示） -->
+        <a th:if="${currentIndex != null and currentIndex > 0}" 
+           th:href="@{/page/checkedout(index=${currentIndex - 1})}"
+           class="btn btn-secondary rounded-pill px-4 py-2 shadow">
+          <i class="bi bi-arrow-left"></i> 戻る
+        </a>
+        
+        <!-- 進むボタン（最終冊以外で表示） -->
+        <a th:if="${currentIndex != null and currentIndex < totalBooks - 1}" 
+           th:href="@{/page/checkedout(index=${currentIndex + 1})}"
+           class="btn btn-primary rounded-pill px-4 py-2 shadow"
+           th:classappend="${currentIndex == 0 ? 'ms-auto' : ''}">
+          進む <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- ========== ページネーション情報表示 ========== -->
+      <div th:if="${totalBooks != null and totalBooks > 1}" class="text-center mt-4 mb-2">
+        <small class="text-muted">
+          <span th:text="${currentIndex != null ? currentIndex + 1 : 1}">1</span> / 
+          <span th:text="${totalBooks}">1</span> 冊
+        </small>
+      </div>
+
+      <!-- ========== トップページへ戻るリンク ========== -->
+      <div class="col-12 border-0 mt-4">
+        <a href="/page/top" class="text-black ms-2">
+            TOPに戻る
+            <i class="bi bi-arrow-return-left ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+  </section>
+</body>
+</html> 
