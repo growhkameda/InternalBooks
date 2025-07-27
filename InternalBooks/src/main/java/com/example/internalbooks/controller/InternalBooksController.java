@@ -42,10 +42,10 @@ public class InternalBooksController {
         return "redirect:/page/login";
     }
 
-    @GetMapping("/page/user")
-    public String user() {
+    @GetMapping("/page/UserRegistration")
+    public String UserRegistration() {
     	logger.info("★★★★★★★★★★★user() にアクセスされました");
-        return "page/user";
+        return "page/UserRegistration";
     }
     @GetMapping("/page/adminusertop")
     public String usertop() {

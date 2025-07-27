@@ -9,75 +9,81 @@
 <body>
 <section class = "container justify-content-center mt-5">
 	
-    <h1 class= "text-center">書籍登録編集画面</h1>
+    <h1 class= "text-center">書籍登録確認</h1>
     <br>
 <form>    
-   <div class ="container text-center mt-4">
-  <div class = "row justify-content-center">
+ <div class ="container mt-4">
+  <div class = "row justify-content-center gap">
 	  <div class = "col-auto pt-2 ms-4">
 	      	<label for = "name">書籍名</label>
 	  </div>
-	  <div class = "col-8 ms-2" >
+	  <div class = "col-7 col-sm-8 ms-2" >
 			<input type ="text" class="form-control bg-light">
 	  </div>
   </div>
 </div>
 
-<div class ="container text-center mt-4">
+<div class ="container mt-4">
   <div class = "row justify-content-center">
 	  <div class = "col-auto pt-2">
 	      	<label for = "category">カテゴリー</label>
 	  </div>
-	  <div class = "col-8">
+	  <div class = "col-7 col-sm-8">
 			<input type ="text" class="form-control bg-light">
 	  </div>
   </div>
 </div>
  
- <div class ="container text-center mt-4">
+ <div class ="container mt-4">
   <div class ="row justify-content-center"> 
 	  <div class = "col-auto pt-2">
 			<label for = "id">書籍提供者</label>
 	  </div>
-	   <div class = "col-8">
+	   <div class = "col-7 col-md-8">
 			<input type ="text" class="form-control bg-light">
 	   </div>
   </div>	
  </div>
- <div class ="container text-center mt-4">
+ 
+ <div class ="container mt-4">
   <div class ="row justify-content-center"> 
 	  <div class = "col-auto pull-left pt-2">
 			<label for = "id">書籍提供者</label>
 			<br>
 			<label for = "id">コメント</label>
 	  </div>
-	   <div class = "col-8">
-			<textarea class="form-control bg-light"style="height:150px;"></textarea>
+	   <div class = "col-7 col-md-8">
+			<input type ="text" class="form-control bg-light"style="height:150px;">
 	   </div>
   </div>	
  </div>
+ 
  <div class ="container text-center mt-4">
   <div class ="row justify-content-center"> 
 	  <div class = "col-auto mt-1 pt-2 ms-3">
 			<label for = "id">書籍画像</label>
 	  </div>
-	    <div class = "col-8 text-start">
+	    <div class = "col-7 col-md-8 text-start">
 			 <img src="/images/1001.png" class="img-fluid mt-4 " style="height:200px" alt="book">
 			
         </div>
 	   </div>
   </div>	
 					
-   <div class ="input-group mt-5 gap-1">
-   <div class ="row justify-content-start"> 
-	   <div class = "col-9 ms-lg-5 ps-lg-5">
-			<a href="/page/adminusertop" class="btn fs-6 ">編集画面へ戻る</a>
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"/>
-            </svg>
-	   </div>
-   </div>
+ <div class="container mt-5">
+  <div class="row">
+    <div class="col-12 text-start ms-lg-5 ">
+      <a href="/page/bookediting" class="btn fs-6">
+        編集画面へ戻る
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+             class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+                d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
+        </svg>
+      </a>
+    </div>
   </div>
+</div>
  <div class ="container text-center mt-4">
 	  <div class = "col-auto">
 	 <a href="/page/BookingRegistrationComplete" class="btn btn-primary">登録</a>

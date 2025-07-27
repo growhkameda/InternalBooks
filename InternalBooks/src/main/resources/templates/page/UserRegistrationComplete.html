@@ -17,55 +17,54 @@
  <div class="text-dark">
   <div class="container ms-2 text-center">
     <div class="row justify-content-center">
-      <div class="col-10 bg-light pt-2 text-start" style="height:40px">
+      <div class="col-12 bg-light pt-2 text-start" style="height:40px">
         以下のユーザーを登録しました。
       </div>
     </div>
   </div>
 </div>
-<div class ="container text-center mt-4">
-  <div class = "row justify-content-center me-3">
-	  <div class = "col-auto pt-2 me-1">
-	      	<label for = "id">社員ID</label>
-	  </div>
-	  <div class = "col-8 ">
-			<p id ="employee-id" class="text-start pt-2 ms-4 ps-3">0001</p>
-	  </div>
+
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-12 pt-2 d-flex justify-content-center align-items-center gap-5">
+      <label for="id" class="form-label mb-0 me-3">社員ID</label>
+      <p id="employee-id" class="mb-0 me-5 pe-2">0001</p>
+    </div>
   </div>
 </div>
 
-<div class ="container text-center mt-4">
-  <div class = "row justify-content-center ">
-	  <div class = "col-auto pt-2">
-	      	<label for = "name">名前</label>
-	  </div>
-	  <div class = "col-8 me-2">
-			<p id ="user-name" class="text-start pt-2 ms-5">武藤 秀平</p>
-	  </div>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-10 pt-2 d-flex justify-content-center align-items-center gap-5">
+      <label for="name" class="form-label mb-0 me-3">名前</label>
+      <p id="user-name" class="mb-0 me-3">武藤 秀平</p>
+    </div>
   </div>
 </div>
  
- <div class ="container text-center mt-4">
-  <div class ="row justify-content-center"> 
-	  <div class = "col-auto pt-2">
-			<label for = "department">所属課</label>
-	  </div>
-	  
-	   <div class = "col-8 me-4">
-			<p id ="development"class="text-start pt-2 ms-5">開発課</p>
-	   </div>
-  </div>	
- </div>		
-  <div class ="input-group mt-5 gap-1">
-   <div class ="row justify-content-start"> 
-	   <div class = "col-9 ms-lg-5 ps-lg-5">
-			<a href="/" class="btn fs-6 ">Topへ戻る</a>
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"/>
-            </svg>
-	   </div>
-   </div>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-12 pt-2 d-flex justify-content-center align-items-center gap-5">
+      <label for="department" class="form-label mb-0 me-3">所属課</label>
+      <p id="development" class="mb-0 me-5 pe-1">開発課</p>
+    </div>
   </div>
+</div>
+	
+ <div class="container mt-5">
+  <div class="row">
+    <div class="col-12 text-start ms-lg-5">
+      <a href="/page/top" class="btn fs-6">
+        TOPへ戻る
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+             class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">
+          <path fill-rule="evenodd"
+                d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
 </section>
 </body>
 </html>
