@@ -13,12 +13,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.internalbooks.dto.DtoAuthRequest;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.utils.JwtUtil;
+import java.io.IOException;
+import java.util.Base64;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -41,33 +44,7 @@ public class InternalBooksController {
     public String index() {
         return "redirect:/page/login";
     }
-
-    @GetMapping("/page/UserRegistration")
-    public String UserRegistration() {
-    	logger.info("★★★★★★★★★★★user() にアクセスされました");
-        return "page/UserRegistration";
-    }
-    @GetMapping("/page/adminusertop")
-    public String usertop() {
-    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
-        return "page/adminusertop";
-    }
-    @GetMapping("/page/bookediting")
-    public String bookediting() {
-    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
-        return "page/bookediting";
-    }
-    @GetMapping("/page/UserConfir")
-    public String UserConfir() {
-    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
-        return "page/UserConfir";
-    }
-    @GetMapping("/page/UserRegistrationComplete")
-    public String UserRegistrationComplete() {
-    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
-        return "page/UserRegistrationComplete";
-    }
-
+   
     @GetMapping("/page/BookingConfirmation")
     public String BookingConfirmation() {
     	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
@@ -249,5 +226,79 @@ public class InternalBooksController {
     	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
         return "redirect:/page/login";
     }
+ // 管理者登録画面の表示
+    @GetMapping("/page/adminusertop")
+    public String adminusertop() {
+        return "page/adminusertop"; // registration.html のパス
+    }
+    
+ // ユーザー登録画面の表示
+    @GetMapping("/page/UserRegistration")
+    public String UserRegistration() {
+        return "page/UserRegistration"; // registration.html のパス
+    }
 
+ // ユーザー登録フォームの送信処理
+    @PostMapping("/action/UserConfir")
+    public String UserConfir(
+    	    @RequestParam("employeeId") String employeeId,
+    	    @RequestParam("mailAddress") String mailAddress,
+    	    @RequestParam("userName") String userName,
+    	    @RequestParam("department") String department,
+    	    Model model) {
+
+    	    model.addAttribute("employeeId", employeeId);
+    	    model.addAttribute("mailAddress", mailAddress);
+    	    model.addAttribute("userName", userName);
+    	    model.addAttribute("department", department);
+    	    
+        return "page/UserConfir"; // 同じページに戻り、結果表示
+    }
+    
+    @PostMapping("/action/UserRegistrationComplete")
+    public String UserRegistrationComplete(
+    	    @RequestParam("employeeId") String employeeId,
+    	    @RequestParam("mailAddress") String mailAddress,
+    	    @RequestParam("userName") String userName,
+    	    @RequestParam("department") String department,
+    	    Model model) {
+
+    	    model.addAttribute("employeeId", employeeId);
+    	    model.addAttribute("mailAddress", mailAddress);
+    	    model.addAttribute("userName", userName);
+    	    model.addAttribute("department", department);
+    	    
+        return "page/UserRegistrationComplete"; // 同じページに戻り、結果表示
+    }
+    @GetMapping("/page/bookediting")
+    public String bookediting() {
+        return "page/bookediting"; // registration.html のパス
+    }
+ // 書籍登録フォームの送信処理
+    @PostMapping("/action/BookingConfirmation")
+    public String BookingConfirmation(
+    	    @RequestParam("bookname") String bookname,
+    	    @RequestParam("category") String category,
+    	    @RequestParam("offer") String offer,
+    	    @RequestParam("comment") String comment,
+    	    @RequestParam("imagefile") MultipartFile file,
+    	    Model model) {
+
+    	    model.addAttribute("bookname", bookname);
+    	    model.addAttribute("category", category);
+    	    model.addAttribute("offer", offer);
+    	    model.addAttribute("comment", comment);
+    	    
+    	    if (!file.isEmpty()) {
+    	        try {
+    	            // 一時的にBase64でエンコードして表示用にする
+    	            String base64Image = Base64.getEncoder().encodeToString(file.getBytes());
+    	            model.addAttribute("imagePreview", base64Image);
+    	        } catch (IOException e) {
+    	            e.printStackTrace();
+    	        }
+    	    }
+    	    
+        return "page/BookingConfirmation"; // 同じページに戻り、結果表示
+    }
 }

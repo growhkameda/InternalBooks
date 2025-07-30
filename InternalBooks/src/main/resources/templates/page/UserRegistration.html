@@ -14,12 +14,13 @@
     <br>
     <h3 class= "text-center mt-4">ユーザー登録</h3>
     <br>
-<form>    
+    
+<form th:action="@{/action/UserConfir}" method="post" enctype="application/x-www-form-urlencoded">    
 <div class ="container mt-4">
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "id" class="form-label text-start">社員ID</label>
-	      	<input type ="text" class="form-control bg-light">
+	      	<input type="text" class="form-control bg-light" id="employeeId" name="employeeId">
 	  </div>
   </div>
 </div>
@@ -28,16 +29,16 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "mail" class="form-label text-start">メールアドレス </label>
-	      	<input type ="text" class="form-control bg-light">
+	      	<input type="text" class="form-control bg-light" id="mailAddress" name="mailAddress">
 	  </div>
   </div>
 </div>
 
 <div class ="container mt-3">
   <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
+	  <div class = "col-8 pt-2 me-2">
 	      	<label for = "name" class="form-label text-start">名前</label>
-	      	<input type ="text" class="form-control bg-light">
+	      	<input type="text" class="form-control bg-light" id="userName" name="userName">
 	  </div>
   </div>
 </div>
@@ -46,7 +47,7 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "department" class="form-label text-start">所属課</label>
-	      	<input type ="text" class="form-control bg-light">
+	      	<input type="text" class="form-control bg-light" id="department" name="department">
 	  </div>
   </div>
 </div>
@@ -66,7 +67,7 @@
 </div>
  <div class ="container text-center mt-4">
 	  <div class = "col-auto">
-	 <a href="/page/UserConfir" class="btn btn-primary">登録確認</a>
+	 <button type="submit" class="btn btn-primary">登録確認</button>
 	  </div>
 </div>
 </form>
