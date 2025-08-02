@@ -255,6 +255,7 @@ public class InternalBooksController {
         return "page/UserConfir"; // 同じページに戻り、結果表示
     }
     
+    // ユーザー登録完了の送信処理
     @PostMapping("/action/UserRegistrationComplete")
     public String UserRegistrationComplete(
     	    @RequestParam("employeeId") String employeeId,
@@ -270,6 +271,8 @@ public class InternalBooksController {
     	    
         return "page/UserRegistrationComplete"; // 同じページに戻り、結果表示
     }
+    
+// 書籍登録画面の表示
     @GetMapping("/page/bookediting")
     public String bookediting() {
         return "page/bookediting"; // registration.html のパス
@@ -277,28 +280,60 @@ public class InternalBooksController {
  // 書籍登録フォームの送信処理
     @PostMapping("/action/BookingConfirmation")
     public String BookingConfirmation(
-    	    @RequestParam("bookname") String bookname,
-    	    @RequestParam("category") String category,
-    	    @RequestParam("offer") String offer,
-    	    @RequestParam("comment") String comment,
-    	    @RequestParam("imagefile") MultipartFile file,
-    	    Model model) {
+        @RequestParam("bookname") String bookname,
+        @RequestParam("category") String category,
+        @RequestParam("offer") String offer,
+        @RequestParam("comment") String comment,
+        @RequestParam("imagefile") MultipartFile file,
+        HttpSession session,
+        Model model
+    ) {
+        model.addAttribute("bookname", bookname);
+        model.addAttribute("category", category);
+        model.addAttribute("offer", offer);
+        model.addAttribute("comment", comment);
 
-    	    model.addAttribute("bookname", bookname);
-    	    model.addAttribute("category", category);
-    	    model.addAttribute("offer", offer);
-    	    model.addAttribute("comment", comment);
-    	    
-    	    if (!file.isEmpty()) {
-    	        try {
-    	            // 一時的にBase64でエンコードして表示用にする
-    	            String base64Image = Base64.getEncoder().encodeToString(file.getBytes());
-    	            model.addAttribute("imagePreview", base64Image);
-    	        } catch (IOException e) {
-    	            e.printStackTrace();
-    	        }
-    	    }
-    	    
-        return "page/BookingConfirmation"; // 同じページに戻り、結果表示
+        if (!file.isEmpty()) {
+            try {
+                byte[] imageBytes = file.getBytes();
+                session.setAttribute("imageBytes", imageBytes); // 一時保存
+
+                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+                model.addAttribute("imagePreview", base64Image);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return "page/BookingConfirmation"; // 確認画面
     }
+
+ // 書籍登録完了の送信処理
+    @PostMapping("/action/BookingRegistrationComplete")
+    public String complete(
+        @RequestParam("bookname") String bookname,
+        @RequestParam("category") String category,
+        @RequestParam("offer") String offer,
+        @RequestParam("comment") String comment,
+        HttpSession session,
+        Model model
+    ) {
+        model.addAttribute("bookname", bookname);
+        model.addAttribute("category", category);
+        model.addAttribute("offer", offer);
+        model.addAttribute("comment", comment);
+
+        byte[] imageBytes = (byte[]) session.getAttribute("imageBytes");
+        if (imageBytes != null) {
+            String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+            model.addAttribute("imagePreview", base64Image);
+        }
+
+        // 完了後に画像をセッションから削除（任意）
+        session.removeAttribute("imageBytes");
+
+        return "page/BookingRegistrationComplete";
+    }
+
 }
