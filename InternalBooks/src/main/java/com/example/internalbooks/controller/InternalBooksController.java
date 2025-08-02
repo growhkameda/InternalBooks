@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.internalbooks.dto.DtoAuthRequest;
+import com.example.internalbooks.dto.DtoCheckedOutBook;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.utils.JwtUtil;
@@ -178,15 +179,33 @@ public class InternalBooksController {
     @GetMapping("/page/checkedout")
     public String checkedout(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
     	try {
-    		// torkenの検証
+    		// tokenの検証とユーザーIDの取得
     		String token = (String) session.getAttribute("token");
-            jwtUtil.extractUserId(token);
+            Integer userId = jwtUtil.extractUserId(token);
             
-            //この辺に現在の借りてる書籍の情報取得の処理を書く予定
+            logger.info("★★★ 貸出中書籍ページアクセス: ユーザーID = {} ★★★", userId);
+            
+            // 現在のユーザーの貸出中書籍を取得
+            List<DtoCheckedOutBook> checkedOutBooks = tBookService.getCheckedOutBooksByUserId(userId);
+            
+            logger.info("★★★ 取得した貸出中書籍数: {} ★★★", checkedOutBooks != null ? checkedOutBooks.size() : 0);
+            
+            // 書籍リストをModelに設定（全ての書籍を一度に表示）
+            model.addAttribute("checkedOutBooks", checkedOutBooks);
+            
+            if (checkedOutBooks != null && !checkedOutBooks.isEmpty()) {
+                logger.info("★★★ 貸出中書籍を縦並びで表示: 書籍数 = {} ★★★", checkedOutBooks.size());
+                for (DtoCheckedOutBook book : checkedOutBooks) {
+                    logger.info("★★★ 表示書籍: ID = {}, タイトル = {} ★★★", book.getBookId(), book.getTitle());
+                }
+            } else {
+                logger.info("★★★ 貸出中書籍なし: ユーザーID = {} ★★★", userId);
+            }
 
             return "page/checkedout";
     	}
     	catch (Exception e) {
+    		logger.error("★★★ 貸出中書籍ページエラー: {} ★★★", e.getMessage());
     		return error(redirectAttributes);
     	}  
 

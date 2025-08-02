@@ -152,6 +152,8 @@
     </div>
 
 
+    
+    <!-- ------------------------JS処理部分---------------------------------->
 
     <!-- jsQRライブラリ（QRコード解析用） -->
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
@@ -201,10 +203,7 @@
                 });
             }
             
-
         }
-        
-
         
         function checkCameraSupport() {
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -218,6 +217,7 @@
             }
             
             return true;
+
         }
         
         async function startScanning() {

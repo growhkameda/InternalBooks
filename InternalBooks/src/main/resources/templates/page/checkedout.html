@@ -10,8 +10,9 @@
   <section th:fragment="section">
 
     <!-- ================== ページメインタイトル ================== -->
-    <div class="container text-center" style="max-width: 400px; margin-bottom: 40px;">
-      <h1 class="fw-bold mt-4" style="font-size: 30px;">貸出中書籍</h1>
+    <div class="container text-center" style="max-width: 400px; margin-top: 50px;">
+      <h1 class="fw-bold mt-4" style="font-size: 50px; margin-bottom: 5rem;">貸出中書籍</h1>
+      <p class="text-muted mt-5 mb-2" style="font-size: 16px;">書籍をタップするとカード詳細画面に遷移します</p>
     </div>
 
     <!-- ================== 貸出中書籍なしの場合の表示 ================== -->
@@ -34,66 +35,70 @@
     <div th:if="${checkedOutBooks != null and not #lists.isEmpty(checkedOutBooks)}" 
          class="container" style="max-width: 400px;">
       
-      <!-- ========== 書籍表示エリア ========== -->
-      <div class="text-center mb-5">
-        <!-- 書籍画像表示（Thymeleafで現在表示する書籍を制御） -->
-        <img th:src="${currentBook != null ? currentBook.imageUrl : '/images/default-book.png'}" 
-             class="img-fluid rounded shadow-lg mb-4" 
-             style="width: 200px; height: 300px; object-fit: cover;" 
-             alt="書籍画像" />
-        
-        <!-- 書籍情報カード -->
-        <div class="card bg-light border-0 rounded-4 p-4">
-          <!-- 書籍タイトル -->
-          <div class="h5 fw-bold text-dark mb-2" th:text="${currentBook != null ? currentBook.title : '書籍名'}">書籍名</div>
-          <!-- カテゴリーバッジ -->
-          <span class="badge bg-primary rounded-pill px-3 py-2 mb-2" 
-                style="font-size: 14px;" 
-                th:text="${currentBook != null ? currentBook.category : 'カテゴリー'}">カテゴリー</span>
-          <!-- 貸出状況 -->
-          <div class="text-muted" th:text="${currentBook != null ? currentBook.status : '貸出状況'}">貸出状況</div>
+      <!-- ========== 書籍一覧表示エリア（縦並び） ========== -->
+      <div th:each="book : ${checkedOutBooks}" class="text-center mb-4">
+        <!-- 書籍カード（Bootstrapのbtnクラスを使用） -->
+        <div class="btn btn-light w-100 p-0 border-0 shadow-sm rounded-4 text-start">
+          <div class="card border-0 rounded-4 overflow-hidden bg-transparent">
+            <!-- 書籍画像エリア -->
+            <div class="text-center p-4">
+              <img th:src="@{${book.imageUrl}}" 
+                   class="img-fluid rounded shadow" 
+                   style="width: 200px; height: 280px; object-fit: cover;" 
+                   alt="書籍画像"
+                   onerror="handleImageError(this)" />
+            </div>
+            
+            <!-- 書籍情報エリア -->
+            <div class="card-body p-4 text-center" style="padding-top: 1rem !important;">
+              <!-- 書籍名 -->
+              <h5 class="card-title fw-bold mb-2 text-dark" th:text="${book.title}">書籍名</h5>
+              
+              <!-- カテゴリー -->
+              <div class="mb-2">
+                <span class="badge bg-primary rounded-pill px-3 py-2" 
+                      style="font-size: 14px;" 
+                      th:text="${book.category}">カテゴリー</span>
+              </div>
+              
+              <!-- 貸出状況 -->
+              <p class="text-muted mb-0" th:text="${book.status} + ' or 書籍所'">貸出中 or 書籍所</p>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- ========== ナビゲーションボタンエリア ========== -->
-      <!-- 複数冊ある場合のみ表示されるナビゲーションボタン -->
-      <div th:if="${totalBooks != null and totalBooks > 1}" 
-           class="fixed-bottom d-flex justify-content-between p-3" 
-           style="max-width: 400px; left: 50%; transform: translateX(-50%);">
-        
-        <!-- 戻るボタン（1冊目以外で表示） -->
-        <a th:if="${currentIndex != null and currentIndex > 0}" 
-           th:href="@{/page/checkedout(index=${currentIndex - 1})}"
-           class="btn btn-secondary rounded-pill px-4 py-2 shadow">
-          <i class="bi bi-arrow-left"></i> 戻る
-        </a>
-        
-        <!-- 進むボタン（最終冊以外で表示） -->
-        <a th:if="${currentIndex != null and currentIndex < totalBooks - 1}" 
-           th:href="@{/page/checkedout(index=${currentIndex + 1})}"
-           class="btn btn-primary rounded-pill px-4 py-2 shadow"
-           th:classappend="${currentIndex == 0 ? 'ms-auto' : ''}">
-          進む <i class="bi bi-arrow-right"></i>
-        </a>
-      </div>
-
-      <!-- ========== ページネーション情報表示 ========== -->
-      <div th:if="${totalBooks != null and totalBooks > 1}" class="text-center mt-4 mb-2">
-        <small class="text-muted">
-          <span th:text="${currentIndex != null ? currentIndex + 1 : 1}">1</span> / 
-          <span th:text="${totalBooks}">1</span> 冊
-        </small>
-      </div>
-
       <!-- ========== トップページへ戻るリンク ========== -->
-      <div class="col-12 border-0 mt-4">
-        <a href="/page/top" class="text-black ms-2">
-            TOPに戻る
-            <i class="bi bi-arrow-return-left ms-1"></i>
-        </a>
-      </div>
+      <div class="border-0 mt-4 mb-5">
+        <a href="/page/top" class="text-black ms-1">
+             TOPに戻る
+             <i class="bi bi-arrow-return-left ms-1"></i>
+         </a>
+     </div>
     </div>
 
   </section>
+
+  <!-- 画像エラー処理用JavaScript -->
+  <script>
+    function handleImageError(img) {
+      // 無限ループを防ぐため、既にエラー処理済みの場合は何もしない
+      if (img.dataset.errorHandled === 'true') {
+        return;
+      }
+      
+      // エラー処理済みフラグを設定
+      img.dataset.errorHandled = 'true';
+      
+      // 画像の代わりにBootstrapアイコンを表示するため、親要素を変更
+      const parent = img.parentElement;
+      parent.innerHTML = `
+        <div class="d-flex align-items-center justify-content-center h-100 text-muted" 
+             style="width: 200px; height: 280px;">
+          <i class="bi bi-book" style="font-size: 4rem;"></i>
+        </div>
+      `;
+    }
+  </script>
 </body>
 </html> 
