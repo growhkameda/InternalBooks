@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +25,8 @@ public class TBookService {
 	public List<String> getAllCategories() {
 		List<String> categoryList = new ArrayList<>();
 		try {
-			// 全本情報を取得
-			List<TBookEntity> bookList = tBookRepository.findAll();
+			// 全本情報をbook_idの昇順で取得
+			List<TBookEntity> bookList = tBookRepository.findAll(Sort.by(Sort.Direction.ASC, "bookId"));
 
 			// カテゴリー情報を登録されている本情報から取得する
 			for (TBookEntity book : bookList) {

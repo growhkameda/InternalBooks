@@ -1,7 +1,7 @@
 package com.example.internalbooks.controller;
 
 
-import java.util.ArrayList; // ★★★貸し出し書籍なしのテスト用のためデプロイ時削除★★★
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -186,9 +186,7 @@ public class InternalBooksController {
             // 現在のユーザーの貸出中書籍を取得
             List<DtoCheckedOutBook> checkedOutBooks = tBookService.getCheckedOutBooksByUserId(userId);
             
-            // ====★★★【テスト用】貸し出し書籍なしの状態をテストする場合は以下をコメントアウト★★★ ===//
-            // 貸出書籍なしのテスト用：以下の行を有効にすると強制的に空リストになる                     //
-            //checkedOutBooks = new ArrayList<>();  // 空リスト                                   //
+            // ====★★★【テスト用】貸し出し書籍なしの状態をテストする場合は以下をコメントアウト★★★ ===//                 //                                   //
             //checkedOutBooks = null;               // null                                     // 
             // ================================================================================//
             
