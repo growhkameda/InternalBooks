@@ -1,6 +1,7 @@
 package com.example.internalbooks.controller;
 
 
+import java.util.ArrayList; // ★★★貸し出し書籍なしのテスト用のためデプロイ時削除★★★
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -86,8 +87,7 @@ public class InternalBooksController {
      * ログインページに遷移
      */
     @GetMapping("/page/login")
-    public String Login() {
-    	logger.info("★★★★★★★★★★★Loginされました★★★★★★★★★★★");
+    public String Login() {  
         return "page/login";
     }
 
@@ -183,29 +183,21 @@ public class InternalBooksController {
     		String token = (String) session.getAttribute("token");
             Integer userId = jwtUtil.extractUserId(token);
             
-            logger.info("★★★ 貸出中書籍ページアクセス: ユーザーID = {} ★★★", userId);
-            
             // 現在のユーザーの貸出中書籍を取得
             List<DtoCheckedOutBook> checkedOutBooks = tBookService.getCheckedOutBooksByUserId(userId);
             
-            logger.info("★★★ 取得した貸出中書籍数: {} ★★★", checkedOutBooks != null ? checkedOutBooks.size() : 0);
+            // ====★★★【テスト用】貸し出し書籍なしの状態をテストする場合は以下をコメントアウト★★★ ===//
+            // 貸出書籍なしのテスト用：以下の行を有効にすると強制的に空リストになる                     //
+            //checkedOutBooks = new ArrayList<>();  // 空リスト                                   //
+            //checkedOutBooks = null;               // null                                     // 
+            // ================================================================================//
             
             // 書籍リストをModelに設定（全ての書籍を一度に表示）
             model.addAttribute("checkedOutBooks", checkedOutBooks);
-            
-            if (checkedOutBooks != null && !checkedOutBooks.isEmpty()) {
-                logger.info("★★★ 貸出中書籍を縦並びで表示: 書籍数 = {} ★★★", checkedOutBooks.size());
-                for (DtoCheckedOutBook book : checkedOutBooks) {
-                    logger.info("★★★ 表示書籍: ID = {}, タイトル = {} ★★★", book.getBookId(), book.getTitle());
-                }
-            } else {
-                logger.info("★★★ 貸出中書籍なし: ユーザーID = {} ★★★", userId);
-            }
 
             return "page/checkedout";
     	}
     	catch (Exception e) {
-    		logger.error("★★★ 貸出中書籍ページエラー: {} ★★★", e.getMessage());
     		return error(redirectAttributes);
     	}  
 
@@ -220,9 +212,6 @@ public class InternalBooksController {
     		// JWT認証トークンの検証
     		String token = (String) session.getAttribute("token");
             jwtUtil.extractUserId(token);
-            
-            //デバッグ用ログ
-            logger.info("QRスキャナーページにアクセスされました");
 
             return "page/qrsearch";
     	}
