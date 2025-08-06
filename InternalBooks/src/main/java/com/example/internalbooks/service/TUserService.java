@@ -21,6 +21,9 @@ public class TUserService implements UserDetailsService {
     @Autowired
     private TUserRepository tUserRepository;
     
+    public void save(TUserEntity user) {
+        tUserRepository.save(user);
+    }
     @Override
     /**
      * ユーザ名(メールアドレス)からTUser情報を取得するメソッド

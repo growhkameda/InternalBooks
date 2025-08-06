@@ -17,6 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.internalbooks.dto.DtoAuthRequest;
+import com.example.internalbooks.entity.TUserEntity;
+import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.utils.JwtUtil;
@@ -39,21 +41,13 @@ public class InternalBooksController {
     @Autowired
 	private TBookService tBookService;
     
+    @Autowired
+    private TUserService tUserService; 
+    
     //トップページとしてloginを設定
     @GetMapping("/")
     public String index() {
         return "redirect:/page/login";
-    }
-   
-    @GetMapping("/page/BookingConfirmation")
-    public String BookingConfirmation() {
-    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
-        return "page/BookingConfirmation";
-    }
-    @GetMapping("/page/BookingRegistrationComplete")
-    public String BookingRegistrationComplete() {
-    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
-        return "page/BookingRegistrationComplete";
     }
     
     //ログインページ
@@ -263,6 +257,14 @@ public class InternalBooksController {
     	    @RequestParam("userName") String userName,
     	    @RequestParam("department") String department,
     	    Model model) {
+    	
+    	//Entityに詰める
+    	TUserEntity user = new TUserEntity();
+    	user.setUserId(Integer.parseInt(employeeId));
+    	user.setMailAddress(mailAddress);
+    	user.setDepartmentId(department);
+    	
+           tUserService.save(user);
 
     	    model.addAttribute("employeeId", employeeId);
     	    model.addAttribute("mailAddress", mailAddress);
