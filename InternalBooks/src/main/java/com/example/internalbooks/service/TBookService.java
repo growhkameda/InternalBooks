@@ -127,27 +127,7 @@ public class TBookService {
 		}
 	}
 	
-	/**
-	 * 指定されたbookIdの残り在庫数を取得する
-	 * ※現在の実装では書籍が重複していても1冊につき1エントリのため、残り在庫は0または1
-	 * 今後在庫カラムなど追加する場合は変更が必要だと思われる
-	 */
-	public int getRemainingBookCount(Integer bookId) {
-		try {
-			TBookEntity book = tBookRepository.findById(bookId).orElse(null);
-			
-			if (book == null) {
-				return 0;
-			}
-			
-			// 貸出状況に基づいて在庫数を判定（貸出可能=1、貸出中=0）
-			String status = determineLendingStatus(book.getBorrowerId());
-			return status.equals("貸出可能") ? 1 : 0;
-			
-		} catch (Exception e) {
-			return 0;
-		}
-	}
+
 	
 	/**
 	 * 書籍検索リクエストを処理する

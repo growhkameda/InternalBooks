@@ -24,9 +24,6 @@ public class DtoBookInfo {
     // 書籍画像URL
     private String imageUrl;
     
-    // 残り在庫数
-    private Integer remainingCount;
-    
     // デフォルトコンストラクタ
     public DtoBookInfo() {
         // デフォルト値は設定せず、使用時に適切な値を設定する
