@@ -294,11 +294,11 @@
                     // QRコード読み取り成功時の処理
                     stopScanning();
                     
-                    // フォーム送信によるダミーページへの遷移
+                    // フォーム送信によるSearchResultページへの遷移
                     // セッション維持を確実にするためwindow.location.hrefではなくフォーム送信を使用
                     const form = document.createElement('form');
                     form.method = 'GET';
-                    form.action = '/page/dummy';
+                    form.action = '/page/searchresult';
                     
                     // QRデータをhiddenパラメータとして設定
                     const input = document.createElement('input');

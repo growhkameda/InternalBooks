@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.internalbooks.dto.DtoCheckedOutBook;
+import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.repository.TBookRepository;
 
@@ -47,15 +47,15 @@ public class TBookService {
 	/**
 	 * 指定されたユーザーIDの貸出中書籍を取得する
 	 */
-	public List<DtoCheckedOutBook> getCheckedOutBooksByUserId(Integer userId) {
-		List<DtoCheckedOutBook> checkedOutBooks = new ArrayList<>();
+	public List<DtoBookInfo> getCheckedOutBooksByUserId(Integer userId) {
+		List<DtoBookInfo> checkedOutBooks = new ArrayList<>();
 		
 		// 借りているユーザーIDで書籍を検索
 		List<TBookEntity> borrowedBooks = tBookRepository.findByBorrowerId(userId);
 		
 		// EntityからDTOに変換
 		for (TBookEntity book : borrowedBooks) {
-			DtoCheckedOutBook dto = new DtoCheckedOutBook();
+			DtoBookInfo dto = new DtoBookInfo();
 			dto.setBookId(book.getBookId());
 			
 			// タイトルが空の場合はデフォルト値を設定
@@ -72,6 +72,9 @@ public class TBookService {
 			}
 			dto.setCategory(categories);
 			
+			// 貸出状況を設定（borrower_idに基づいて動的に判定）
+			dto.setStatus(determineLendingStatus(book.getBorrowerId()));
+			
 			// 書籍IDに基づいて画像URLを設定
 			dto.setImageUrlFromBookId();
 			
@@ -79,6 +82,126 @@ public class TBookService {
 		}
 		
 		return checkedOutBooks;
+	}
+
+	/**
+	 * 指定されたbookIdの書籍情報を取得する
+	 */
+	public DtoBookInfo getBookById(Integer bookId) {
+		try {
+			// 書籍IDで書籍を検索
+			TBookEntity book = tBookRepository.findById(bookId).orElse(null);
+			
+			if (book == null) {
+				return null;
+			}
+			
+			// EntityからDTOに変換
+			DtoBookInfo dto = new DtoBookInfo();
+			dto.setBookId(book.getBookId());
+			
+			// タイトルが空の場合はデフォルト値を設定
+			String title = book.getTitle();
+			if (title == null || title.trim().isEmpty()) {
+				title = "書籍ID: " + book.getBookId();
+			}
+			dto.setTitle(title);
+			
+			// カテゴリーが空の場合はデフォルト値を設定
+			String categories = book.getCategories();
+			if (categories == null || categories.trim().isEmpty() || categories.equals(",")) {
+				categories = "未分類";
+			}
+			dto.setCategory(categories);
+			
+			// 貸出状況を設定（borrower_idに基づいて動的に判定）
+			dto.setStatus(determineLendingStatus(book.getBorrowerId()));
+			
+			// 書籍IDに基づいて画像URLを設定
+			dto.setImageUrlFromBookId();
+			
+			return dto;
+			
+		} catch (Exception e) {
+			throw e;
+		}
+	}
+	
+	/**
+	 * 指定されたbookIdの残り在庫数を取得する
+	 * ※現在の実装では書籍が重複していても1冊につき1エントリのため、残り在庫は0または1
+	 * 今後在庫カラムなど追加する場合は変更が必要だと思われる
+	 */
+	public int getRemainingBookCount(Integer bookId) {
+		try {
+			TBookEntity book = tBookRepository.findById(bookId).orElse(null);
+			
+			if (book == null) {
+				return 0;
+			}
+			
+			// 貸出状況に基づいて在庫数を判定（貸出可能=1、貸出中=0）
+			String status = determineLendingStatus(book.getBorrowerId());
+			return status.equals("貸出可能") ? 1 : 0;
+			
+		} catch (Exception e) {
+			return 0;
+		}
+	}
+	
+	/**
+	 * 書籍検索リクエストを処理する
+	 */
+	public DtoBookInfo processBookSearchRequest(Integer bookIdParam, String qrData) {
+		try {
+			// 書籍IDを解決する（パラメータまたはQRデータから）
+			Integer bookId = resolveBookId(bookIdParam, qrData);
+			
+			// 書籍IDが取得できない場合はnullを返す
+			if (bookId == null) {
+				return null;
+			}
+			
+			// 書籍情報を取得
+			return getBookById(bookId);
+			
+		} catch (Exception e) {
+			// エラーが発生した場合はnullを返してエラー表示させる
+			System.err.println("書籍検索処理でエラーが発生しました: " + e.getMessage());
+			return null;
+		}
+	}
+	
+	/**
+	 * 書籍IDを取得するメソッド
+	 * テストのし易さを考えて指定Idを優先して取得する
+	 */
+	private Integer resolveBookId(Integer bookIdParam, String qrData) {
+		// 直接指定されたbookIdが優先
+		if (bookIdParam != null) {
+			return bookIdParam;
+		}
+		
+		// QRデータから解析
+		if (qrData != null && !qrData.isEmpty()) {
+			try {
+				return Integer.parseInt(qrData);
+			} catch (NumberFormatException e) {
+				// QRデータが無効な場合は例外をスロー
+				throw new IllegalArgumentException("無効なQRコードデータ: " + qrData);
+			}
+		}
+		
+		// どちらも指定されていない場合はnull
+		return null;
+	}
+	
+	/**
+	 * borrower_idに基づいて貸出状況を判定する共通メソッド
+	 * 貸出状況を取得する際にはこのメソッドを共通で使うようにしてください！
+	 */
+	private String determineLendingStatus(Integer borrowerId) {
+		return borrowerId != null ? "貸出中" : "貸出可能";
 	}
 
 }

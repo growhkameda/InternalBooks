@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.internalbooks.dto.DtoAuthRequest;
-import com.example.internalbooks.dto.DtoCheckedOutBook;
+import com.example.internalbooks.dto.DtoBookInfo;
+import com.example.internalbooks.dto.BookHistory;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.utils.JwtUtil;
@@ -184,7 +185,7 @@ public class InternalBooksController {
             Integer userId = jwtUtil.extractUserId(token);
             
             // 現在のユーザーの貸出中書籍を取得
-            List<DtoCheckedOutBook> checkedOutBooks = tBookService.getCheckedOutBooksByUserId(userId);
+            List<DtoBookInfo> checkedOutBooks = tBookService.getCheckedOutBooksByUserId(userId);
             
             // ====★★★【テスト用】貸し出し書籍なしの状態をテストする場合は以下をコメントアウト★★★ ===//                 //                                   //
             //checkedOutBooks = null;               // null                                     // 
@@ -192,6 +193,9 @@ public class InternalBooksController {
             
             // 書籍リストをModelに設定（全ての書籍を一度に表示）
             model.addAttribute("checkedOutBooks", checkedOutBooks);
+            
+            // 貸出中書籍ページからの遷移フラグをセッションに設定
+            session.setAttribute("fromCheckedOut", true);
 
             return "page/checkedout";
     	}
@@ -210,6 +214,9 @@ public class InternalBooksController {
     		// JWT認証トークンの検証
     		String token = (String) session.getAttribute("token");
             jwtUtil.extractUserId(token);
+            
+            // QRサーチページからの遷移フラグをセッションに設定
+            session.setAttribute("fromQrSearch", true);
 
             return "page/qrsearch";
     	}
@@ -221,35 +228,52 @@ public class InternalBooksController {
     }
     
     /**
-     * QRコード読み取り結果表示ページ
-     * ★テストのためダミーページにしている★
+     * 検索結果詳細ページに遷移
      */
-    @GetMapping("/page/dummy")
-    public String dummy(@RequestParam(name = "qrData", required = false) String qrData, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// JWT認証トークンの検証
-    		String token = (String) session.getAttribute("token");
+    @GetMapping("/page/searchresult")
+    public String searchResult(
+        @RequestParam(name = "bookId", required = false) Integer bookId,
+        @RequestParam(name = "qrData", required = false) String qrData,
+        HttpSession session, 
+        Model model, 
+        RedirectAttributes redirectAttributes) {
+        
+        try {
+            // JWT認証トークンの検証
+            String token = (String) session.getAttribute("token");
             jwtUtil.extractUserId(token);
             
-            // QRデータの取得（パラメータまたはセッションから）
-            String finalQrData = qrData;
-            if (finalQrData == null || finalQrData.isEmpty()) {
-            	// セッションからQRデータを取得（POSTリダイレクト方式の場合）
-            	finalQrData = (String) session.getAttribute("qrData");
-            	// セッションから取得後は削除
-            	session.removeAttribute("qrData");
-            }
+            // QRサーチからの遷移判定フラグを設定
+            Boolean fromQrSearch = (Boolean) session.getAttribute("fromQrSearch");
+            model.addAttribute("fromQrSearch", fromQrSearch != null ? fromQrSearch : false);
+            
+            // 貸出中書籍ページからの遷移判定フラグを設定
+            Boolean fromCheckedOut = (Boolean) session.getAttribute("fromCheckedOut");
+            model.addAttribute("fromCheckedOut", fromCheckedOut != null ? fromCheckedOut : false);
+            
+            // 返却ボタン表示判定（QRサーチまたは貸出中書籍ページからの遷移）
+            boolean showReturnButton = (fromQrSearch != null && fromQrSearch) || (fromCheckedOut != null && fromCheckedOut);
+            model.addAttribute("showReturnButton", showReturnButton);
+            
+            // 書籍検索処理をServiceで処理
+            DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
+            model.addAttribute("book", book);
+            
+            // 書籍履歴を取得
+            List<BookHistory> bookHistory = new ArrayList<>();
+            // TODO 実際の書籍履歴取得機能のロジックをここに記述してください。(サービスに記述したものを引っ張ってくる)
+            model.addAttribute("bookHistory", bookHistory);
+            
+            // セッションから遷移フラグを削除
+            session.removeAttribute("fromQrSearch");
+            session.removeAttribute("fromCheckedOut");
 
-            // QRコードデータをThymeleafテンプレートに渡す
-            model.addAttribute("qrData", finalQrData);
-
-            return "page/dummy";    //テストのため遷移先をdummyにしている
-    	}
-    	catch (Exception e) {
-    		// 認証失敗時はログインページにリダイレクト
+            return "page/SearchResult";
+            
+        } catch (Exception e) {
+            logger.error("検索結果詳細ページでエラーが発生しました", e);
             return error(redirectAttributes);
-    	}
-
+        }
     }
    
     /**
