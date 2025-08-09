@@ -36,49 +36,58 @@ public class InternalBooksController {
     @Autowired
 	private TBookService tBookService;
     
+    //トップページとしてloginを設定
     @GetMapping("/")
     public String index() {
-        return "index";
+        return "redirect:/page/login";
     }
-    @GetMapping("/test/kimata")
-    public String kimata() {
-    	logger.info("★★★★★★★★★★★kimata() にアクセスされました");
-        return "test/kimata";
+
+    @GetMapping("/page/user")
+    public String user() {
+    	logger.info("★★★★★★★★★★★user() にアクセスされました");
+        return "page/user";
     }
-    @GetMapping("/test/matunaga")
-    public String matunaga() {
-    	logger.info("★★★★★★★★★★★matunaga() にアクセスされました");
-        return "test/matunaga";
+    @GetMapping("/page/adminusertop")
+    public String usertop() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "page/adminusertop";
     }
-    @GetMapping("/test/mutou")
-    public String mutou() {
-    	logger.info("★★★★★★★★★★★mutou() にアクセスされました");
-        return "test/mutou";
+    @GetMapping("/page/bookediting")
+    public String bookediting() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "page/bookediting";
     }
-    @GetMapping("/test/sano")
-    public String sano() {
-    	logger.info("★★★★★★★★★★★sano() にアクセスされました");
-        return "test/sano";
+    @GetMapping("/page/UserConfir")
+    public String UserConfir() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "page/UserConfir";
     }
-    @GetMapping("/test/kameda")
-    public String kameda() {
-    	logger.info("★★★★★★★★★★★kameda() にアクセスされました");
-        return "test/kameda";
+    @GetMapping("/page/UserRegistrationComplete")
+    public String UserRegistrationComplete() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "page/UserRegistrationComplete";
     }
-    @GetMapping("/test/amemiya")
-    public String amemiya() {
-    	logger.info("★★★★★★★★★★★amemiya() にアクセスされました");
-        return "test/amemiya";
+
+    @GetMapping("/page/BookingConfirmation")
+    public String BookingConfirmation() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "page/BookingConfirmation";
+    }
+    @GetMapping("/page/BookingRegistrationComplete")
+    public String BookingRegistrationComplete() {
+    	logger.info("★★★★★★★★★★★usertop() にアクセスされました");
+        return "page/BookingRegistrationComplete";
     }
     
+    //ログインページ
     @GetMapping("/page/login")
     public String Login() {
-    	logger.info("★★★★★★★★★★★Loginされました");
+    	logger.info("★★★★★★★★★★★Loginされました★★★★★★★★★★★");
         return "page/login";
     }
     
     @PostMapping("/action/login")
-    public String login(@RequestParam String mailAddress, @RequestParam String password, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String login(@RequestParam(name = "mailAddress") String mailAddress, @RequestParam(name = "password") String password, HttpSession session, RedirectAttributes redirectAttributes) {
     	
     	try {
         	
@@ -148,14 +157,72 @@ public class InternalBooksController {
             return error(redirectAttributes);
     	}
         
+    }   
+    
+    /**
+     * QRコードサーチページを表示
+     * 
+     * @param session HTTPセッション（JWT認証トークン取得用）
+     * @param model モデル
+     * @param redirectAttributes 認証失敗時のリダイレクト用
+     * @return QRスキャナーページのテンプレート名(page/qrsearch) または 認証エラー時のリダイレクト
+     */
+    @GetMapping("/page/qrsearch")
+    public String qrScanner(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// JWT認証トークンの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            //デバッグ用ログ
+            logger.info("QRスキャナーページにアクセスされました");
+
+            return "page/qrsearch";
+    	}
+    	catch (Exception e) {
+    		// 認証失敗時はログインページにリダイレクト
+            return error(redirectAttributes);
+    	}
     }
     
-    private String error(RedirectAttributes redirectAttributes) {
-    	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
-        return "redirect:/page/login";
+    /**
+     * QRコード読み取り結果表示ページ
+     * テストのためダミーページにしている
+     * 
+     * @param qrData QRコードから読み取ったデータ（URLパラメータ）
+     * @param session HTTPセッション（JWT認証トークン・セッションデータ取得用）
+     * @param model Thymeleafテンプレートに渡すモデル
+     * @param redirectAttributes 認証失敗時のリダイレクト用
+     * @return ダミーページのテンプレート名(page/dummy) または 認証エラー時のリダイレクト
+     */
+    @GetMapping("/page/dummy")
+    public String dummy(@RequestParam(name = "qrData", required = false) String qrData, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// JWT認証トークンの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            // QRデータの取得（パラメータまたはセッションから）
+            String finalQrData = qrData;
+            if (finalQrData == null || finalQrData.isEmpty()) {
+            	// セッションからQRデータを取得（POSTリダイレクト方式の場合）
+            	finalQrData = (String) session.getAttribute("qrData");
+            	// セッションから取得後は削除
+            	session.removeAttribute("qrData");
+            }
+
+            // QRコードデータをThymeleafテンプレートに渡す
+            model.addAttribute("qrData", finalQrData);
+
+            return "page/dummy";    //テストのためdummyにしている
+    	}
+    	catch (Exception e) {
+    		// 認証失敗時はログインページにリダイレクト
+            return error(redirectAttributes);
+    	}
     }
    
-    @GetMapping("/page/book_detail")
+    @GetMapping("/page/categories_detail")
     public String book_detail(@RequestParam("category") String category,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
     	try {
     		// torkenの検証
@@ -169,12 +236,18 @@ public class InternalBooksController {
             model.addAttribute("category", category);
             
 
-            return "page/book_detail";
+            return "page/categories_detail";
     	}
     	catch (Exception e) {
     		return error(redirectAttributes);
     	}
         
+    }
+
+    // エラーページ
+    private String error(RedirectAttributes redirectAttributes) {
+    	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
+        return "redirect:/page/login";
     }
 
 }

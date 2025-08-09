@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!-- 
+社内図書館システム - QRコード読み取り結果表示ページ
+現在はダミーページにしている
+
+機能概要:
+- QRスキャナーページから遷移してきたQRデータの表示機能(将来的に検索結果詳細ページにて書籍表示)
+
+データ取得方法:
+1. URLパラメータから取得 (GETメソッド): /page/dummy?qrData=xxx
+2. セッションから取得 (POST-Redirect-GET方式): /action/qr_result → /page/dummy
+-->
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <!-- ページタイトル設定 -->
+    <title>QR読み取り結果</title>
+</head>
+
+<body>
+<!-- メインコンテンツセクション -->
+<section class="container-fluid py-4">
+    <div class="row justify-content-center">
+        <div class="col-12">
+            
+            <!-- メインカードコンテナ -->
+            <div class="card shadow-lg border-0">
+                
+                <!-- カードヘッダー（青色背景でアイコン付き） -->
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h2 class="mb-0">
+                        <i class="bi bi-check-circle me-2"></i>
+                        QR読み取り結果
+                    </h2>
+                    <p class="mb-0 mt-2 opacity-75">スキャンが完了しました</p>
+                </div>
+                
+                <!-- カードボディ（メインコンテンツエリア） -->
+                <div class="card-body p-4">
+                    
+                    <!-- QRコードデータ表示エリア -->
+                    <div class="mb-4">
+                        <div class="alert alert-success border-0 shadow-sm">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-qr-code-scan text-success me-3 fs-2"></i>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-1 fw-bold">読み取ったデータ</h5>
+                                    <div class="mt-2">
+                                                                <!-- QRコードデータがある場合 -->
+                        <div th:if="${qrData != null and !#strings.isEmpty(qrData)}" class="border rounded p-3 bg-light">
+                            <code class="text-dark text-break" th:text="${qrData}">QRコードデータ</code>
+                        </div>
+                        <!-- QRコードデータがない場合 -->
+                        <div th:unless="${qrData != null and !#strings.isEmpty(qrData)}" class="text-muted">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            データが取得できませんでした
+                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- QRデータの詳細情報 -->
+                    <div th:if="${qrData != null and !#strings.isEmpty(qrData)}" class="mb-3">
+                        <div class="card bg-light border-0">
+                            <div class="card-body p-3">
+                                <h6 class="card-title text-muted mb-3">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    データ詳細
+                                </h6>
+                                <!-- 読み取り時刻 -->
+                                <div class="mb-0">
+                                    <small class="text-muted">読み取り時刻</small>
+                                    <div class="fw-bold" th:text="${#temporals.format(#temporals.createNow(), 'HH:mm:ss')}">--:--:--</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                   
+
+                    <!-- 戻るボタン -->
+                    <div class="border-0">
+                        <a href="/page/qrsearch" class="text-black ms-1">
+                            QRスキャナーに戻る
+                            <i class="bi bi-arrow-return-left ms-1"></i>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>   
+
+</section>
+
+
+</script>
+</body>
+</html>

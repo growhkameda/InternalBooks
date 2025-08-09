@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+  <title>松永テストページ</title>
+</head>
+
+<body>
+  <section th:fragment="section">
+
+    <style>
+      .fixed-size-img {
+        width: 230px;
+        height: 330px;
+        object-fit: cover;
+      }
+
+      .fixed-page-width {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .pagination-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .pagination-buttons .btn {
+        font-size: 16px;
+      }
+    </style>
+
+    <div class="container text-center fixed-page-width"
+         style="margin-bottom: 60px; font-size: 30px; font-weight: 600;">
+      図書館システム
+    </div>
+
+	<div class="container text-center fixed-page-width"
+	     style="margin-bottom: 60px; font-size: 30px;">
+	  カテゴリー：<span th:text="${category}">カテゴリー名</span>
+	</div>
+
+    <div class="container fixed-page-width">
+      <div class="row">
+        <a th:href="@{/page/categories}" class="col-auto btn" style="margin-bottom: 10px; font-size: 16px; text-align: left;">
+          カテゴリー選択へ戻る↵
+        </a>
+      </div>
+    </div>
+
+    <div class="container fixed-page-width">
+      <div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
+      </div>
+
+      <div class="pagination-buttons fixed-page-width">
+        <button id="prev-button" class="btn btn-outline-primary">← 前のページ</button>
+        <button id="next-button" class="btn btn-outline-primary">次のページ →</button>
+      </div>
+    </div>
+
+	<script th:inline="javascript">
+	  const category = /*[[${category}]]*/ "default";
+
+	  let imagePages = [];
+
+	  // カテゴリーに応じた画像番号の範囲
+	  let start = 0;
+	  let end = 0;
+
+	  if (category === "Java") {
+	    start = 1000; end = 1999;
+	  } else if (category === "プログラミング") {
+	    start = 2000; end = 2999;
+	  } else if (category === "基本情報") {
+	    start = 3000; end = 3999;
+	  } else if (category === "資格") {
+	    start = 4000; end = 4999;
+	  } else if (category === "ITパスポート") {
+	    start = 5000; end = 5999;
+	  }
+
+	  // 画像リスト作成とページ分割
+	  const imageList = [];
+	  for (let i = start; i <= end; i++) {
+	    imageList.push(`${i}.png`);
+	  }
+
+	  const pageSize = 20; // 1ページに表示する画像数
+	  for (let i = 0; i < imageList.length; i += pageSize) {
+	    imagePages.push(imageList.slice(i, i + pageSize));
+	  }
+
+	  let currentPage = 0;
+
+	  function renderImages() {
+	    const gallery = document.getElementById('image-gallery');
+	    gallery.innerHTML = '';
+
+	    imagePages[currentPage].forEach(imgName => {
+	      const anchor = document.createElement('a');
+	      anchor.href = '#';
+	      anchor.className = 'col-6 btn';
+
+	      const img = document.createElement('img');
+	      img.className = 'fixed-size-img';
+	      img.src = `/images/${imgName}`;
+	      img.alt = '画像';
+
+	      anchor.appendChild(img);
+	      gallery.appendChild(anchor);
+	    });
+	  }
+
+	  window.onload = () => renderImages();
+
+	  document.getElementById('next-button').onclick = () => {
+	    currentPage = (currentPage + 1) % imagePages.length;
+	    renderImages();
+	  };
+
+	  document.getElementById('prev-button').onclick = () => {
+	    currentPage = (currentPage - 1 + imagePages.length) % imagePages.length;
+	    renderImages();
+	  };
+	</script>
+
+
+
+  </section>
+</body>
+</html>

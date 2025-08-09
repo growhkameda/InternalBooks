@@ -16,7 +16,7 @@
 	      <!-- 2列レイアウト -->
 	      <div class="col-6" th:each="category : ${categories}">
 	        <a 			class="btn btn-primary w-100"
-			   th:href="@{'/page/book_detail?category=' + ${category}}"
+			   th:href="@{'/page/categories_detail?category=' + ${category}}"
 			   th:text="${category}">Button</a>
 	      </div>
 	    </div>
