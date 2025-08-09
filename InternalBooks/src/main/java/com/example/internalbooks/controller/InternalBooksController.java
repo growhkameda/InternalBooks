@@ -222,7 +222,7 @@ public class InternalBooksController {
     	}
     }
    
-    @GetMapping("/page/book_detail")
+    @GetMapping("/page/categories_detail")
     public String book_detail(@RequestParam("category") String category,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
     	try {
     		// torkenの検証
@@ -236,7 +236,7 @@ public class InternalBooksController {
             model.addAttribute("category", category);
             
 
-            return "page/book_detail";
+            return "page/categories_detail";
     	}
     	catch (Exception e) {
     		return error(redirectAttributes);
