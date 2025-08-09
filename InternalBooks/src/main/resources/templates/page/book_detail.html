@@ -1,166 +1,133 @@
 <!DOCTYPE html>
-<!-- Thymeleafのテンプレート構文を使用して、共通レイアウトにタイトルとセクションを埋め込む -->
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-  <!-- ページタイトル -->
   <title>松永テストページ</title>
 </head>
 
 <body>
-  <!-- layout.htmlの中で埋め込まれるセクション部分 -->
   <section th:fragment="section">
 
-    <!-- ページ内スタイル定義（本来は外部CSSに分離推奨） -->
     <style>
-      /* 固定サイズの画像表示用クラス */
       .fixed-size-img {
         width: 230px;
         height: 330px;
-        object-fit: cover; /* アスペクト比を保ちつつ枠に収める */
+        object-fit: cover;
       }
 
-      /* ページ幅を中央に固定するためのクラス */
       .fixed-page-width {
         max-width: 600px;
         margin: 0 auto;
         padding: 0 20px;
       }
 
-      /* ページ送りボタンの配置スタイル */
       .pagination-buttons {
         display: flex;
         justify-content: space-between;
         margin-bottom: 10px;
       }
 
-      /* ボタンのフォントサイズ調整 */
       .pagination-buttons .btn {
         font-size: 16px;
       }
     </style>
 
-    <!-- ページタイトル表示 -->
     <div class="container text-center fixed-page-width"
          style="margin-bottom: 60px; font-size: 30px; font-weight: 600;">
       図書館システム
     </div>
 
-    <!-- カテゴリー名の表示（Thymeleafで動的に埋め込まれる） -->
-    <div class="container text-center fixed-page-width"
-         style="margin-bottom: 60px; font-size: 30px;">
-      カテゴリー：<span th:text="${category}">カテゴリー名</span>
-    </div>
+	<div class="container text-center fixed-page-width"
+	     style="margin-bottom: 60px; font-size: 30px;">
+	  カテゴリー：<span th:text="${category}">カテゴリー名</span>
+	</div>
 
-    <!-- カテゴリー選択画面へ戻るリンク -->
     <div class="container fixed-page-width">
       <div class="row">
-        <a th:href="@{/page/categories}" class="col-auto btn"
-           style="margin-bottom: 10px; font-size: 16px; text-align: left;">
+        <a th:href="@{/page/categories}" class="col-auto btn" style="margin-bottom: 10px; font-size: 16px; text-align: left;">
           カテゴリー選択へ戻る↵
         </a>
       </div>
     </div>
 
-    <!-- 画像ギャラリーとページ送りボタン -->
     <div class="container fixed-page-width">
-      <!-- 画像を表示する領域（JavaScriptで動的に埋め込まれる） -->
       <div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
       </div>
 
-      <!-- ページ送りボタン -->
       <div class="pagination-buttons fixed-page-width">
         <button id="prev-button" class="btn btn-outline-primary">← 前のページ</button>
         <button id="next-button" class="btn btn-outline-primary">次のページ →</button>
       </div>
     </div>
 
-    <!-- JavaScriptで画像表示とページ切り替えを制御 -->
-    <script th:inline="javascript">
-      // サーバーから渡されたカテゴリー名を取得（Thymeleafで埋め込み）
-      const category = /*[[${category}]]*/ "default";
+	<script th:inline="javascript">
+	  const category = /*[[${category}]]*/ "default";
 
-      // ページごとの画像リストを格納する配列
-      let imagePages = [];
+	  let imagePages = [];
 
-      // カテゴリーに応じた画像番号の範囲を設定
-      let start = 0;
-      let end = 0;
+	  // カテゴリーに応じた画像番号の範囲
+	  let start = 0;
+	  let end = 0;
 
-      // カテゴリーごとの画像番号範囲を定義
-      if (category === "Java") {
-        start = 1000; end = 1999;
-      } else if (category === "プログラミング") {
-        start = 2000; end = 2999;
-      } else if (category === "基本情報") {
-        start = 3000; end = 3999;
-      } else if (category === "資格") {
-        start = 4000; end = 4999;
-      } else if (category === "ITパスポート") {
-        start = 5000; end = 5999;
-      }
+	  if (category === "Java") {
+	    start = 1000; end = 1999;
+	  } else if (category === "プログラミング") {
+	    start = 2000; end = 2999;
+	  } else if (category === "基本情報") {
+	    start = 3000; end = 3999;
+	  } else if (category === "資格") {
+	    start = 4000; end = 4999;
+	  } else if (category === "ITパスポート") {
+	    start = 5000; end = 5999;
+	  }
 
-      // 画像ファイル名を生成し、imageListに格納
-      const imageList = [];
-      for (let i = start; i <= end; i++) {
-        imageList.push(`${i}.png`);
-      }
+	  // 画像リスト作成とページ分割
+	  const imageList = [];
+	  for (let i = start; i <= end; i++) {
+	    imageList.push(`${i}.png`);
+	  }
 
-      // 1ページに表示する画像数
-      const pageSize = 20;
+	  const pageSize = 20; // 1ページに表示する画像数
+	  for (let i = 0; i < imageList.length; i += pageSize) {
+	    imagePages.push(imageList.slice(i, i + pageSize));
+	  }
 
-      // imageListをページ単位に分割してimagePagesに格納
-      for (let i = 0; i < imageList.length; i += pageSize) {
-        imagePages.push(imageList.slice(i, i + pageSize));
-      }
+	  let currentPage = 0;
 
-      // 現在表示中のページ番号
-      let currentPage = 0;
+	  function renderImages() {
+	    const gallery = document.getElementById('image-gallery');
+	    gallery.innerHTML = '';
 
-      // 画像を画面に表示する関数
-      function renderImages() {
-        const gallery = document.getElementById('image-gallery');
-        gallery.innerHTML = ''; // 前の表示をクリア
+	    imagePages[currentPage].forEach(imgName => {
+	      const anchor = document.createElement('a');
+	      anchor.href = '#';
+	      anchor.className = 'col-6 btn';
 
-        // 現在のページの画像を1枚ずつ表示
-        imagePages[currentPage].forEach(imgName => {
-          const anchor = document.createElement('a');
-          anchor.href = '#';
-          anchor.className = 'col-6 btn';
+	      const img = document.createElement('img');
+	      img.className = 'fixed-size-img';
+	      img.src = `/images/${imgName}`;
+	      img.alt = '画像';
 
-          const img = document.createElement('img');
-          img.className = 'fixed-size-img';
-          img.src = `/images/${imgName}`;
-          img.alt = '画像';
+	      anchor.appendChild(img);
+	      gallery.appendChild(anchor);
+	    });
+	  }
 
-          // 🔴 画像が読み込めなかった場合はリンクごと削除（表示しない）
-          img.onerror = () => {
-            if (anchor && anchor.parentNode) {
-              anchor.parentNode.removeChild(anchor);
-            }
-          };
+	  window.onload = () => renderImages();
 
-          anchor.appendChild(img);
-          gallery.appendChild(anchor);
-        });
-      }
+	  document.getElementById('next-button').onclick = () => {
+	    currentPage = (currentPage + 1) % imagePages.length;
+	    renderImages();
+	  };
 
-      // ページ読み込み時に画像を初期表示
-      window.onload = () => renderImages();
+	  document.getElementById('prev-button').onclick = () => {
+	    currentPage = (currentPage - 1 + imagePages.length) % imagePages.length;
+	    renderImages();
+	  };
+	</script>
 
-      // 「次へ」ボタンをクリックしたときの処理
-      document.getElementById('next-button').onclick = () => {
-        currentPage = (currentPage + 1) % imagePages.length; // ページ番号を進める（循環）
-        renderImages(); // 再描画
-      };
 
-      // 「前へ」ボタンをクリックしたときの処理
-      document.getElementById('prev-button').onclick = () => {
-        currentPage = (currentPage - 1 + imagePages.length) % imagePages.length; // ページ番号を戻す（循環）
-        renderImages(); // 再描画
-      };
-    </script>
 
   </section>
 </body>
