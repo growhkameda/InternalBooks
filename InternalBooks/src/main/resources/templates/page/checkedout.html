@@ -10,16 +10,16 @@
   <section th:fragment="section">
 
     <!-- ================== ページメインタイトル ================== -->
-    <div class="container text-center" style="max-width: 400px; margin-top: 50px;">
-      <h1 class="fw-bold mt-4" style="font-size: 50px; margin-bottom: 5rem;">貸出中書籍</h1>
-      <p class="text-muted mt-5 mb-3" style="font-size: 16px;">書籍をタップするとカード詳細画面に遷移します</p>
+    <div class="container-sm text-center">
+      <h1 class="fw-bold mt-5 display-3 mb-5">貸出中書籍</h1>
+      <p class="text-muted mt-5 mb-3 fs-6">書籍をタップするとカード詳細画面に遷移します</p>
     </div>
 
     <!-- ================== 貸出中書籍なしの場合の表示 ================== -->
     <div th:if="${checkedOutBooks == null or #lists.isEmpty(checkedOutBooks)}" 
-         class="text-center text-muted" style="margin-top: 100px;">
+         class="text-center text-muted mt-5 pt-5">
       <!-- 本のアイコン表示 -->
-      <i class="bi bi-book" style="font-size: 4em; color: #ccc;"></i>
+      <i class="bi bi-book display-1 text-secondary"></i>
       <!-- メッセージ表示 -->
       <p class="fs-5 mt-4">現在貸出中の書籍はありません</p>
       <!-- トップページへの戻りボタン -->
@@ -33,7 +33,7 @@
 
     <!-- ================== 貸出中書籍ありの場合の表示 ================== -->
     <div th:if="${checkedOutBooks != null and not #lists.isEmpty(checkedOutBooks)}" 
-         class="container" style="max-width: 400px;">
+         class="container-sm">
       
       <!-- ========== 書籍一覧表示エリア（縦並び） ========== -->
       <div th:each="book : ${checkedOutBooks}" class="text-center mb-4">
@@ -44,26 +44,28 @@
             <!-- 書籍画像エリア -->
             <div class="text-center p-4">
               <img th:src="@{${book.imageUrl}}" 
-                   class="img-fluid rounded shadow" 
-                   style="width: 200px; height: 280px; object-fit: cover;" 
+                   class="img-fluid rounded shadow w-75 h-auto"
                    alt="書籍画像"
                    onerror="handleImageError(this)" />
             </div>
             
             <!-- 書籍情報エリア -->
-            <div class="card-body p-4 text-center" style="padding-top: 1rem !important;">
+            <div class="card-body p-4 pt-1 text-center">
               <!-- 書籍名 -->
               <h5 class="card-title fw-bold mb-2 text-dark" th:text="${book.title}">書籍名</h5>
               
+              <!-- ★★★","で区切ってカテゴリ表示できるように修正する★★★ -->
               <!-- カテゴリー -->
               <div class="mb-2">
-                <span class="badge bg-primary rounded-pill px-3 py-2" 
-                      style="font-size: 14px;" 
+                <span class="badge bg-primary rounded-pill px-3 py-2 fs-6" 
                       th:text="${book.category}">カテゴリー</span>
               </div>
               
               <!-- 貸出状況 -->
-              <p class="text-muted mb-0" th:text="${book.status} + ' or 書籍所'">貸出中 or 書籍所</p>
+              <div class="mb-0">
+                <span th:if="${book.status == '貸出中'}" class="text-danger fw-bold">貸出中</span>
+                <span th:if="${book.status != '貸出中'}" class="text-success fw-bold">書籍所</span>
+              </div>
             </div>
           </div>
         </a>
@@ -80,6 +82,8 @@
 
   </section>
 
+
+
   <!-- 画像エラー処理用JavaScript -->
   <script>
     function handleImageError(img) {
@@ -94,9 +98,8 @@
       // 画像の代わりにBootstrapアイコンを表示するため、親要素を変更
       const parent = img.parentElement;
       parent.innerHTML = `
-        <div class="d-flex align-items-center justify-content-center h-100 text-muted" 
-             style="width: 200px; height: 280px;">
-          <i class="bi bi-book" style="font-size: 4rem;"></i>
+        <div class="d-flex align-items-center justify-content-center py-5 text-muted">
+          <i class="bi bi-book display-2"></i>
         </div>
       `;
     }

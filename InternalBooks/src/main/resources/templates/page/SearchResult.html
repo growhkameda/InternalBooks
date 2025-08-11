@@ -10,15 +10,15 @@
   <section th:fragment="section">
 
     <!-- ================== ページメインタイトル ================== -->
-    <div class="container text-center" style="max-width: 400px; margin-top: 30px;">
-      <h1 class="fw-bold mt-4" style="font-size: 36px; margin-bottom: 2rem;">検索結果詳細</h1>
+    <div class="container-sm text-center mt-4">
+      <h1 class="fw-bold mt-4 display-4 mb-4">検索結果詳細</h1>
     </div>
 
     <!-- ================== 書籍情報がない場合の表示 ================== -->
     <div th:if="${book == null}" 
-         class="text-center text-muted" style="margin-top: 100px;">
+         class="text-center text-muted mt-5 pt-5">
       <!-- 本のアイコン表示 -->
-      <i class="bi bi-book" style="font-size: 4em; color: #ccc;"></i>
+      <i class="bi bi-book display-1 text-secondary"></i>
       <!-- メッセージ表示 -->
       <p class="fs-5 mt-4">書籍が見つかりませんでした</p>
       <!-- トップページへの戻りボタン -->
@@ -32,28 +32,26 @@
 
     <!-- ================== 書籍情報がある場合の表示 ================== -->
     <div th:if="${book != null}" 
-         class="container" style="max-width: 400px;">
+         class="container-sm">
       
       <!-- ========== 書籍カード表示 ========== -->
       <div class="text-center mb-1">
         <!-- 書籍画像エリア -->
         <div class="text-center p-4">
           <img th:src="@{${book.imageUrl}}" 
-               class="img-fluid rounded shadow" 
-               style="width: 200px; height: 280px; object-fit: cover;" 
+               class="img-fluid rounded shadow w-75 h-auto" 
                alt="書籍画像"
                onerror="handleImageError(this)" />
         </div>
         
         <!-- 書籍情報エリア -->
-        <div class="card-body p-4 text-center" style="padding-top: 1rem !important;">
+        <div class="card-body p-4 pt-1 text-center">
           <!-- 書籍名 -->
           <h5 class="card-title fw-bold mb-3 text-dark" th:text="${book.title}">書籍名</h5>
           
           <!-- カテゴリー -->
           <div class="mb-3">
-            <span class="badge bg-primary rounded-pill px-3 py-2" 
-                  style="font-size: 14px;" 
+            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6" 
                   th:text="${book.category}">カテゴリー</span>
           </div>
           
@@ -77,9 +75,9 @@
        <div th:if="${showReturnButton == true}" class="text-center mb-5">
         <!-- 貸出中の場合は返却ボタン -->
         <div th:if="${book.status == '貸出中'}">
-          <form method="post" th:action="@{/api/return}" class="d-inline">
+          <form method="post" th:action="@{/遷移先書いてください}" class="d-inline">
             <input type="hidden" name="bookId" th:value="${book.bookId}" />
-            <button type="submit" class="btn btn-danger btn-lg w-100">
+            <button type="submit" class="btn btn-danger btn-lg w-50">
               返す
             </button>
           </form>
@@ -87,9 +85,9 @@
         
         <!-- 貸出可能の場合は借りるボタン -->
         <div th:if="${book.status != '貸出中'}">
-          <form method="post" th:action="@{/api/borrow}" class="d-inline">
+          <form method="post" th:action="@{/遷移先書いてください}" class="d-inline">
             <input type="hidden" name="bookId" th:value="${book.bookId}" />
-            <button type="submit" class="btn btn-primary btn-lg w-100">
+            <button type="submit" class="btn btn-primary btn-lg w-50">
               借りる
             </button>
           </form>
@@ -103,8 +101,8 @@
           <table class="table table-striped table-sm">
             <thead class="table-primary">
               <tr>
-                <th scope="col" class="text-center" style="border-right: 2px solid #fff;">日付</th>
-                <th scope="col" class="text-center" style="border-right: 2px solid #fff;">ユーザー</th>
+                <th scope="col" class="text-center border-end border-2 border-white">日付</th>
+                <th scope="col" class="text-center border-end border-2 border-white">ユーザー</th>
                 <th scope="col" class="text-center">貸出履歴</th>
               </tr>
             </thead>
@@ -125,6 +123,8 @@
 
   </section>
 
+
+
   <!-- 画像エラー処理用JavaScript -->
   <script>
     function handleImageError(img) {
@@ -139,9 +139,8 @@
       // 画像の代わりにBootstrapアイコンを表示するため、親要素を変更
       const parent = img.parentElement;
       parent.innerHTML = `
-        <div class="d-flex align-items-center justify-content-center h-100 text-muted" 
-             style="width: 200px; height: 280px;">
-          <i class="bi bi-book" style="font-size: 4rem;"></i>
+        <div class="d-flex align-items-center justify-content-center py-5 text-muted">
+          <i class="bi bi-book display-2"></i>
         </div>
       `;
     }
