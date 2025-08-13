@@ -392,11 +392,48 @@ public class InternalBooksController {
     }
 
     /**
+     * 書籍削除確認ページに遷移
+     */
+    @GetMapping("/page/BookDeletingConfirmation")
+    public String BookDeletingConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            // 管理者権限の検証
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            
+            // 管理者権限がない場合はログインページにリダイレクト
+            if (!isAdmin) {
+            	return adminPermissionError(redirectAttributes);
+            }
+            
+            model.addAttribute("isAdmin", isAdmin);
+
+            return "page/BookDeletingConfirmation";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+
+    /**
      * エラー処理
      * セッション切れなどの際にloginページにリダイレクト
      */
     private String error(RedirectAttributes redirectAttributes) {
     	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
+        return "redirect:/page/login";
+    }
+    
+    /**
+     * 管理者権限エラー処理
+     * 管理者権限が必要な機能にアクセスした際にloginページにリダイレクト
+     */
+    private String adminPermissionError(RedirectAttributes redirectAttributes) {
+    	redirectAttributes.addFlashAttribute("errorMessage", "管理者権限が必要です。");
         return "redirect:/page/login";
     }
 
