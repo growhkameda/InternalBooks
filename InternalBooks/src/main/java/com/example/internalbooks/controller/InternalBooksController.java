@@ -392,28 +392,6 @@ public class InternalBooksController {
     }
 
     /**
-     * 書籍削除確認ページに遷移
-     */
-    @GetMapping("/page/BookDeletingConfirmation")
-    public String BookDeletingConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// torkenの検証
-    		String token = (String) session.getAttribute("token");
-            jwtUtil.extractUserId(token);
-            
-            // 管理者権限の検証
-            boolean isAdmin = jwtUtil.extractIsAdmin(token);
-            model.addAttribute("isAdmin", isAdmin);
-
-            return "page/BookDeletingConfirmation";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
-        
-    }
-
-    /**
      * エラー処理
      * セッション切れなどの際にloginページにリダイレクト
      */
