@@ -403,12 +403,6 @@ public class InternalBooksController {
             
             // 管理者権限の検証
             boolean isAdmin = jwtUtil.extractIsAdmin(token);
-            
-            // 管理者権限がない場合はログインページにリダイレクト
-            if (!isAdmin) {
-            	return adminPermissionError(redirectAttributes);
-            }
-            
             model.addAttribute("isAdmin", isAdmin);
 
             return "page/BookDeletingConfirmation";
@@ -425,15 +419,6 @@ public class InternalBooksController {
      */
     private String error(RedirectAttributes redirectAttributes) {
     	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
-        return "redirect:/page/login";
-    }
-    
-    /**
-     * 管理者権限エラー処理
-     * 管理者権限が必要な機能にアクセスした際にloginページにリダイレクト
-     */
-    private String adminPermissionError(RedirectAttributes redirectAttributes) {
-    	redirectAttributes.addFlashAttribute("errorMessage", "管理者権限が必要です。");
         return "redirect:/page/login";
     }
 
