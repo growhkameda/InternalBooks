@@ -43,7 +43,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
 
 
-                .requestMatchers("/", "/page/**", "/action/**","/test/**", "/webjars/**", "/logo/**","/favicon.ico", "/images/**").permitAll()  // 認証不要のエンドポイント
+                .requestMatchers("/", "/page/**", "/action/**", "/admin/**", "/test/**", "/webjars/**", "/logo/**","/favicon.ico", "/images/**").permitAll()  // 認証不要のエンドポイント
 
                 .anyRequest().authenticated()  // 他のエンドポイントは認証が必要
             )
