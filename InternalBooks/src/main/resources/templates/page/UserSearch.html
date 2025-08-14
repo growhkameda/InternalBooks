@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+  <title>ユーザー検索</title>
+</head>
+
+<body>
+    <section class="d-flex justify-content-center align-items-start py-5">
+        <div class="container d-flex justify-content-center align-items-start">
+            <div class="w-100" style="max-width: 350px;">
+
+                <!-- ================== ページメインタイトル ================== -->
+                <h1 class="fw-bold mt-5 display-3 mb-5 text-center">ユーザー検索</h1>
+
+                <!-- ================== 検索窓と検索ボタン ================== -->
+                <div class="mb-3 d-flex flex-column  align-items-center">
+                    <input type="text" 
+                        class="text-center form-control bg-secondary-subtle"
+                        style="width: 80%;"
+                        id="search"
+                        name="search"
+                        placeholder="所属課または名前を入力">
+                    <button type="button" class="btn btn-warning fs-6 w-25 mt-3">検索</button>
+                </div>
+
+                <!-- ================== 戻るボタン ================== -->
+                <div class="border-0 mb-5 text-start">
+                    <a href="/admin/adminusertop" class="text-black ms-1">
+                        管理者TOPへ戻る
+                        <i class="bi bi-arrow-return-left ms-1"></i>
+                    </a>
+                </div>
+
+                <!-- ================== ユーザー一覧テーブル ================== -->
+                <div class="mt-5">
+                    <div class="table-responsive">
+                      <table class="table table-striped table-sm w-100">
+                        <thead class="table-primary">
+                          <tr>
+                            <th class="text-center border-end border-2 border-white col-6">所属課</th>
+                            <th class="text-center border-end border-2 border-white col-6">名前</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <!-- 履歴データの表示 -->
+                            <!----------------------------ここに履歴データの表示を追加してください------------------------>
+                          <!-- 履歴がない場合 -->
+                          <tr th:if="${ここにユーザーmodel == null or #lists.isEmpty(ここにユーザーmodel)}">
+                            <td colspan="3" class="text-center text-muted">ユーザーが存在しません</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+            </div>
+        </div>
+    </section>
+</body>

@@ -277,4 +277,25 @@ public class AdminController extends InternalBooksController {
             return error(redirectAttributes);
         }
     }
+
+    /**
+     * ユーザー検索ページに遷移
+     */
+    @GetMapping("/usersearch")
+    public String UserSearch(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        // トークンと管理者権限の検証
+        try {
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+            
+            model.addAttribute("isAdmin", isAdmin);
+            
+            return "page/UserSearch";
+        }
+        catch (Exception e) {
+            return error(redirectAttributes);
+        }
+    }
 }
