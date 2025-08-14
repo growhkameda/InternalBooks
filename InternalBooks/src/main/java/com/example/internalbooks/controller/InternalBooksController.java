@@ -301,90 +301,27 @@ public class InternalBooksController {
         
     }
     
-    @GetMapping("/page/finishUserEdit")
-    public String finishUserEdit(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// torkenの検証
-    		String token = (String) session.getAttribute("token");
-            jwtUtil.extractUserId(token);
-            
-            
-            boolean isAdmin = jwtUtil.extractIsAdmin(token);
-            model.addAttribute("isAdmin", isAdmin);
-
-<<<<<<< HEAD
-            return "page/finishUserEdit";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
-        
-    }
-    
-    @GetMapping("/page/userConfirmationScreen")
-    public String userConfirmationScreen(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-=======
-    @GetMapping("/page/finishUserEdit")
-    public String finishUserEdit(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
->>>>>>> c989805ab1ababadf35ebb236717c24d4bc53ac1
-    	try {
-    		// torkenの検証
-    		String token = (String) session.getAttribute("token");
-            jwtUtil.extractUserId(token);
-            
-            boolean isAdmin = jwtUtil.extractIsAdmin(token);
-            model.addAttribute("isAdmin", isAdmin);
-
-<<<<<<< HEAD
-            return "page/userConfirmationScreen";
-=======
-            return "page/finishUserEdit";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
-        
-    }
-    
-    @GetMapping("/page/userConfirmation")
-    public String userConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// torkenの検証
-    		String token = (String) session.getAttribute("token");
-            jwtUtil.extractUserId(token);
-            
-            boolean isAdmin = jwtUtil.extractIsAdmin(token);
-            model.addAttribute("isAdmin", isAdmin);
-
-            return "page/userConfirmation";
->>>>>>> c989805ab1ababadf35ebb236717c24d4bc53ac1
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
-        
-    }
-    
-    @GetMapping("/page/userDeleteConfirmation")
-<<<<<<< HEAD
-    /*
-     * トークンの検証と管理者かどうかの確認を行い双方ともtrueの場合、ページ遷移する
+    /**
+     * ユーザー編集完了画面へ遷移
      */
-    public String userDeleteConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    @GetMapping("/page/finishUserEdit")
+    public String finishUserEdit(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
     	try {
     		// tokenの検証
-=======
-    public String userDeleteConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// torkenの検証
->>>>>>> c989805ab1ababadf35ebb236717c24d4bc53ac1
     		String token = (String) session.getAttribute("token");
             jwtUtil.extractUserId(token);
             
+            //管理者かどうかの検証
             boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            
+            //・管理者権限がない場合はログインページにリダイレクト
+            if(!isAdmin){
+            	return adminPermissionError(redirectAttributes);
+            }
+            
             model.addAttribute("isAdmin", isAdmin);
 
-            return "page/userDeleteConfirmation";
+            return "page/finishUserEdit";
     	}
     	catch (Exception e) {
     		return error(redirectAttributes);
@@ -392,45 +329,91 @@ public class InternalBooksController {
         
     }
 
-    @GetMapping("/page/userEdit")
-    public String userEdit(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// torkenの検証
-    		String token = (String) session.getAttribute("token");
-            jwtUtil.extractUserId(token);
-            
-            boolean isAdmin = jwtUtil.extractIsAdmin(token);
-            model.addAttribute("isAdmin", isAdmin);
-
-            return "page/userEdit";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
-        
-    }
     
-    @GetMapping("/page/userDeleteComplete")
-    public String userDeleteComplete(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// torkenの検証
-    		String token = (String) session.getAttribute("token");
-            jwtUtil.extractUserId(token);
-            
-            boolean isAdmin = jwtUtil.extractIsAdmin(token);
-            model.addAttribute("isAdmin", isAdmin);
-
-            return "page/userDeleteComplete";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
+    /**
+     * ユーザー確認画面に遷移
+     */
+@GetMapping("/page/userConfirmationScreen")
+public String userConfirmationScreen(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+	try {
+		// torkenの検証
+		String token = (String) session.getAttribute("token");
+        jwtUtil.extractUserId(token);
         
-    }
-<<<<<<< HEAD
+        boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "page/userConfirmationScreen";
+	}
+	catch (Exception e) {
+		return error(redirectAttributes);
+	}
     
-    // エラーページ
-=======
+}
+    
+/**
+ * ユーザー削除確認ページに遷移
+ */
+@GetMapping("/page/userDeleteConfirmation")
+public String userDeleteConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+	try {
+		// torkenの検証
+		String token = (String) session.getAttribute("token");
+        jwtUtil.extractUserId(token);
+        
+        boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "page/userDeleteConfirmation";
+	}
+	catch (Exception e) {
+		return error(redirectAttributes);
+	}
+    
+}
+
+/**
+ * ユーザー編集ページに遷移
+ */
+@GetMapping("/page/userEdit")
+public String userEdit(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+	try {
+		// torkenの検証
+		String token = (String) session.getAttribute("token");
+        jwtUtil.extractUserId(token);
+        
+        boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "page/userEdit";
+	}
+	catch (Exception e) {
+		return error(redirectAttributes);
+	}
+    
+}
+
+/**
+ * ユーザー削除完了ページに遷移
+ */
+@GetMapping("/page/userDeleteComplete")
+public String userDeleteComplete(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+	try {
+		// torkenの検証
+		String token = (String) session.getAttribute("token");
+        jwtUtil.extractUserId(token);
+        
+        boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "page/userDeleteComplete";
+	}
+	catch (Exception e) {
+		return error(redirectAttributes);
+	}
+    
+}
+
 
     /**
      * 書籍削除確認ページに遷移
@@ -464,7 +447,6 @@ public class InternalBooksController {
      * エラー処理
      * セッション切れなどの際にloginページにリダイレクト
      */
->>>>>>> c989805ab1ababadf35ebb236717c24d4bc53ac1
     private String error(RedirectAttributes redirectAttributes) {
     	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
         return "redirect:/page/login";
