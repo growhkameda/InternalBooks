@@ -9,6 +9,7 @@ import com.example.internalbooks.entity.TUserEntity;
 
 /**
  * MUserテーブルに対してどういった処理を行うかのリポジトリ
+ * 現在はTUserRepositoryを使用しているが、本番環境にデプロイ前にMUserRepositoryに変更する場合は、このクラスを変更する必要がある
  */
 public interface TUserRepository extends JpaRepository<TUserEntity, Integer> {
 	

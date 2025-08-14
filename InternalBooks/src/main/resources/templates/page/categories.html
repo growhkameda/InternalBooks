@@ -13,13 +13,27 @@
 	    <h1 class="mb-4 text-center">カテゴリー</h1>
 
 	    <div class="row g-3">
-	      <!-- 2列レイアウト -->
-	      <div class="col-6" th:each="category : ${categories}">
-	        <a 			class="btn btn-primary w-100"
-			   th:href="@{'/page/book_detail?category=' + ${category}}"
-			   th:text="${category}">Button</a>
+	      <!-- 
+	           2列レイアウトでカテゴリーボタンを表示
+	           各カテゴリーに8色の色を割り当て表示する(9色目からは最初に戻る)
+	           色を変更したい場合はth:withを変更する
+	      -->
+	      <div class="col-6" th:each="category, iterStat : ${categories}">
+	        <a class="btn w-100"
+	           th:with="bootstrapColorList=${'primary,success,warning,danger,info,secondary,light,dark'}"
+	           th:classappend="${'btn-' + #strings.listSplit(bootstrapColorList, ',')[iterStat.index % 8]}"
+	           th:href="@{'/page/book_detail?category=' + ${category}}"
+	           th:text="${category}">Button</a>
 	      </div>
 	    </div>
+
+		<!-- ========== 一覧へ戻るボタン ========== -->
+		<div class="border-0 mt-4 mb-3 text-start">
+			<a href="/page/top" class="text-black ms-1">
+				 TOPへ戻る
+				 <i class="bi bi-arrow-return-left ms-1"></i>
+			</a>
+		</div>
 		
 	  </div>
 	</div>

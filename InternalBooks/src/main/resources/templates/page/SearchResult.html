@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+  <title>検索結果詳細</title>
+</head>
+
+<body>
+  <section th:fragment="section">
+
+    <!-- ================== ページメインタイトル ================== -->
+    <div class="container-sm text-center mt-4">
+      <h1 class="fw-bold mt-4 display-4 mb-4">検索結果詳細</h1>
+    </div>
+
+    <!-- ================== 書籍情報がない場合の表示 ================== -->
+    <div th:if="${book == null}" 
+         class="text-center text-muted mt-5 pt-5">
+      <!-- 本のアイコン表示 -->
+      <i class="bi bi-book display-1 text-secondary"></i>
+      <!-- メッセージ表示 -->
+      <p class="fs-5 mt-4">書籍が見つかりませんでした</p>
+      <!-- トップページへの戻りボタン -->
+      <div class="col-12 border-0 mt-4">
+        <a href="/page/top" class="text-black ms-2">
+            TOPに戻る
+            <i class="bi bi-arrow-return-left ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- ================== 書籍情報がある場合の表示 ================== -->
+    <div th:if="${book != null}" 
+         class="container-sm">
+      
+      <!-- ========== 書籍カード表示 ========== -->
+      <div class="text-center mb-1">
+        <!-- 書籍画像エリア -->
+        <div class="text-center p-4">
+          <img th:src="@{${book.imageUrl}}" 
+               class="img-fluid rounded shadow w-75 h-auto" 
+               alt="書籍画像"
+               onerror="handleImageError(this)" />
+        </div>
+        
+        <!-- 書籍情報エリア -->
+        <div class="card-body p-4 pt-1 text-center">
+          <!-- 書籍名 -->
+          <h5 class="card-title fw-bold mb-3 text-dark" th:text="${book.title}">書籍名</h5>
+          
+          <!-- カテゴリー -->
+          <div class="mb-3">
+            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6" 
+                  th:text="${book.category}">カテゴリー</span>
+          </div>
+          
+          <!-- 貸出状況 -->
+          <div class="mb-0">
+            <span th:if="${book.status == '貸出中'}" class="text-danger fw-bold">貸出中</span>
+            <span th:if="${book.status != '貸出中'}" class="text-success fw-bold">貸出可能</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== 一覧へ戻るボタン ========== -->
+      <div class="border-0 mt-0 mb-5 text-start">
+        <a href="/page/top" class="text-black ms-1">
+             TOPへ戻る
+             <i class="bi bi-arrow-return-left ms-1"></i>
+        </a>
+      </div>
+
+       <!-- ========== 返却/借りるボタン（QRサーチまたは貸出中書籍ページからの遷移時のみ表示） ========== -->
+       <div th:if="${showReturnButton == true}" class="text-center mb-5">
+        <!-- 貸出中の場合は返却ボタン -->
+        <div th:if="${book.status == '貸出中'}">
+          <form method="post" th:action="@{/遷移先書いてください}" class="d-inline">
+            <input type="hidden" name="bookId" th:value="${book.bookId}" />
+            <button type="submit" class="btn btn-danger btn-lg w-50">
+              返す
+            </button>
+          </form>
+        </div>
+        
+        <!-- 貸出可能の場合は借りるボタン -->
+        <div th:if="${book.status != '貸出中'}">
+          <form method="post" th:action="@{/遷移先書いてください}" class="d-inline">
+            <input type="hidden" name="bookId" th:value="${book.bookId}" />
+            <button type="submit" class="btn btn-primary btn-lg w-50">
+              借りる
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ========== 書籍履歴テーブル ========== -->
+      <div class="mb-4">
+        <h6 class="fw-bold mb-3">書籍履歴</h6>
+        <div class="table-responsive">
+          <table class="table table-striped table-sm">
+            <thead class="table-primary">
+              <tr>
+                <th scope="col" class="text-center border-end border-2 border-white">日付</th>
+                <th scope="col" class="text-center border-end border-2 border-white">ユーザー</th>
+                <th scope="col" class="text-center">貸出履歴</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- 履歴データの表示 -->
+                <!----------------------------ここに履歴データの表示を追加してください------------------------>
+              <!-- 履歴がない場合 -->
+              <tr th:if="${bookHistory == null or #lists.isEmpty(bookHistory)}">
+                <td colspan="3" class="text-center text-muted">履歴がありません</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+    </div>
+
+  </section>
+
+
+
+  <!-- 画像エラー処理用JavaScript -->
+  <script>
+    function handleImageError(img) {
+      // 無限ループを防ぐため、既にエラー処理済みの場合は何もしない
+      if (img.dataset.errorHandled === 'true') {
+        return;
+      }
+      
+      // エラー処理済みフラグを設定
+      img.dataset.errorHandled = 'true';
+      
+      // 画像の代わりにBootstrapアイコンを表示するため、親要素を変更
+      const parent = img.parentElement;
+      parent.innerHTML = `
+        <div class="d-flex align-items-center justify-content-center py-5 text-muted">
+          <i class="bi bi-book display-2"></i>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
