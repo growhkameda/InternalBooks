@@ -44,15 +44,15 @@
                 </tr>
               </thead>
 
-                <!-- ユーザーデータの表示 -->
+              <!-- ================== ユーザーデータの表示 ================== -->
               <tbody id="userTableBody">
                 <tr th:each="user : ${users}" th:if="${users != null and !#lists.isEmpty(users)}" 
                     class="user-row">
                   <td colspan="2" class="text-center p-0">
                     <a th:href="@{/admin/userconfirmation(userId=${user.userId})}"
-                        class="btn btn-light w-100 p-0 border-0 rounded-0 shadow-sm text-start mb-2">
+                       class="btn btn-light w-100 p-0 border-0 rounded-0 shadow-sm text-start mb-2">
                       <div class="card border-0 rounded-0 overflow-hidden bg-transparent">
-                        <div class="card-body p-3 text-center">
+                        <div class="card-body p-2 text-center">
                           <div class="row">
                             
                             <!--データ表示領域-->
@@ -69,9 +69,9 @@
                     </a>
                   </td>
                 </tr>
-                <!-- ユーザーがない場合 -->
-                <tr th:if="${users == null or #lists.isEmpty(users)}">
-                  <td colspan="2" class="text-center text-muted">ユーザーが存在しません</td>
+                <!-- ユーザーがない場合(表示切替はJSで行う) -->
+                <tr class="no-users-message" style="display: none;">
+                  <td colspan="2" class="text-center bg-secondary-subtle text-muted">ユーザーが存在しません</td>
                 </tr>
               </tbody>
 
@@ -80,5 +80,71 @@
         </div>
       </div>
     </div>
-  </section>
+
+    
+    <!--================= 検索機能用JavaScript =================-->
+    <script th:inline="javascript">
+      // ページ読み込み時の初期化
+      document.addEventListener('DOMContentLoaded', () => {
+        // 初期状態の設定
+        const userRows = document.querySelectorAll('.user-row');
+        const noUsersMessage = document.querySelector('.no-users-message');
+        
+        // 初期表示時にユーザーが存在しない場合はメッセージを表示
+        if (userRows.length === 0 && noUsersMessage) {
+          noUsersMessage.style.display = '';
+        }
+        
+        // 検索ボタンクリックイベント
+        document.getElementById('searchButton').addEventListener('click', performSearch);
+        
+        // 検索入力欄のエンターキーイベント
+        document.getElementById('search').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            performSearch();
+          }
+        });
+      });
+      
+      // 検索実行関数(main処理)
+      const performSearch = () => {
+        const searchTerm = document.getElementById('search').value.trim().toLowerCase();
+        const userRows = document.querySelectorAll('.user-row');
+        const noUsersMessage = document.querySelector('.no-users-message');
+        
+        // ユーザーのHIT数をカウント
+        let visibleCount = 0;
+
+        // 各ユーザー行の表示/非表示を切り替え
+        userRows.forEach(row => {
+          const departmentName = row.querySelector('.department-name').textContent.toLowerCase();
+          const userName = row.querySelector('.user-name').textContent.toLowerCase();
+          
+          // 所属課または名前で検索
+          const isMatch = departmentName.includes(searchTerm) || userName.includes(searchTerm);
+          
+          if (searchTerm === '' || isMatch) {
+            row.style.display = '';
+            if (searchTerm !== '') visibleCount++;
+          } else {
+            row.style.display = 'none';
+          }
+        });
+        
+        // エラーメッセージの表示制御
+        if (searchTerm !== '' && visibleCount === 0) {
+          // 検索結果が0件の場合、メッセージを表示
+          if (noUsersMessage) {
+            noUsersMessage.style.display = '';
+          }
+        } else if (searchTerm !== '') {
+          // 検索結果がある場合、メッセージを非表示
+          if (noUsersMessage) {
+            noUsersMessage.style.display = 'none';
+          }
+        }
+      };
+    </script>
+
+   </section>
 </body>
