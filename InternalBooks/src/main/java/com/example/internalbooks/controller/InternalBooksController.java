@@ -46,13 +46,6 @@ public class InternalBooksController {
     public String index() {
         return "redirect:/page/login";
     }
-
-    @GetMapping("/page/user")
-    public String user() {
-    	logger.info("★★★★★★★★★★★user() にアクセスされました");
-        return "page/user";
-    }
-
     
     /**
      * ログインページに遷移

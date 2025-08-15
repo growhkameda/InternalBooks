@@ -10,6 +10,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 
+import com.example.internalbooks.service.TUserService;
+import com.example.internalbooks.entity.TUserEntity;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+
 /**
  * 管理者専用機能のコントローラー
  */
@@ -19,6 +24,16 @@ public class AdminController extends InternalBooksController {
     
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
     
+    private final TUserService tUserService;
+
+    /**
+     * t_user用のコンストラクタインジェクション
+     * @param tUserService
+     */
+    public AdminController(TUserService tUserService) {
+        this.tUserService = tUserService;
+    }
+
     /**
      * 管理者ユーザートップページに遷移
      */
@@ -40,6 +55,15 @@ public class AdminController extends InternalBooksController {
         catch (Exception e) {
             return error(redirectAttributes);
         }
+    }
+
+    /**
+     * ユーザー登録ページに遷移
+     */
+    @GetMapping("/user")
+    public String user() {
+    	logger.info("★★★★★★★★★★★user() にアクセスされました");
+        return "page/user";
     }
     
     /**
@@ -285,16 +309,25 @@ public class AdminController extends InternalBooksController {
     public String UserSearch(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         // トークンと管理者権限の検証
         try {
+            // 管理者権限の検証
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
             
+            // 全ユーザー情報を取得
+            List<TUserEntity> users = tUserService.getAllUsers();
+            
+            model.addAttribute("users", users);
             model.addAttribute("isAdmin", isAdmin);
+
+            // ログを出力
+            logger.info("UserSearch() にアクセスされました");
             
             return "page/UserSearch";
         }
         catch (Exception e) {
+            logger.error("UserSearchでエラーが発生しました", e);
             return error(redirectAttributes);
         }
     }

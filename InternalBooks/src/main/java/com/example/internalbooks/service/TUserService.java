@@ -1,6 +1,7 @@
 package com.example.internalbooks.service;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -48,5 +49,12 @@ public class TUserService implements UserDetailsService {
         return user.get();
     }
 
+    /**
+     * 全ユーザー情報を取得するメソッド
+     * @return 全ユーザーリスト
+     */
+    public List<TUserEntity> getAllUsers() {
+        return tUserRepository.findAll();
+    }
 
 }
