@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.internalbooks.dto.BookHistory;
 import com.example.internalbooks.dto.DtoAuthRequest;
 import com.example.internalbooks.dto.DtoBookInfo;
-import com.example.internalbooks.dto.BookHistory;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.utils.JwtUtil;
@@ -341,6 +341,11 @@ public String userConfirmationScreen(HttpSession session, Model model, RedirectA
         jwtUtil.extractUserId(token);
         
         boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        
+        //・管理者権限がない場合はログインページにリダイレクト
+        if(!isAdmin){
+        	return adminPermissionError(redirectAttributes);
+        }
         model.addAttribute("isAdmin", isAdmin);
 
         return "page/userConfirmationScreen";
@@ -362,6 +367,11 @@ public String userDeleteConfirmation(HttpSession session, Model model, RedirectA
         jwtUtil.extractUserId(token);
         
         boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        
+        //・管理者権限がない場合はログインページにリダイレクト
+        if(!isAdmin){
+        	return adminPermissionError(redirectAttributes);
+        }
         model.addAttribute("isAdmin", isAdmin);
 
         return "page/userDeleteConfirmation";
@@ -383,6 +393,11 @@ public String userEdit(HttpSession session, Model model, RedirectAttributes redi
         jwtUtil.extractUserId(token);
         
         boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        
+        //・管理者権限がない場合はログインページにリダイレクト
+        if(!isAdmin){
+        	return adminPermissionError(redirectAttributes);
+        }
         model.addAttribute("isAdmin", isAdmin);
 
         return "page/userEdit";
@@ -404,6 +419,11 @@ public String userDeleteComplete(HttpSession session, Model model, RedirectAttri
         jwtUtil.extractUserId(token);
         
         boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        
+        //・管理者権限がない場合はログインページにリダイレクト
+        if(!isAdmin){
+        	return adminPermissionError(redirectAttributes);
+        }
         model.addAttribute("isAdmin", isAdmin);
 
         return "page/userDeleteComplete";
