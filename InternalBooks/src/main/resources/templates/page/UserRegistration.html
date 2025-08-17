@@ -15,12 +15,12 @@
     <h3 class= "text-center mt-4">ユーザー登録</h3>
     <br>
     
-<form th:action="@{/action/UserConfir}" method="post" enctype="application/x-www-form-urlencoded">    
+<form th:action="@{/action/UserConfir}" method="post" th:object="${UserRegistration}" enctype="application/x-www-form-urlencoded">
 <div class ="container mt-4">
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "id" class="form-label text-start">社員ID</label>
-	      	<input type="text" class="form-control bg-light" id="employeeId" name="employeeId">
+	      	<input type="text" th:field="*{employeeId}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
@@ -29,32 +29,42 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "mail" class="form-label text-start">メールアドレス </label>
-	      	<input type="text" class="form-control bg-light" id="mailAddress" name="mailAddress">
+	      	<input type="text" th:field="*{email}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
 
 <div class ="container mt-3">
   <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2 me-2">
-	      	<label for = "name" class="form-label text-start">名前</label>
-	      	<input type="text" class="form-control bg-light" id="userName" name="userName">
+	  <div class = "col-8 pt-2">
+	      	<label for = "password" class="form-label text-start"> パスワード</label>
+	      	<input type="text" th:field="*{password}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
  
- <div class ="container mt-3">
+<div class ="container mt-3">
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
-	      	<label for = "department" class="form-label text-start">所属課</label>
-	      	<input type="text" class="form-control bg-light" id="department" name="department">
+	      	<label for = "name" class="form-label text-start">名前</label>
+	      	<input type="text" th:field="*{name}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
+
+<div class ="container mt-3">
+  <div class = "row justify-content-center">
+	  <div class = "col-8 pt-2">
+	      	<label for = "department" class="form-label text-start">名前</label>
+	      	<input type="text" th:field="*{department}" class="form-control bg-light">
+	  </div>
+  </div>
+</div>
+
  <div class="container mt-5">
   <div class="row">
     <div class="col-12 text-start ms-lg-5">
-      <a href="/page/top" class="btn fs-6">
+      <a href="/page/adminusertop" class="btn fs-6">
         戻る
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
              class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">

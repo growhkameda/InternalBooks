@@ -14,60 +14,54 @@
     <h3 class= "text-center mt-4">ユーザー登録確認</h3>
     <br>
 	
-<form th:action="@{/action/UserRegistrationComplete}" method="post" enctype="application/x-www-form-urlencoded">	
+<form th:action="@{/action/UserRegistrationComplete}" method="post" th:object="${UserRegistration}" enctype="application/x-www-form-urlencoded">	
 <!-- 社員ID -->
-<div class="container mt-4">
-  <div class="row justify-content-center">
-    <div class="col-6 d-flex justify-content-end align-items-center">
-      <label for="id" class="form-label mb-0 me-4">社員ID</label>
-    </div>
-    <div class="col-6 d-flex justify-content-start align-items-center">
-      <p th:text="${employeeId}" class="mb-0 ms-1"></p>
-    </div>
+<div class ="container mt-4">
+  <div class = "row justify-content-center">
+	  <div class = "col-8 pt-2">
+	      	<label for = "id" class="form-label text-start">社員ID</label>
+	      	<input type="text" th:field="*{employeeId}" class="form-control bg-white border-dark" readonly>
+	  </div>
   </div>
 </div>
 
 <!--メールアドレス -->
-<div class="container mt-4">
-  <div class="row justify-content-center">
-    <div class="col-6 d-flex justify-content-end align-items-center">
-      <label for="mailAddress" class="form-label mb-0 me-4">メールアドレス</label>
-    </div>
-    <div class="col-6 d-flex justify-content-start align-items-center">
-      <p th:text="${mailAddress}" class="mb-0 ms-1"></p>
-    </div>
+<div class ="container mt-3">
+  <div class = "row justify-content-center">
+	  <div class = "col-8 pt-2">
+	      	<label for = "mail" class="form-label text-start">メールアドレス </label>
+	      	<input type="text" th:field="*{email}" class="form-control bg-white border-dark" readonly>
+	  </div>
   </div>
 </div>
 
-<!-- 名前 -->
-<div class="container mt-4">
-  <div class="row justify-content-center">
-    <div class="col-6 d-flex justify-content-end align-items-center">
-      <label for="name" class="form-label mb-0 me-4">名前</label>
-    </div>
-    <div class="col-6 d-flex justify-content-start align-items-center">
-      <p th:text="${userName}" class="mb-0 ms-1"></p>
-    </div>
+<div class ="container mt-3">
+  <div class = "row justify-content-center">
+	  <div class = "col-8 pt-2">
+	      	<label for = "password" class="form-label text-start"> パスワード</label>
+	      	<input type="text" th:field="*{password}" class="form-control bg-white border-dark" readonly>
+	  </div>
+  </div>
+</div>
+ 
+<div class ="container mt-3">
+  <div class = "row justify-content-center">
+	  <div class = "col-8 pt-2">
+	      	<label for = "name" class="form-label text-start">名前</label>
+	      	<input type="text" th:field="*{name}" class="form-control bg-white border-dark" readonly>
+	  </div>
   </div>
 </div>
  
 <!--  -->
-<div class="container mt-4">
-  <div class="row justify-content-center">
-     <div class="col-6 d-flex justify-content-end align-items-center">
-      <label for="department" class="form-label mb-0 me-4">所属課</label>
-     </div>
-     <div class="col-6 d-flex justify-content-start align-items-center">
-      <p th:text="${department}" class="mb-0 ms-1"></p>
-    </div>
+<div class ="container mt-3">
+  <div class = "row justify-content-center">
+	  <div class = "col-8 pt-2">
+	      	<label for = "department" class="form-label text-start">名前</label>
+	      	<input type="text" th:field="*{department}" class="form-control bg-white border-dark" readonly>
+	  </div>
   </div>
 </div>
-
-<!-- hiddenで値を保持 -->
-  <input type="hidden" name="employeeId" th:value="${employeeId}">
-  <input type="hidden" name="userName" th:value="${userName}">
-  <input type="hidden" name="mailAddress" th:value="${mailAddress}">
-  <input type="hidden" name="department" th:value="${department}">
  
   <div class="container mt-5">
   <div class="row">
@@ -86,7 +80,7 @@
 
  <div class ="container text-center mt-4">
 	  <div class = "col-auto">
-	 <button type="submit" class="btn btn-primary">登録</button>
+	 <button type="submit" class="btn btn-success">登録</button>
 	  </div>
 </div>
 </form>

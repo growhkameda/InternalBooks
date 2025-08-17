@@ -12,7 +12,7 @@
     <h1 class= "text-center">書籍登録確認</h1>
     <br>
 
-<form th:action="@{/action/BookingRegistrationComplete}" method="post" enctype="multipart/form-data"> 
+<form th:action="@{/action/BookingRegistrationComplete}" method="post" th:object="${BookingRegistration}" enctype="multipart/form-data"> 
 	
  <!-- 書籍名 -->
  <div class ="container mt-4">
@@ -21,7 +21,7 @@
 	      	<label for = "name">書籍名</label>
 	  </div>
 	  <div class = "col-7 col-sm-8 ms-2" >
-			<p th:text="${bookname}" class="form-control bg-light"></p>
+			<p th:text="*{bookname}" class="form-control bg-light"></p>
 	  </div>
   </div>
 </div>
@@ -33,7 +33,7 @@
 	      	<label for = "category">カテゴリー</label>
 	  </div>
 	  <div class = "col-7 col-sm-8">
-			<p th:text="${category}" class="form-control bg-light">
+			<p th:text="*{category}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
@@ -45,7 +45,7 @@
 			<label for = "id">書籍提供者</label>
 	  </div>
 	   <div class = "col-7 col-sm-8">
-			<p th:text="${offer}" class="form-control bg-light">
+			<p th:text="*{offer}" class="form-control bg-light">
 	   </div>
   </div>	
  </div>
@@ -59,7 +59,7 @@
 			<label for = "offer">コメント</label>
 	  </div>
 	   <div class = "col-7 col-sm-8">
-			<p th:text="${comment}" class="form-control bg-light"style="height:150px;">
+			<p th:text="*{comment}" class="form-control bg-light"style="height:150px; white-space: pre-wrap;">
 	   </div>
   </div>	
  </div>
@@ -77,10 +77,6 @@
   </div>	
   
   <!-- hiddenで値を保持 -->
-  <input type="hidden" name="bookname" th:value="${bookname}">
-  <input type="hidden" name="category" th:value="${category}">
-  <input type="hidden" name="offer" th:value="${offer}">
-  <input type="hidden" name="comment" th:value="${comment}">
   <input type="hidden" name="imagePreview" th:value="${imagePreview}">
 					
  <div class="container mt-5">
@@ -99,7 +95,7 @@
 </div>
  <div class ="container text-center mt-4">
 	  <div class = "col-auto">
-	 <button type="submit" class="btn btn-primary">登録</button>
+	 <button type="submit" class="btn btn-success">登録</button>
 	  </div>
 </div>
 </form>

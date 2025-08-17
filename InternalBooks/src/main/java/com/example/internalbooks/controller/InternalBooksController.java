@@ -11,11 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.internalbooks.common.BookingRegistrationForm;
+import com.example.internalbooks.common.Const;
+import com.example.internalbooks.common.UserRegistrationForm;
 import com.example.internalbooks.dto.DtoAuthRequest;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.service.TUserService;
@@ -28,6 +34,7 @@ import java.util.Base64;
 import io.micrometer.common.util.StringUtils;
 
 @Controller
+@SessionAttributes({"UserRegistration", "BookingRegistration"}) 
 public class InternalBooksController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(InternalBooksController.class);
@@ -225,75 +232,54 @@ public class InternalBooksController {
     public String adminusertop() {
         return "page/adminusertop"; // registration.html のパス
     }
+
+    @ModelAttribute("UserRegistration")
+    public UserRegistrationForm setUpUserRegistration() {
+        return new UserRegistrationForm();
+    }
     
  // ユーザー登録画面の表示
     @GetMapping("/page/UserRegistration")
-    public String UserRegistration() {
+    public String UserRegistration(@ModelAttribute("UserRegistration") UserRegistrationForm form) {
         return "page/UserRegistration"; // registration.html のパス
     }
 
  // ユーザー登録フォームの送信処理
     @PostMapping("/action/UserConfir")
-    public String UserConfir(
-    	    @RequestParam("employeeId") String employeeId,
-    	    @RequestParam("mailAddress") String mailAddress,
-    	    @RequestParam("userName") String userName,
-    	    @RequestParam("department") String department,
-    	    Model model) {
-
-    	    model.addAttribute("employeeId", employeeId);
-    	    model.addAttribute("mailAddress", mailAddress);
-    	    model.addAttribute("userName", userName);
-    	    model.addAttribute("department", department);
-    	    
-        return "page/UserConfir"; // 同じページに戻り、結果表示
+    public String UserConfir(@ModelAttribute("UserRegistration") UserRegistrationForm form) {   	        
+        return "page/UserConfir"; 
     }
     
     // ユーザー登録完了の送信処理
     @PostMapping("/action/UserRegistrationComplete")
-    public String UserRegistrationComplete(
-    	    @RequestParam("employeeId") String employeeId,
-    	    @RequestParam("mailAddress") String mailAddress,
-    	    @RequestParam("userName") String userName,
-    	    @RequestParam("department") String department,
-    	    Model model) {
+    public String UserRegistrationComplete(@ModelAttribute("UserRegistration") UserRegistrationForm form, SessionStatus sessionStatus) {
     	
-    	//Entityに詰める
-    	TUserEntity user = new TUserEntity();
-    	user.setUserId(Integer.parseInt(employeeId));
-    	user.setMailAddress(mailAddress);
-    	user.setDepartmentId(department);
+//    	//Entityに詰める
+//    	TUserEntity user = new TUserEntity();
+//    	user.setUserId(Integer.parseInt(employeeId));
+//    	user.setMailAddress(mailAddress);
+//    	user.setDepartmentId(department);
+//    	
+//           tUserService.save(user);
     	
-           tUserService.save(user);
+    	// セッション破棄（フォームを消す）
+        sessionStatus.setComplete();
 
-    	    model.addAttribute("employeeId", employeeId);
-    	    model.addAttribute("mailAddress", mailAddress);
-    	    model.addAttribute("userName", userName);
-    	    model.addAttribute("department", department);
-    	    
         return "page/UserRegistrationComplete"; // 同じページに戻り、結果表示
     }
     
+    @ModelAttribute("BookingRegistration")
+    public BookingRegistrationForm setUpBookingRegistration() {
+    	return new BookingRegistrationForm();
+    }
 // 書籍登録画面の表示
     @GetMapping("/page/bookediting")
-    public String bookediting() {
+    public String bookediting(@ModelAttribute("BookingRegistration") BookingRegistrationForm form) {
         return "page/bookediting"; // registration.html のパス
     }
  // 書籍登録フォームの送信処理
     @PostMapping("/action/BookingConfirmation")
-    public String BookingConfirmation(
-        @RequestParam("bookname") String bookname,
-        @RequestParam("category") String category,
-        @RequestParam("offer") String offer,
-        @RequestParam("comment") String comment,
-        @RequestParam("imagefile") MultipartFile file,
-        HttpSession session,
-        Model model
-    ) {
-        model.addAttribute("bookname", bookname);
-        model.addAttribute("category", category);
-        model.addAttribute("offer", offer);
-        model.addAttribute("comment", comment);
+    public String BookingConfirmation(@ModelAttribute("BookingRegistration") BookingRegistrationForm form,@RequestParam("imagefile") MultipartFile file, HttpSession session,Model model) throws IOException {
 
         if (!file.isEmpty()) {
             try {
@@ -313,18 +299,7 @@ public class InternalBooksController {
 
  // 書籍登録完了の送信処理
     @PostMapping("/action/BookingRegistrationComplete")
-    public String complete(
-        @RequestParam("bookname") String bookname,
-        @RequestParam("category") String category,
-        @RequestParam("offer") String offer,
-        @RequestParam("comment") String comment,
-        HttpSession session,
-        Model model
-    ) {
-        model.addAttribute("bookname", bookname);
-        model.addAttribute("category", category);
-        model.addAttribute("offer", offer);
-        model.addAttribute("comment", comment);
+    public String BookingRegistrationcomplete(@ModelAttribute("BookingRegistration") BookingRegistrationForm form, MultipartFile file, HttpSession session,Model model) throws IOException {
 
         byte[] imageBytes = (byte[]) session.getAttribute("imageBytes");
         if (imageBytes != null) {
@@ -332,7 +307,7 @@ public class InternalBooksController {
             model.addAttribute("imagePreview", base64Image);
         }
 
-        // 完了後に画像をセッションから削除（任意）
+        // 完了後に画像をセッションから削除
         session.removeAttribute("imageBytes");
 
         return "page/BookingRegistrationComplete";
