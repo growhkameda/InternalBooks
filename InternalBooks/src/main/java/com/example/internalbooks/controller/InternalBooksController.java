@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import com.example.internalbooks.dto.DtoAuthRequest;
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoBookHistory;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.utils.JwtUtil;
+
 
 import io.micrometer.common.util.StringUtils;
 
@@ -271,6 +271,7 @@ public class InternalBooksController {
     	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
         return "redirect:/page/login";
     }
+ 
     
     /**
      * 管理者権限エラー処理

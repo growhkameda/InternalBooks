@@ -38,7 +38,7 @@ public class TUserEntity implements UserDetails {
     private Integer role;
     
     @Column(name = Const.DEPARTMENT_ID)
-    private Integer departmentId;
+    private String departmentId;
     
     @Column(name = Const.DELETE_FLG)
     private Integer deleteFlg;
