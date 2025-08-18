@@ -19,8 +19,14 @@ import com.example.internalbooks.repository.TBookRepository;
  */
 public class TBookService {
 
-	@Autowired
-	private TBookRepository tBookRepository;
+	//DI用フィールド
+    private final TBookRepository tBookRepository;
+
+	//コンストラクタインジェクション
+    public TBookService(TBookRepository tBookRepository) {
+        this.tBookRepository = tBookRepository;
+    }
+
 
 	public List<String> getAllCategories() {
 		List<String> categoryList = new ArrayList<>();

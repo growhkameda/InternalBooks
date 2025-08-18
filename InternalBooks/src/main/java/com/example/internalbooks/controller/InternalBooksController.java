@@ -18,7 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.internalbooks.dto.DtoAuthRequest;
 import com.example.internalbooks.dto.DtoBookInfo;
-import com.example.internalbooks.dto.BookHistory;
+import com.example.internalbooks.dto.DtoBookHistory;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.utils.JwtUtil;
@@ -28,17 +28,21 @@ import io.micrometer.common.util.StringUtils;
 @Controller
 public class InternalBooksController {
 	
+    //ロガー
 	private static final Logger logger = LoggerFactory.getLogger(InternalBooksController.class);
+    //DI用フィールド
+    private final JwtUtil jwtUtil;
+    private final AuthService authService;
+    private final TBookService tBookService;
+    
+    //コンストラクタインジェクション
+    public InternalBooksController(JwtUtil jwtUtil, AuthService authService, TBookService tBookService) {
+        this.jwtUtil = jwtUtil;
+        this.authService = authService;
+        this.tBookService = tBookService;
+    }
+    
 
-    @Autowired
-    private JwtUtil jwtUtil;
-    
-    @Autowired
-    private AuthService authService;
-    
-    @Autowired
-	private TBookService tBookService;
-    
     /**
      * トップページとしてloginを設定
      */
@@ -219,7 +223,7 @@ public class InternalBooksController {
             model.addAttribute("book", book);
             
             // 書籍履歴を取得
-            List<BookHistory> bookHistory = new ArrayList<>();
+            List<DtoBookHistory> bookHistory = new ArrayList<>();
             // TODO 実際の書籍履歴取得機能のロジックをここに記述してください。(サービスに記述したものを引っ張ってくる)
             model.addAttribute("bookHistory", bookHistory);
             
@@ -257,7 +261,6 @@ public class InternalBooksController {
     		return error(redirectAttributes);
     	}
     }
-
 
     /**
      * エラー処理

@@ -13,7 +13,11 @@ import jakarta.servlet.http.HttpSession;
 import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.entity.TUserEntity;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
+import java.util.HashMap;
+import com.example.internalbooks.utils.JwtUtil;
+import com.example.internalbooks.service.AuthService;
+import com.example.internalbooks.service.TBookService;
 
 /**
  * 管理者専用機能のコントローラー
@@ -22,15 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RequestMapping("/admin")
 public class AdminController extends InternalBooksController {
     
+    //ロガー
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
-    
+    //DI用フィールド
     private final TUserService tUserService;
 
-    /**
-     * t_user用のコンストラクタインジェクション
-     * @param tUserService
-     */
-    public AdminController(TUserService tUserService) {
+    //コンストラクタインジェクション    
+    public AdminController(JwtUtil jwtUtil, AuthService authService, TBookService tBookService, TUserService tUserService) {
+        super(jwtUtil, authService, tBookService);
         this.tUserService = tUserService;
     }
 
@@ -318,7 +321,15 @@ public class AdminController extends InternalBooksController {
             // 全ユーザー情報を取得
             List<TUserEntity> users = tUserService.getAllUsers();
             
+            // 各ユーザーの所属課を取得してモデルに追加する
+            Map<Integer, String> departmentNames = new HashMap<>();
+            for (TUserEntity user : users) {
+                String departmentName = tUserService.getDepartmentNameById(user.getDepartmentId());
+                departmentNames.put(user.getUserId(), departmentName);
+            }
+            
             model.addAttribute("users", users);
+            model.addAttribute("departmentNames", departmentNames);
             model.addAttribute("isAdmin", isAdmin);
 
             // ログを出力
