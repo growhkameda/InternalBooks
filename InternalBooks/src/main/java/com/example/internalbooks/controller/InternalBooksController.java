@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -151,7 +150,7 @@ public class InternalBooksController {
             // 現在のユーザーの貸出中書籍を取得
             List<DtoBookInfo> checkedOutBooks = tBookService.getCheckedOutBooksByUserId(userId);
             
-            // ====★★★【テスト用】貸し出し書籍なしの状態をテストする場合は以下をコメントアウト★★★ ===//                 //                                   //
+            // ====★★★【テスト用】貸し出し書籍なしの状態をテストする場合は以下をコメントアウト★★★ ===/
             //checkedOutBooks = null;               // null                                     // 
             // ================================================================================//
             
@@ -192,6 +191,7 @@ public class InternalBooksController {
     
     /**
      * 検索結果詳細ページに遷移
+     * (session情報詰め込みすぎた…いつかServiceに移行しないといけない(木俣))
      */
     @GetMapping("/page/searchresult")
     public String searchResult(
@@ -260,6 +260,7 @@ public class InternalBooksController {
     	catch (Exception e) {
     		return error(redirectAttributes);
     	}
+        
     }
 
     /**

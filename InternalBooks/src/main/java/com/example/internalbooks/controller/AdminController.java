@@ -193,7 +193,7 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
-            return "page/finishUserEdit";
+            return "page/finishuseredit";
         }
         catch (Exception e) {
             return error(redirectAttributes);
@@ -203,8 +203,8 @@ public class AdminController extends InternalBooksController {
     /**
      * ユーザー確認画面に遷移
      */
-    @GetMapping("/userconfirmation")
-    public String userConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    @GetMapping("/userconfirmationscreen")
+    public String userConfirmationScreen(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         // トークンと管理者権限の検証
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
@@ -214,7 +214,7 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
-            return "page/userConfirmation";
+            return "page/userconfirmationscreen";
         }
         catch (Exception e) {
             return error(redirectAttributes);
@@ -256,7 +256,7 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
-            return "page/userEdit";
+            return "page/useredit";
         }
         catch (Exception e) {
             return error(redirectAttributes);
@@ -277,7 +277,7 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
-            return "page/userDeleteComplete";
+            return "page/userdeletecomplete";
         }
         catch (Exception e) {
             return error(redirectAttributes);
@@ -298,7 +298,7 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
-            return "page/BookDeletingConfirmation";
+            return "page/bookdeletingconfirmation";
         }
         catch (Exception e) {
             return error(redirectAttributes);
