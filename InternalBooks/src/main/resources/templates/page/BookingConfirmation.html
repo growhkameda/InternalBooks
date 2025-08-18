@@ -14,14 +14,14 @@
 
 <form th:action="@{/action/BookingRegistrationComplete}" method="post" th:object="${BookingRegistration}" enctype="multipart/form-data"> 
 	
- <!-- 書籍名 -->
- <div class ="container mt-4">
+<!-- 書籍名 -->
+<div class ="container mt-4">
   <div class = "row justify-content-center gap">
 	  <div class = "col-auto pt-2 ms-4">
 	      	<label for = "name">書籍名</label>
 	  </div>
 	  <div class = "col-7 col-sm-8 ms-2" >
-			<p th:text="*{bookname}" class="form-control bg-light"></p>
+			<p th:text="*{bookname}" class="form-control bg-white border-dark"></p>
 	  </div>
   </div>
 </div>
@@ -33,7 +33,7 @@
 	      	<label for = "category">カテゴリー</label>
 	  </div>
 	  <div class = "col-7 col-sm-8">
-			<p th:text="*{category}" class="form-control bg-light">
+			<p th:text="*{category}" class="form-control bg-white border-dark">
 	  </div>
   </div>
 </div>
@@ -44,42 +44,43 @@
 	  <div class = "col-auto pt-2">
 			<label for = "id">書籍提供者</label>
 	  </div>
-	   <div class = "col-7 col-sm-8">
-			<p th:text="*{offer}" class="form-control bg-light">
-	   </div>
+	  <div class = "col-7 col-sm-8">
+			<p th:text="*{offer}" class="form-control bg-white border-dark">
+	  </div>
   </div>	
- </div>
+</div>
  
 <!-- コメント -->
- <div class ="container mt-4">
+<div class ="container mt-4">
   <div class ="row justify-content-center"> 
 	  <div class = "col-auto pull-left pt-2">
 			<label for = "offer">書籍提供者</label>
 			<br>
 			<label for = "offer">コメント</label>
 	  </div>
-	   <div class = "col-7 col-sm-8">
-			<p th:text="*{comment}" class="form-control bg-light"style="height:150px; white-space: pre-wrap;">
-	   </div>
+	  <div class = "col-7 col-sm-8">
+			<p th:text="*{comment}" class="form-control bg-white border-dark"style="height:150px; white-space: pre-wrap;">
+	  </div>
   </div>	
- </div>
+</div>
  
  <!-- 画像 -->
- <div class ="container text-center mt-4">
+<div class ="container text-center mt-4">
   <div class ="row justify-content-center"> 
 	  <div class = "col-auto mt-1 pt-2 ms-3">
 			<label for = "id">書籍画像</label>
 	  </div>
-	    <div th:if="${imagePreview}" class = "col-7 col-md-8 text-start">
+	  <div th:if="${imagePreview}" class = "col-7 col-md-8 text-start">
 			 <img th:src="'data:image/jpeg;base64,' + ${imagePreview}" alt="アップロード画像" class="img-fluid mt-4 " style="height:200px">
-        </div>
-	   </div>
-  </div>	
+      </div>
+  </div>
+</div>	
   
-  <!-- hiddenで値を保持 -->
-  <input type="hidden" name="imagePreview" th:value="${imagePreview}">
+<!-- hiddenで値を保持 -->
+<input type="hidden" name="imagePreview" th:value="${imagePreview}">
 					
- <div class="container mt-5">
+<!-- 登録画面へ戻る -->
+<div class="container mt-5">
   <div class="row">
     <div class="col-12 text-start ms-lg-5 ">
       <a href="/page/bookediting" class="btn fs-6">
@@ -93,11 +94,14 @@
     </div>
   </div>
 </div>
+
+<!-- 登録 -->
  <div class ="container text-center mt-4">
 	  <div class = "col-auto">
 	 <button type="submit" class="btn btn-success">登録</button>
 	  </div>
 </div>
+
 </form>
 </section>
 </body>

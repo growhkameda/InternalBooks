@@ -14,8 +14,9 @@
     <br>
     <h3 class= "text-center mt-4">書籍登録完了</h3>
     <br>
-    
- <div class="text-dark">
+
+<!-- 完了ラベル -->
+<div class="text-dark">
   <div class="container ms-2 text-center">
     <div class="row justify-content-center">
       <div class="col-12 bg-dark-subtle pt-2 text-start" style="height:40px">
@@ -26,6 +27,7 @@
 </div>
 
 <form th:object="${BookingRegistration}">
+	
 <!-- 画像 -->
 <div class="text-center">
    <div th:if="${imagePreview}">
@@ -45,7 +47,7 @@
   </div>
 </div>
 
-<!--  書籍提供者 -->
+<!-- 書籍提供者 -->
 <div class ="container mt-4">
   <div class ="row justify-content-center"> 
 	  <div class = "col-9 d-flex align-items-center">
@@ -54,6 +56,8 @@
 	  </div>
   </div>
 </div>
+
+<!-- コメント -->
 <div class ="container">
   <div class ="row justify-content-center"> 
 	    <div class = "col-9 pull-left ">
@@ -61,7 +65,8 @@
 	    </div>
 	  </div>
   </div>	
- 
+
+<!-- Topへ -->
  <div class="container mt-5">
   <div class="d-flex justify-content-end align-items-center gap-1">
     <a href="/page/adminusertop" class="btn fs-6">Topへ戻る</a>
@@ -72,6 +77,7 @@
     </svg>
   </div>
 </div>
+
 </form>
 </section>
 </body>
