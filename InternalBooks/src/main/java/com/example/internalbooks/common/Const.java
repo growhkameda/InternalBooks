@@ -6,6 +6,7 @@ package com.example.internalbooks.common;
 public class Const {
 	public final static String ID = "id";
 	public final static String USER_ID = "user_id";
+	public final static String NAME = "name";
 	public final static String MAILADDRESS = "mail_address";
 	public final static String PASSWORD = "password";
 	public final static String ROLE = "role";

@@ -13,9 +13,9 @@
     <br>
     <h3 class= "text-center mt-4">ユーザー登録確認</h3>
     <br>
-	
-<form th:action="@{/action/UserRegistrationComplete}" method="post" th:object="${UserRegistration}" enctype="application/x-www-form-urlencoded">
-	
+
+<form th:action="@{/admin/userregistrationcomplete}" method="post" th:object="${UserRegistration}" enctype="application/x-www-form-urlencoded">	
+
 <!-- 社員ID -->
 <div class ="container mt-4">
   <div class = "row justify-content-center">
@@ -70,7 +70,7 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-12 text-start ms-lg-5">
-      <a href="/page/UserRegistration" class="btn fs-6">
+      <a href="/admin/userregistration" class="btn fs-6">
         入力画面へ戻る
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
              class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">
@@ -85,7 +85,7 @@
 <!-- 戻る -->
 <div class ="container text-center mt-4">
 	  <div class = "col-auto">
-	 <button type="submit" class="btn btn-success">登録</button>
+	      <button type="submit" class="btn btn-success">登録</button>
 	  </div>
 </div>
 

@@ -15,8 +15,7 @@
     <h3 class= "text-center mt-4">ユーザー登録</h3>
     <br>
 
-
-<form th:action="@{/action/UserConfir}" method="post" th:object="${UserRegistration}" enctype="application/x-www-form-urlencoded">
+<form th:action="@{/admin/userconfir}" method="post" th:object="${UserRegistration}" enctype="application/x-www-form-urlencoded">
 
 <!-- 社員ID -->
 <div class ="container mt-4">
@@ -72,7 +71,7 @@
  <div class="container mt-5">
   <div class="row">
     <div class="col-12 text-start ms-lg-5">
-      <a href="/page/adminusertop" class="btn fs-6">
+      <a href="/admin/adminusertop" class="btn fs-6">
         戻る
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
              class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">

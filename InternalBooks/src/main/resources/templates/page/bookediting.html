@@ -11,9 +11,9 @@
 	
     <h1 class= "text-center">書籍登録編集画面</h1>
     <br>
-    
-<form th:action="@{/action/BookingConfirmation}" method="post" th:object="${BookingRegistration}" enctype="multipart/form-data">  
-	  
+
+<form th:action="@{/admin/bookingconfirmation}" method="post" th:object="${BookingRegistration}" enctype="multipart/form-data">    
+
 <!-- 書籍名 -->
 <div class ="container mt-4">
   <div class = "row justify-content-center gap">
@@ -70,7 +70,7 @@
 	  <div class = "col-auto mt-1 pt-2 ms-3">
 			<label for = "id">書籍画像</label>
 	  </div>
-	  <div class = "col-7 col-md-8">
+	   <div class = "col-7 col-md-8">
 			<div class="border rounded bg-light d-flex flex-column justify-content-center align-items-center" style="height: 150px;">
             <span class="me-2 mb-1">ファイルを選択</span>
 			<label for="file-upload" class="custom-file-upload">
@@ -80,15 +80,15 @@
 			</label>
 			<input id="file-upload" type="file" name="imagefile" class="d-none"/>
             </div>
-	  </div>
+	   </div>
   </div>
-</div>	
+</div>
 
 <!-- 戻る -->
 <div class="container mt-5">
   <div class="row">
     <div class="col-12 text-start ms-lg-5">
-      <a href="/page/adminusertop" class="btn fs-6">
+      <a href="/admin/adminusertop" class="btn fs-6">
         戻る
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
              class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">

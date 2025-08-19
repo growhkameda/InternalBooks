@@ -1,8 +1,8 @@
 package com.example.internalbooks.service;
 
 import java.util.Optional;
+import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,13 +17,16 @@ import com.example.internalbooks.repository.TUserRepository;
  * MUserテーブルに対してどんな操作をしていくかをMUserリポジトリを介して制御していくサービス
  */
 public class TUserService implements UserDetailsService {
+ 
+    //DI用フィールド
+    private final TUserRepository tUserRepository;
 
-    @Autowired
-    private TUserRepository tUserRepository;
-    
-    public void save(TUserEntity user) {
-        tUserRepository.save(user);
+    //コンストラクタインジェクション
+    public TUserService(TUserRepository tUserRepository) {
+        this.tUserRepository = tUserRepository;
     }
+    
+
     @Override
     /**
      * ユーザ名(メールアドレス)からTUser情報を取得するメソッド
@@ -51,5 +54,36 @@ public class TUserService implements UserDetailsService {
         return user.get();
     }
 
+    /**
+     * 全ユーザー情報を取得するメソッド
+     * @return 全ユーザーリスト
+     */
+    public List<TUserEntity> getAllUsers() {
+        return tUserRepository.findAll();
+    }
+
+    /**
+     * 部門IDから部門名を取得する
+     * (現在は仮で設定)
+     */
+    public String getDepartmentNameById(String departmentId) {
+        if (departmentId == null) {
+            return "未設定";
+        }
+        
+        switch (departmentId) {
+            case "1": return "11課";
+            case "2": return "22課";
+            case "3": return "33課";
+            case "4": return "44課";
+            case "5": return "55課";
+            case "6": return "66課";
+            case "7": return "77課";
+            case "8": return "88課";
+            case "9": return "99課";
+            case "10": return "100課";
+            default: return "不明";
+        }
+    }
 
 }

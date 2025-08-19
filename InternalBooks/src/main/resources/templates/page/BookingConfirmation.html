@@ -12,7 +12,7 @@
     <h1 class= "text-center">書籍登録確認</h1>
     <br>
 
-<form th:action="@{/action/BookingRegistrationComplete}" method="post" th:object="${BookingRegistration}" enctype="multipart/form-data"> 
+<form th:action="@{/admin/bookingregistrationcomplete}" method="post" th:object="${BookingRegistration}" enctype="multipart/form-data"> 
 	
 <!-- 書籍名 -->
 <div class ="container mt-4">
@@ -83,7 +83,7 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-12 text-start ms-lg-5 ">
-      <a href="/page/bookediting" class="btn fs-6">
+      <a href="/admin/bookediting" class="btn fs-6">
         編集画面へ戻る
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
              class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">
