@@ -30,7 +30,7 @@ public class TBookEntity {
     private Integer borrowerId;
     
     @Column(name = Const.PROVIDER_ID)
-    private String providerId;
+    private Integer providerId;
     
     @Column(name = Const.PROVIDER_COMMENT)
     private String providerComment;
