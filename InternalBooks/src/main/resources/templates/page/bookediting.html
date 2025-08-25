@@ -12,7 +12,7 @@
     <h1 class= "text-center">書籍登録編集画面</h1>
     <br>
 
-<form th:action="@{/admin/bookingconfirmation}" method="post" th:object="${BookingRegistration}" enctype="multipart/form-data">    
+<form th:action="@{/admin/bookingconfirmation}" method="post" enctype="multipart/form-data">
 
 <!-- 書籍名 -->
 <div class ="container mt-4">
@@ -21,7 +21,7 @@
 	      	<label for = "name">書籍名</label>
 	  </div>
 	  <div class = "col-7 col-md-8 ms-2" >
-			<input type ="text" th:field="*{bookname}" class="form-control bg-light">
+			<input type ="text" name="booktitle" th:value="${booktitle}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
@@ -33,7 +33,7 @@
 	      	<label for = "category">カテゴリー</label>
 	  </div>
 	  <div class = "col-7 col-md-8">
-			<input type ="text" th:field="*{category}" class="form-control bg-light">
+			<input type ="text" name="categories" th:value="${categories}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
@@ -45,7 +45,7 @@
 			<label for = "id">書籍提供者</label>
 	  </div>
 	  <div class = "col-7 col-md-8">
-			<input type ="text" th:field="*{offer}" class="form-control bg-light">
+			<input type ="text" name="providerId" th:value="${providerId}" class="form-control bg-light">
 	  </div>
   </div>	
 </div>
@@ -59,7 +59,7 @@
 			<label for = "id">コメント</label>
 	  </div>
 	  <div class = "col-7 col-md-8">
-			<textarea class="form-control bg-light"style="height:150px;" th:field="*{comment}"></textarea>
+			<textarea class="form-control bg-light" style="height:150px;" name="providerComment" th:value="${providerComment}"></textarea>
 	  </div>
   </div>	
 </div>
