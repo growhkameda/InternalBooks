@@ -17,7 +17,7 @@ import com.example.internalbooks.repository.TUserRepository;
  * MUserテーブルに対してどんな操作をしていくかをMUserリポジトリを介して制御していくサービス
  */
 public class TUserService implements UserDetailsService {
-
+ 
     //DI用フィールド
     private final TUserRepository tUserRepository;
 
