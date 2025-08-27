@@ -50,6 +50,36 @@ public class TBookService {
 	}
 
 	/**
+	 * TBookEntityからDtoBookInfoに変換する共通メソッド
+	 */
+	private DtoBookInfo convertEntityToDto(TBookEntity book) {
+		DtoBookInfo dto = new DtoBookInfo();
+		dto.setBookId(book.getBookId());
+		
+		// タイトルが空の場合はデフォルト値を設定
+		String title = book.getTitle();
+		if (title == null || title.trim().isEmpty()) {
+			title = "書籍ID: " + book.getBookId();
+		}
+		dto.setTitle(title);
+		
+		// カテゴリーが空の場合はデフォルト値を設定
+		String categories = book.getCategories();
+		if (categories == null || categories.trim().isEmpty() || categories.equals(",")) {
+			categories = "未分類";
+		}
+		dto.setCategory(categories);
+		
+		// 貸出状況を設定（borrower_idに基づいて動的に判定）
+		dto.setStatus(determineLendingStatus(book.getBorrowerId()));
+		
+		// 書籍IDに基づいて画像URLを設定
+		dto.setImageUrlFromBookId();
+		
+		return dto;
+	}
+
+	/**
 	 * 指定されたユーザーIDの貸出中書籍を取得する
 	 */
 	public List<DtoBookInfo> getCheckedOutBooksByUserId(Integer userId) {
@@ -58,32 +88,9 @@ public class TBookService {
 		// 借りているユーザーIDで書籍を検索
 		List<TBookEntity> borrowedBooks = tBookRepository.findByBorrowerId(userId);
 		
-		// EntityからDTOに変換
+		// EntityからDTOに変換（共通メソッドを使用）
 		for (TBookEntity book : borrowedBooks) {
-			DtoBookInfo dto = new DtoBookInfo();
-			dto.setBookId(book.getBookId());
-			
-			// タイトルが空の場合はデフォルト値を設定
-			String title = book.getTitle();
-			if (title == null || title.trim().isEmpty()) {
-				title = "書籍ID: " + book.getBookId();
-			}
-			dto.setTitle(title);
-			
-			// カテゴリーが空の場合はデフォルト値を設定
-			String categories = book.getCategories();
-			if (categories == null || categories.trim().isEmpty() || categories.equals(",")) {
-				categories = "未分類";
-			}
-			dto.setCategory(categories);
-			
-			// 貸出状況を設定（borrower_idに基づいて動的に判定）
-			dto.setStatus(determineLendingStatus(book.getBorrowerId()));
-			
-			// 書籍IDに基づいて画像URLを設定
-			dto.setImageUrlFromBookId();
-			
-			checkedOutBooks.add(dto);
+			checkedOutBooks.add(convertEntityToDto(book));
 		}
 		
 		return checkedOutBooks;
@@ -101,38 +108,13 @@ public class TBookService {
 				return null;
 			}
 			
-			// EntityからDTOに変換
-			DtoBookInfo dto = new DtoBookInfo();
-			dto.setBookId(book.getBookId());
-			
-			// タイトルが空の場合はデフォルト値を設定
-			String title = book.getTitle();
-			if (title == null || title.trim().isEmpty()) {
-				title = "書籍ID: " + book.getBookId();
-			}
-			dto.setTitle(title);
-			
-			// カテゴリーが空の場合はデフォルト値を設定
-			String categories = book.getCategories();
-			if (categories == null || categories.trim().isEmpty() || categories.equals(",")) {
-				categories = "未分類";
-			}
-			dto.setCategory(categories);
-			
-			// 貸出状況を設定（borrower_idに基づいて動的に判定）
-			dto.setStatus(determineLendingStatus(book.getBorrowerId()));
-			
-			// 書籍IDに基づいて画像URLを設定
-			dto.setImageUrlFromBookId();
-			
-			return dto;
+			// EntityからDTOに変換（共通メソッドを使用）
+			return convertEntityToDto(book);
 			
 		} catch (Exception e) {
 			throw e;
 		}
 	}
-	
-
 	
 	/**
 	 * 書籍検索リクエストを処理する

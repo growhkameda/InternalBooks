@@ -53,11 +53,11 @@
                   <!-- 書籍名 -->
                   <h5 class="card-title fw-bold mb-2 text-dark" th:text="${book.title}">書籍名</h5>
                   
-                  <!-- ★★★","で区切ってカテゴリ表示できるように修正する★★★ -->
                   <!-- カテゴリー -->
                   <div class="mb-2">
-                    <span class="badge bg-primary rounded-pill px-3 py-2 fs-6" 
-                          th:text="${book.category}">カテゴリー</span>
+                    <span th:each="category : ${#strings.listSplit(book.category, ',')}"
+                          class="badge bg-primary rounded-pill px-2 py-1 me-1"
+                          th:text="${#strings.trim(category)}">カテゴリー</span>
                   </div>
                   
                   <!-- 貸出状況 -->
