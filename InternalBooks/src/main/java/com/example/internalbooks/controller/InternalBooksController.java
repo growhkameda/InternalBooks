@@ -228,13 +228,13 @@ public class InternalBooksController {
     		// torkenの検証
     		String token = (String) session.getAttribute("token");
             jwtUtil.extractUserId(token);
+           
+         // 対象カテゴリーのbookIdを取得
+            List<Integer> bookIdList = tBookService.getCategoriesdetail(category);
             
-            boolean isAdmin = jwtUtil.extractIsAdmin(token);
-            model.addAttribute("isAdmin", isAdmin);
-            
-            // カテゴリーの値
+            model.addAttribute("bookId", bookIdList);
             model.addAttribute("category", category);
-            
+
 
             return "page/categories_detail";
     	}
