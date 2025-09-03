@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Base64;
 
 import com.example.internalbooks.service.TUserService;
+import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ import com.example.internalbooks.service.TBookService;
  */
 @Controller
 @RequestMapping("/admin")
-@SessionAttributes({"userId","mailAddress","password","name","departmentId,title,categories,providerId,providerComment"})
+@SessionAttributes({"userdto, title,categories,providerId,providerComment"})
 public class AdminController extends InternalBooksController {
     
     //ロガー
@@ -358,6 +359,8 @@ public class AdminController extends InternalBooksController {
            }
             
             model.addAttribute("isAdmin", isAdmin);
+            
+            model.addAttribute("userDto", new DtoUserRegistration()); //空のDTOを返す
 
             return "page/UserRegistration"; 
             
@@ -371,12 +374,7 @@ public class AdminController extends InternalBooksController {
      * ユーザー登録確認画面に遷移
      */
     @PostMapping("/userconfir")
-    public String UserConfir(HttpSession session, RedirectAttributes redirectAttributes,
-    		@RequestParam int userId,
-            @RequestParam String name,
-            @RequestParam String mailAddress,
-            @RequestParam String password,
-            @RequestParam String departmentId,
+    public String UserConfir(@ModelAttribute("userDto") DtoUserRegistration userDto, HttpSession session, RedirectAttributes redirectAttributes,
             Model model) {
     	
         // トークンと管理者権限の検証
@@ -388,12 +386,6 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
-            model.addAttribute("userId",userId);
-            model.addAttribute("name",name);
-            model.addAttribute("mailAddress",mailAddress);
-            model.addAttribute("password",password);
-            model.addAttribute("departmentId",departmentId);
-            
             return "page/UserConfir";
         }
         catch (Exception e) {
@@ -401,15 +393,33 @@ public class AdminController extends InternalBooksController {
         }
     }
     
+ // 戻る（入力画面へ戻す）
+    @PostMapping("/back")
+    public String UserRegistrationBack(@ModelAttribute("userDto")DtoUserRegistration userDto, HttpSession session, RedirectAttributes redirectAttributes,
+            Model model) {
+    	
+        // トークンと管理者権限の検証
+        try {
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+            
+            model.addAttribute("isAdmin", isAdmin);
+            
+            model.addAttribute("userDto", userDto);
+            
+            return "page/UserRegistration";
+        }
+        catch (Exception e) {
+            return error(redirectAttributes);
+        }
+   
+    }
+       
  // ユーザー登録完了の送信処理
     @PostMapping("/userregistrationcomplete")
-    public String UserRegistrationComplete(SessionStatus status, HttpSession session, RedirectAttributes redirectAttributes,
-            @RequestParam int userId,
-            @RequestParam String name,
-            @RequestParam String mailAddress,
-            @RequestParam String password,
-            @RequestParam String departmentId,
-            Model model) {
+    public String UserRegistrationComplete(@ModelAttribute("userDto") DtoUserRegistration userdto, SessionStatus status, HttpSession session, RedirectAttributes redirectAttributes, Model model) {
     	
     	 // トークンと管理者権限の検証
         try {
@@ -421,8 +431,8 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
             
          // DBへ(userId,name,mailAddress,password,departmentId)を保存
-            TUserEntity savedUser = tUserService.userRegistration(userId,name,mailAddress,password,departmentId);
-         // DBよりUserIdで検索し取得            
+            TUserEntity savedUser = tUserService.userRegistration(userdto);
+         // DBに保存した値を再度取得           
             TUserEntity tuser = tUserService.getUserById(savedUser.getUserId());
             
             // 取得した情報を表示

@@ -15,14 +15,14 @@
     <h3 class= "text-center mt-4">ユーザー登録</h3>
     <br>
 
-<form th:action="@{/admin/userconfir}" method="post" enctype="application/x-www-form-urlencoded">
+<form th:action="@{/admin/userconfir}" method="post" th:object= "${userDto}" enctype="application/x-www-form-urlencoded">
 
 <!-- 社員ID -->
 <div class ="container mt-4">
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "id" class="form-label text-start">社員ID</label>
-	      	<input type="text" name="userId" th:value="${userId}" class="form-control bg-light">
+	      	<input type="text" th:field="*{userId}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
@@ -32,7 +32,7 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "mail" class="form-label text-start">メールアドレス </label>
-	      	<input type="text" name="mailAddress" th:value="${mailAddress}" class="form-control bg-light">
+	      	<input type="text" th:field="*{mailAddress}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
@@ -42,7 +42,7 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "password" class="form-label text-start"> パスワード</label>
-	      	<input type="text" name="password" th:value="${password}" class="form-control bg-light">
+	      	<input type="text" th:field="*{password}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
@@ -52,7 +52,7 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "name" class="form-label text-start">名前</label>
-	      	<input type="text" name="name" th:value="${name}" class="form-control bg-light">
+	      	<input type="text" th:field="*{name}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
@@ -62,7 +62,7 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "department" class="form-label text-start">所属課</label>
-	      	<input type="text" name="departmentId" th:value="${departmentId}" class="form-control bg-light">
+	      	<input type="text" th:field="*{departmentId}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
