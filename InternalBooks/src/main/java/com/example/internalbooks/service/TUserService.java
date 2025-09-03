@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TUserRepository;
+import com.example.internalbooks.repository.MDepartmentRepository;
 
 @Service
 @Transactional
@@ -20,10 +21,12 @@ public class TUserService implements UserDetailsService {
  
     //DI用フィールド
     private final TUserRepository tUserRepository;
+    private final MDepartmentRepository mDepartmentRepository;
 
     //コンストラクタインジェクション
-    public TUserService(TUserRepository tUserRepository) {
+    public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository) {
         this.tUserRepository = tUserRepository;
+        this.mDepartmentRepository = mDepartmentRepository;
     }
     
 
@@ -64,25 +67,24 @@ public class TUserService implements UserDetailsService {
 
     /**
      * 部門IDから部門名を取得する
-     * (現在は仮で設定)
      */
-    public String getDepartmentNameById(String departmentId) {
+    public String getDepartmentNameById(Integer departmentId) {
         if (departmentId == null) {
             return "未設定";
         }
         
-        switch (departmentId) {
-            case "1": return "11課";
-            case "2": return "22課";
-            case "3": return "33課";
-            case "4": return "44課";
-            case "5": return "55課";
-            case "6": return "66課";
-            case "7": return "77課";
-            case "8": return "88課";
-            case "9": return "99課";
-            case "10": return "100課";
-            default: return "不明";
+        try {
+            // リポジトリを使用してデータベースから部門名を取得
+            Optional<String> departmentName = mDepartmentRepository.findNameById(departmentId);
+            
+            return departmentName.orElse("不明");
+            
+        } catch (NumberFormatException e) {
+            // 数値に変換できない場合
+            return "不明";
+        } catch (Exception e) {
+            // その他のエラーの場合
+            return "Error";
         }
     }
 

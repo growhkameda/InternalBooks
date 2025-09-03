@@ -20,5 +20,7 @@ public class Const {
 
 	public final static String PROVIDER_COMMENT = "provider_comment";
 	public final static String MEMO = "memo";
+
+	public final static String DETAIL = "detail";
 }
 
