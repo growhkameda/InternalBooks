@@ -7,12 +7,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import jakarta.validation.Valid;
 
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
@@ -374,7 +376,7 @@ public class AdminController extends InternalBooksController {
      * ユーザー登録確認画面に遷移
      */
     @PostMapping("/userconfir")
-    public String UserConfir(@ModelAttribute("userDto") DtoUserRegistration userDto, HttpSession session, RedirectAttributes redirectAttributes,
+    public String UserConfir(@Valid @RequestBody@ModelAttribute("userDto") DtoUserRegistration userDto, HttpSession session, RedirectAttributes redirectAttributes,
             Model model) {
     	
         // トークンと管理者権限の検証
@@ -393,7 +395,7 @@ public class AdminController extends InternalBooksController {
         }
     }
     
- // 戻る（入力画面へ戻す）
+ // 戻る（入力画面へ戻す）入力画面へ戻った際にセッションが残っていなかった為追加。
     @PostMapping("/back")
     public String UserRegistrationBack(@ModelAttribute("userDto")DtoUserRegistration userDto, HttpSession session, RedirectAttributes redirectAttributes,
             Model model) {

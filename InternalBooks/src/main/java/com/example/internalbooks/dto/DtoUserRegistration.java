@@ -1,16 +1,19 @@
 package com.example.internalbooks.dto;
 
-//import jakarta.validation.constraints.Email;
-//import jakarta.validation.constraints.NotBlank;
-//import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 
 public class DtoUserRegistration {
 	
-//	@NotBlank(message = "ユーザーIDは必須です")
+	@NotBlank(message = "ユーザーIDは必須です")
 	private Integer userId;
+	@NotBlank(message = "名前は必須です")
 	private String name;
+	@NotBlank(message = "メールアドレスは必須です")
 	private String mailAddress;
+	@NotBlank(message = "所属課は必須です")
 	private String departmentId;
+	@NotBlank(message = "パスワードは必須です")
 	private String password;
 	
 	public Integer getUserId() {
