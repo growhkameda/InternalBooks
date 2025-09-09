@@ -18,9 +18,10 @@
 	  <div class = "row justify-content-center">
 		  <div class = "col-8 pt-2">
 		      	<p for = "id" class="form-label text-start">社員ID</p>
+				<!--UserIdを表示-->
 				<div class="rounded-2 h-75 border border-black">
-				  <p class="mt-3 ms-2 fw-normal h6">0001</p>
-			    </div>
+				  <span class="mt-3 ms-2 fw-normal h6" th:text="${putUserId.userId}">0000</span>
+				</div>
 		  </div>
 	  </div>
 	</div>
@@ -29,8 +30,9 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<p for = "id" class="form-label text-start">名前</p>
+			<!--UserIdから名前を表示-->
 			<div class="rounded-2 h-75 border border-black">
-			  <p class="mt-3 ms-2 fw-normal h6">武藤 秀平</p>
+			  <span class="mt-3 ms-2 fw-normal h6" th:text="${putUserId.name}">武藤 秀平</span>
 		    </div>
 	  </div>
   </div>
@@ -40,8 +42,9 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<p for = "id" class="form-label text-start">所属課</p>
+			<!--UserIdから所属課を表示-->
 			<div class="rounded-2 h-75 border border-black">
-			  <p class="mt-3 ms-2 fw-normal h6">開発課</p>
+			  <span class="mt-3 ms-2 fw-normal h6" th:text="${departmentNames}">開発課</span>
 		    </div>
 	  </div>
   </div>

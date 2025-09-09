@@ -1,5 +1,13 @@
 package com.example.internalbooks.controller;
 
+import java.io.IOException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -12,20 +20,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Base64;
-
 import com.example.internalbooks.common.BookingRegistrationForm;
 import com.example.internalbooks.common.UserRegistrationForm;
-import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.entity.TUserEntity;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import com.example.internalbooks.utils.JwtUtil;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
+import com.example.internalbooks.service.TUserService;
+import com.example.internalbooks.utils.JwtUtil;
 
 
 /**
@@ -204,22 +205,33 @@ public class AdminController extends InternalBooksController {
      * ユーザー確認画面に遷移
      */
     @GetMapping("/userconfirmationscreen")
-    public String userConfirmationScreen(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
+    public String userConfirmationScreen(
+    		@RequestParam("userId") Integer userId,
+    		HttpSession session, 
+            Model model, RedirectAttributes redirectAttributes) {
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            
+
+            // "userIdからユーザー情報を取得
+            TUserEntity putUserId = tUserService.getUserById(userId);
+            //departmentIdから所属課を取得
+            String departmentNames = tUserService.getDepartmentNameById("1");
+
+            model.addAttribute("putUserId", putUserId);
+            model.addAttribute("departmentNames", departmentNames);
+ 
+                     
+            logger.info("UserConfirmationScreenにアクセスされました, userId={}", userId);
+
             return "page/UserConfirmationScreen";
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return error(redirectAttributes);
         }
     }
+    
     
     /**
      * ユーザー削除確認ページに遷移
@@ -237,9 +249,12 @@ public class AdminController extends InternalBooksController {
             
             return "page/userDeleteConfirmation";
         }
+        
+        
         catch (Exception e) {
             return error(redirectAttributes);
         }
+        
     }
     
     /**

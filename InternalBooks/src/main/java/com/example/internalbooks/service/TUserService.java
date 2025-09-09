@@ -1,7 +1,7 @@
 package com.example.internalbooks.service;
 
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -39,6 +39,18 @@ public class TUserService implements UserDetailsService {
             throw new UsernameNotFoundException("User not found");
         }
         return user;  // LoginUser を返す
+    }
+    
+    /**
+     * ユーザーIDからユーザー名を取得する
+     * @param username ユーザ名(メールアドレス)
+     * @return ユーザ情報
+     */
+    public String getNameByUserId(Integer userId) throws UsernameNotFoundException {
+        TUserEntity user = tUserRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userId));
+
+        return user.getName(); // 名前だけ返す
     }
     
     /**
