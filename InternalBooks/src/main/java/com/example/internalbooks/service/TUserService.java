@@ -88,4 +88,21 @@ public class TUserService implements UserDetailsService {
         }
     }
 
+    /**
+     * ユーザーの所属課を取得する
+     * DBへのアクセス回数が多いためパフォーマンス上げるならJOINクエリとかRepositoryに追加するといい！
+     */
+    public List<TUserEntity> getUserDepartmentName() {
+        // 全ユーザー情報を取得
+        List<TUserEntity> users = getAllUsers();
+
+        // 各ユーザーの所属課を取得
+        for (TUserEntity user : users) {
+            String departmentName = getDepartmentNameById(user.getDepartmentId());
+            user.setDepartmentName(departmentName);
+        }
+
+        return users;
+    }
+        
 }

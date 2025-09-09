@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -42,6 +43,10 @@ public class TUserEntity implements UserDetails {
     
     @Column(name = Const.DELETE_FLG)
     private Integer deleteFlg;
+    
+    //TUserServiceで所属課を取得するためのフィールド
+    @Transient
+    private String departmentName;
 
     @Override
     /**
