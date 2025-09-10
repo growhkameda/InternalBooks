@@ -6,6 +6,7 @@ package com.example.internalbooks.common;
 public class Const {
 	public final static String ID = "id";
 	public final static String USER_ID = "user_id";
+	public final static String NAME = "nmae";
 	public final static String MAILADDRESS = "mail_address";
 	public final static String PASSWORD = "password";
 	public final static String ROLE = "role";
@@ -19,5 +20,9 @@ public class Const {
 
 	public final static String PROVIDER_COMMENT = "provider_comment";
 	public final static String MEMO = "memo";
+	
+	public final static String LENDING_DATE = "lending_date";
+	public final static String RETURN_DATE = "return_date";
+	public final static String SCHEDULED_RETURN_DATE = "scheduled_return_date";
+	public final static String REVIEW = "review";
 }
-

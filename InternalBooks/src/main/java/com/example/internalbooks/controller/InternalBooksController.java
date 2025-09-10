@@ -1,7 +1,6 @@
 package com.example.internalbooks.controller;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -17,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.internalbooks.dto.DtoAuthRequest;
+import com.example.internalbooks.dto.DtoBookHistory;
 import com.example.internalbooks.dto.DtoBookInfo;
-import com.example.internalbooks.dto.BookHistory;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
+import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
 
 import io.micrometer.common.util.StringUtils;
@@ -38,6 +38,10 @@ public class InternalBooksController {
     
     @Autowired
 	private TBookService tBookService;
+    
+    @Autowired
+    private TLendingHistoryService lendingHistoryService;
+
     
     /**
      * トップページとしてloginを設定
@@ -251,6 +255,9 @@ public class InternalBooksController {
             Boolean fromCheckedOut = (Boolean) session.getAttribute("fromCheckedOut");
             model.addAttribute("fromCheckedOut", fromCheckedOut != null ? fromCheckedOut : false);
             
+            // 書籍一覧から遷移した場合のフラグ設定
+            
+            
             // 返却ボタン表示判定（QRサーチまたは貸出中書籍ページからの遷移）
             boolean showReturnButton = (fromQrSearch != null && fromQrSearch) || (fromCheckedOut != null && fromCheckedOut);
             model.addAttribute("showReturnButton", showReturnButton);
@@ -258,11 +265,20 @@ public class InternalBooksController {
             // 書籍検索処理をServiceで処理
             DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
             model.addAttribute("book", book);
+            model.addAttribute("categories", book.getCategories());
+            
             
             // 書籍履歴を取得
-            List<BookHistory> bookHistory = new ArrayList<>();
+//            List<DtoBookHistory> dtoBookHistory = new ArrayList<>();
             // TODO 実際の書籍履歴取得機能のロジックをここに記述してください。(サービスに記述したものを引っ張ってくる)
-            model.addAttribute("bookHistory", bookHistory);
+            List<DtoBookHistory> dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
+            model.addAttribute("bookHistory", latestHistory);
+
+            
+//            boolean showReturnButton = (fromQrSearch != null && fromQrSearch) || (fromCheckedOut != null && fromCheckedOut);
+//            model.addAttribute("showReturnButton", showReturnButton);
+//            model.addAttribute("bookHistory", dtoBookHistory);
             
             // セッションから遷移フラグを削除
             session.removeAttribute("fromQrSearch");
@@ -275,6 +291,22 @@ public class InternalBooksController {
             return error(redirectAttributes);
         }
     }
+    
+    
+    /**
+     * 返却完了ページに遷移
+     */
+    @PostMapping("/ReturnCompleted")
+    public String ReturnCompleted(
+            @RequestParam("bookId") Integer bookId,
+            @RequestParam("review") String review) {
+        
+        // 返却処理のロジック
+        lendingHistoryService.ReturnCompleted(bookId, review);
+
+        return "redirect:/ReturnCompleted"; // 遷移先は必要に応じて変更
+    }
+    
    
     /**
      * カテゴリー詳細ページに遷移

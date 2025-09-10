@@ -1,6 +1,7 @@
 package com.example.internalbooks.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,11 +115,24 @@ public class TBookService {
 			}
 			dto.setCategory(categories);
 			
+			// カテゴリー（分割リストを保持）
+            if (categories != null && !categories.equals("未分類")) {
+                dto.setCategories(Arrays.asList(categories.split(",")));
+            } else {
+                dto.setCategories(new ArrayList<>());
+            }
+			
 			// 貸出状況を設定（borrower_idに基づいて動的に判定）
 			dto.setStatus(determineLendingStatus(book.getBorrowerId()));
 			
 			// 書籍IDに基づいて画像URLを設定
 			dto.setImageUrlFromBookId();
+			
+			// 書籍提供者コメントを設定
+			dto.setProviderComment(book.getProviderComment());
+			
+			// 返却 感想・コメント
+			dto.setMemo(book.getMemo());
 			
 			return dto;
 			
@@ -127,7 +141,6 @@ public class TBookService {
 		}
 	}
 	
-
 	
 	/**
 	 * 書籍検索リクエストを処理する

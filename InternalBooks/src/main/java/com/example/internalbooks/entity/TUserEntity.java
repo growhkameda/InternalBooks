@@ -39,6 +39,9 @@ public class TUserEntity implements UserDetails {
     
     @Column(name = Const.DELETE_FLG)
     private Integer deleteFlg;
+    
+    @Column(name = "name")
+    private String name;
 
     @Override
     /**
@@ -89,4 +92,5 @@ public class TUserEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+    
 }

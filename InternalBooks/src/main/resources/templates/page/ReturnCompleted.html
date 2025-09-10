@@ -125,14 +125,14 @@
 	  	</div>
 	  
 	  
-	 <div class="row d-flex justify-content-center" th:if="${book.status != '貸出中'}">
+	 <div class="row d-flex justify-content-center">
 	 	<p class="col-8">書籍提供者：武藤</p>
 	 	<p th:text="${book.providerComment}" class="col-8 p-3" style="background-color: #E8ECE8; border-radius: 10px;">
 		書籍提供者コメント
 		</p>
 	</div>
 	
-	<div class="row d-flex justify-content-center mb-4" th:if="${book.status == '貸出中'}">
+	<div class="row d-flex justify-content-center mb-4">
 		<label class="col-8" for="comment">感想・コメント</label>
 		<textarea id="comment" name="review" class="col-8 ps-2" placeholder="こちらに感想やコメントを記入してください。" style="background-color: #E8ECE8; border-radius: 10px; border: 0px none;;"></textarea>
 	</div>
@@ -196,17 +196,14 @@
               <!-- 履歴データの表示 -->
                 <!----------------------------ここに履歴データの表示を追加してください------------------------>
               <!-- 履歴がない場合 -->
-			 <tr class="text-center return" th:if="${bookHistory == null or #lists.isEmpty(bookHistory)}">
-                <td colspan="3" class="text-center text-muted">履歴がありません</td>
-			 </tr>
-			 
-			 <tr class="text-center return" th:if="${bookHistory != null}">
+              <tr class="text-center return">
+<!--                <td colspan="3" class="text-center text-muted">履歴がありません</td>-->
 				<td th:text="${bookHistory.returnDate}" class="text-white" style="background-color: #15B2EE;">5月29日</td>
 				<td th:text="${bookHistory.userName}" class="text-white" style="background-color: #15B2EE;">木俣</td>
 				<td class="text-white" style="background-color: #15B2EE;">返却</td>
               </tr>
 			  
-			  <tr class="comment" th:if="${bookHistory.review != null}">
+			  <tr class="comment">
 				<td colspan="3" style="background-color: #15B2EE;">
 					<p class="col-8 text-white mb-0">感想・コメント</p>
 					<p th:text="${bookHistory.review}" class="p-1" style="background-color: #E8ECE8; height: 50px; border-radius: 10px;"></p>
