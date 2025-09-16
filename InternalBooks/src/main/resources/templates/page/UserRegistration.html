@@ -20,10 +20,13 @@
 <!-- 社員ID -->
 <div class ="container mt-4">
   <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
+	 
+  	  <div class = "col-8 pt-2">
 	      	<label for = "id" class="form-label text-start">社員ID</label>
+	        <!-- バリデーションエラーを表示 -->
+	      	<span th:errors="*{userId}" class="text-danger ms-3"></span>
 	      	<input type="text" th:field="*{userId}" class="form-control bg-light">
-	  </div>
+	  </div> 
   </div>
 </div>
 
@@ -32,6 +35,8 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "mail" class="form-label text-start">メールアドレス </label>
+	      	 <!-- バリデーションエラーを表示 -->
+	      	<span th:errors="*{mailAddress}" class="text-danger ms-3"></span>
 	      	<input type="text" th:field="*{mailAddress}" class="form-control bg-light">
 	  </div>
   </div>
@@ -42,6 +47,8 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "password" class="form-label text-start"> パスワード</label>
+	      	<!-- バリデーションエラーを表示 -->
+	      	<span th:errors="*{password}" class="text-danger ms-3"></span>
 	      	<input type="text" th:field="*{password}" class="form-control bg-light">
 	  </div>
   </div>
@@ -52,6 +59,8 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "name" class="form-label text-start">名前</label>
+	      	 <!-- バリデーションエラーを表示 -->
+	      	<span th:errors="*{name}" class="text-danger ms-3"></span>
 	      	<input type="text" th:field="*{name}" class="form-control bg-light">
 	  </div>
   </div>
@@ -62,6 +71,8 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "department" class="form-label text-start">所属課</label>
+	      	<!-- バリデーションエラーを表示 -->
+	      	<span th:errors="*{departmentId}" class="text-danger ms-3"></span>
 	      	<input type="text" th:field="*{departmentId}" class="form-control bg-light">
 	  </div>
   </div>
