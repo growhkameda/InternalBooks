@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 <head>
   <title>書籍詳細</title>
 </head>
@@ -8,6 +9,10 @@
     <h1 th:text="${book.title}">書籍タイトル</h1>
     <p th:text="${book.description}">書籍の説明</p>
     <img th:src="@{/images/{img}(img=${book.imageName})}" class="fixed-size-img" />
+	<div class="col-6" th:each="bookid : ${bookid}">
+		<a 			class="btn btn-primary w-100"
+					   th:text="${bookid}">Button</a>
+	</div>
     <a href="/page/categories">← カテゴリーに戻る</a>
   </section>
 </body>

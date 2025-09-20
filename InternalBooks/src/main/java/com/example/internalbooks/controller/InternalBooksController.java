@@ -223,7 +223,7 @@ public class InternalBooksController {
     }
    
     @GetMapping("/page/categories_detail")
-    public String book_detail(@RequestParam("category") String category,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String categories_detail(@RequestParam("category") String category,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
     	try {
     		// torkenの検証
     		String token = (String) session.getAttribute("token");
@@ -243,6 +243,23 @@ public class InternalBooksController {
     	}
         
     }
+    
+    @GetMapping("/page/book_detail")
+    public String book_detail(@RequestParam("id") String id,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            model.addAttribute("id", id);
+            
+            return "page/book_detail";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+    }
+    
 
     // エラーページ
     private String error(RedirectAttributes redirectAttributes) {
