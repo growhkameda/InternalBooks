@@ -445,8 +445,13 @@ public class AdminController extends InternalBooksController {
             
          // DBへ(userId,name,mailAddress,password,departmentId)を保存
             TUserEntity savedUser = tUserService.userRegistration(userdto);
-         // DBに保存した値を再度取得           
-            TUserEntity tuser = tUserService.getUserById(savedUser.getUserId());
+         // DBに保存した値をDTOWO経由して再度取得           
+            DtoUserRegistration tuser = new DtoUserRegistration();
+            tuser.setUserId(savedUser.getUserId());
+            tuser.setName(savedUser.getName());
+            tuser.setMailAddress(savedUser.getMailAddress());
+            tuser.setDepartmentId(savedUser.getDepartmentId());
+            tuser.setPassword(savedUser.getPassword());
             
             // 取得した情報を表示
             model.addAttribute("tuser",tuser);

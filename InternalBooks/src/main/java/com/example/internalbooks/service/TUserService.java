@@ -2,6 +2,7 @@ package com.example.internalbooks.service;
 
 import java.util.Optional;
 import java.util.List;
+import java.util.stream.*; 
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -105,5 +106,5 @@ public class TUserService implements UserDetailsService {
     	  return tuser;
     	  
         }
-
+      
 }
