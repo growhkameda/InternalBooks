@@ -205,7 +205,7 @@ public class InternalBooksController {
     	}
     	catch (Exception e) {
     		return error(redirectAttributes);
-    	}  
+    	}
 
     }
     
@@ -238,8 +238,8 @@ public class InternalBooksController {
     public String searchResult(
         @RequestParam(name = "bookId", required = false) Integer bookId,
         @RequestParam(name = "qrData", required = false) String qrData,
-        HttpSession session, 
-        Model model, 
+        HttpSession session,
+        Model model,
         RedirectAttributes redirectAttributes) {
         
         try {
@@ -267,18 +267,14 @@ public class InternalBooksController {
             model.addAttribute("book", book);
             model.addAttribute("categories", book.getCategories());
             
-            
             // 書籍履歴を取得
-//            List<DtoBookHistory> dtoBookHistory = new ArrayList<>();
             // TODO 実際の書籍履歴取得機能のロジックをここに記述してください。(サービスに記述したものを引っ張ってくる)
             List<DtoBookHistory> dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
-            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
-            model.addAttribute("bookHistory", latestHistory);
-
+//            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
+            model.addAttribute("bookHistoryList", dtoBookHistory);
             
 //            boolean showReturnButton = (fromQrSearch != null && fromQrSearch) || (fromCheckedOut != null && fromCheckedOut);
 //            model.addAttribute("showReturnButton", showReturnButton);
-//            model.addAttribute("bookHistory", dtoBookHistory);
             
             // セッションから遷移フラグを削除
             session.removeAttribute("fromQrSearch");
@@ -294,17 +290,92 @@ public class InternalBooksController {
     
     
     /**
+     * 貸出完了ページに遷移
+     */
+    @PostMapping("/page/LendingCompleted")
+    public String LendingCompleted(
+    		@RequestParam("bookId") Integer bookId,
+    		@RequestParam(name = "qrData", required = false) String qrData,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+    	
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+            
+            // 書籍検索処理をServiceで処理
+            DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
+            model.addAttribute("book", book);
+            model.addAttribute("categories", book.getCategories());           
+            
+            // 書籍履歴を取得
+            List<DtoBookHistory> dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            model.addAttribute("bookHistoryList", dtoBookHistory);
+            
+            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
+            model.addAttribute("bookHistory", latestHistory);
+            
+            if (bookId == null) {
+                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
+                return "redirect:/page/top";
+            }
+
+            return "page/LendingCompleted";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
+    
+    /**
      * 返却完了ページに遷移
      */
-    @PostMapping("/ReturnCompleted")
+    @PostMapping("/page/ReturnCompleted")
     public String ReturnCompleted(
-            @RequestParam("bookId") Integer bookId,
-            @RequestParam("review") String review) {
-        
-        // 返却処理のロジック
-        lendingHistoryService.ReturnCompleted(bookId, review);
+    		@RequestParam("bookId") Integer bookId,
+    		@RequestParam(name = "qrData", required = false) String qrData,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+    	
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+            
+            // 書籍検索処理をServiceで処理
+            DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
+            model.addAttribute("book", book);
+            model.addAttribute("categories", book.getCategories());           
+            
+            // 書籍履歴を取得
+            List<DtoBookHistory> dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            model.addAttribute("bookHistoryList", dtoBookHistory);
+            
+            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
+            model.addAttribute("bookHistory", latestHistory);
+            
+            if (bookId == null) {
+                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
+                return "redirect:/page/top";
+            }
 
-        return "redirect:/ReturnCompleted"; // 遷移先は必要に応じて変更
+            return "page/ReturnCompleted";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
     }
     
    

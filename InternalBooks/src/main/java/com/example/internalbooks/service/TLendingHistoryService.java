@@ -65,7 +65,7 @@ public class TLendingHistoryService {
         return dtoList;
     }
 	
-	public void ReturnCompleted(Integer bookId, String review) {
+//	public void ReturnCompleted(Integer bookId, String review) {
 	    // t_lendinghistory を更新して review を保存する
 //		Optional<TLendingHistoryEntity> optionalHistory = lendingHistoryRepository.findByBookIdAndStatus(bookId, "貸出中");
 //	    if (optionalHistory.isPresent()) {
@@ -75,6 +75,6 @@ public class TLendingHistoryService {
 ////	    	history.setStatus("返却済み");
 //	        lendingHistoryRepository.save(history);
 //	    }
-	}
+//	}
 
 }

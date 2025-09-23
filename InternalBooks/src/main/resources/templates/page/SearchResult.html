@@ -78,55 +78,64 @@
       </div>
 	  
 	  <!--借りる際のウィンドウ-->
-	  <!--	<div id="b-confirmation" class="col-6 pt-3 position-fixed top-50">-->
-	  <!--		<p class="text-center mt-5" style="font-size: 20px;">この書籍を借りますか？</p>-->
-	  <!--		 <div class="d-flex h-25">-->
-	  <!--			<button class="w-50 border border-0" style="background-color: #494CD8; border-bottom-left-radius: 10px;">-->
-	  <!--				<a href="#" class="text-white text-decoration-none">借りる</a>-->
-	  <!--			</button>-->
-	  <!--			<button class="w-50 border border-0" onclick="window.close();" style="background-color: #ADACBD; border-bottom-right-radius: 10px;">-->
-	  <!--				<p class="m-0 text-white">キャンセル</p>-->
-	  <!--			</button>-->
-	  <!--		 </div>-->
-	  <!--	</div>-->
+	  	<div id="b-confirmation" class="col-6 pt-3 position-fixed top-50" style="display: none; z-index: 999;">
+	  		<p class="text-center mt-5" style="font-size: 20px;">この書籍を借りますか？</p>
+	  		 <div class="d-flex h-25">
+<!--	  			<button class="w-50 border border-0 text-white" style="background-color: #494CD8; border-bottom-left-radius: 10px;">-->
+<!--	  				借りる-->
+<!--	  			</button>-->
+				
+				<form id="lending-form-modal" method="post" th:action="@{/page/LendingCompleted}" 
+				class="d-flex w-50 border-0 align-items-center justify-content-center" 
+				style="background-color: #494CD8; border-bottom-left-radius: 10px;">
+				    <input type="hidden" name="bookId" th:value="${book.bookId}">
+				    <button type="submit" class="w-50 border border-0 text-white" 
+					style="background-color: #494CD8; border-bottom-left-radius: 10px;">
+						借りる
+					</button>
+				</form>
+				
+	  			<button id="cancelB" class="w-50 border border-0" style="background-color: #ADACBD; border-bottom-right-radius: 10px;">
+	  				<p class="m-0 text-white">キャンセル</p>
+	  			</button>
+	  		 </div>
+	  	</div>
 	  	
-	  	<style>
-	  		#b-confirmation,
-	  		#r-confirmation {
-	  			display: flex;
-	  			flex-flow: column;
-	  			justify-content: space-between;
-	  			left: 25%;
-	  			border-radius: 10px;
-	  			height: 180px;
-	  		}
-	  		
-	  		#b-confirmation {
-	  			background-color: #E8E8EC;
-	  		}
-	  		
-	  		#r-confirmation{
-	  			background-color: #ECE8E8;
-	  		}
-	  	</style>
 	  	
 	  	<!--返す際のウィンドウ-->
-	  	<div id="r-confirmation" class="col-6 pt-4 position-fixed top-50" style="display: none; z-index: 999;">
+	  	<div id="r-confirmation" class="col-6 pt-3 position-fixed top-50" style="display: none; z-index: 999;">
 	  		<p class="text-center mt-5 mb-5" style="font-size: 20px;">この書籍を返却しますか？</p>
 	  		<div class="d-flex h-25">
-	  			<button class="w-50 border border-0" style="background-color: #E83838; border-bottom-left-radius: 10px;"
-				onclick="document.getElementById('return-form').submit();">
-	  				返す
-	  			</button>
-	  			<button class="w-50 border border-0" onclick="hideConfirmation()" style="background-color: #BDACAC; border-bottom-right-radius: 10px;">
+<!--	  			<button class="w-50 border border-0" style="background-color: #E83838; border-bottom-left-radius: 10px;"-->
+<!--				onclick="document.getElementById('return-form').submit();">-->
+<!--					返す-->
+<!--	  			</button>-->
+				
+				<form id="return-form-modal" method="post" th:action="@{/page/ReturnCompleted}" 
+				class="d-flex w-50 border-0 align-items-center justify-content-center" 
+				style="background-color: #E83838; border-bottom-left-radius: 10px;">
+				    <input type="hidden" name="bookId" th:value="${book.bookId}">
+				    <button type="submit" class="w-50 border border-0 text-white" 
+					style="background-color: #E83838; border-bottom-left-radius: 10px;">
+						返す
+					</button>
+				</form>
+					
+	  			<button id="cancelR" class="w-50 border border-0 text-center text-white" style="background-color: #BDACAC; border-bottom-right-radius: 10px;">
 	  				キャンセル
 	  			</button>
 	  		 </div>
 	  	</div>
-	  
-	  
+
+		
+<!--		<div class="row d-flex justify-content-center" th:if="${book.status == '貸出中'}">-->
+<!--			<h5 class="col-8">返却日</h5>-->
+<!--			<p th:each="history : ${bookHistoryList}" th:text="${history.scheduledReturnDate}" class="col-8">2025年6月10日</p>-->
+<!--		</div>-->
+		
+		
 	 <div class="row d-flex justify-content-center" th:if="${book.status != '貸出中'}">
-	 	<p class="col-8">書籍提供者：武藤</p>
+	 	<p class="col-8">書籍提供者：武藤</p>	<!-- 書籍提供者　バックエンドから持ってくる -->
 	 	<p th:text="${book.providerComment}" class="col-8 p-3" style="background-color: #E8ECE8; border-radius: 10px;">
 		書籍提供者コメント
 		</p>
@@ -151,9 +160,9 @@
 		<div th:if="${showReturnButton == true}" class="text-center mb-5">
         	<!-- 貸出中の場合は返却ボタン -->
 			<div th:if="${book.status == '貸出中'}">
-			  <form id="return-form" method="post" th:action="@{/遷移先書いてください}" class="d-inline">
+			  <form id="return-form-main" method="post" class="d-inline">
 			    <input type="hidden" name="bookId" th:value="${book.bookId}" />
-			    <button type="button" class="btn btn-danger btn-lg w-25" onclick="showConfirmation()">
+			    <button id="rc" type="button" class="btn btn-danger btn-lg w-25">
 			      返す
 			    </button>
 			  </form>
@@ -163,22 +172,13 @@
 			<div th:if="${book.status != '貸出中'}">
 			  <form method="post" th:action="@{/遷移先書いてください}" class="d-inline">
 			    <input type="hidden" name="bookId" th:value="${book.bookId}" />
-			    <button type="submit" class="btn btn-primary btn-lg w-25">
+			    <button id="bc" type="button" class="btn btn-primary btn-lg w-25">
 			      借りる
 			    </button>
 			  </form>
 			</div>
 		</div>
 		
-		<script>
-			function showConfirmation() {
-			    document.getElementById("r-confirmation").style.display = "block";
-			}
-
-			function hideConfirmation() {
-			    document.getElementById("r-confirmation").style.display = "none";
-			}
-		</script>
 
       <!-- ========== 書籍履歴テーブル ========== -->
       <div class="row d-flex justify-content-center mb-4">
@@ -196,72 +196,149 @@
               <!-- 履歴データの表示 -->
                 <!----------------------------ここに履歴データの表示を追加してください------------------------>
               <!-- 履歴がない場合 -->
-			 <tr class="text-center return" th:if="${bookHistory == null or #lists.isEmpty(bookHistory)}">
-                <td colspan="3" class="text-center text-muted">履歴がありません</td>
-			 </tr>
+				 <tr class="text-center return" th:if="${#lists.isEmpty(bookHistoryList)}">
+	                <td colspan="3" class="text-center text-muted">履歴がありません</td>
+				 </tr>
 			 
-			 <tr class="text-center return" th:if="${bookHistory != null}">
-				<td th:text="${bookHistory.returnDate}" class="text-white" style="background-color: #15B2EE;">5月29日</td>
-				<td th:text="${bookHistory.userName}" class="text-white" style="background-color: #15B2EE;">木俣</td>
-				<td class="text-white" style="background-color: #15B2EE;">返却</td>
-              </tr>
-			  
-			  <tr class="comment" th:if="${bookHistory.review != null}">
-				<td colspan="3" style="background-color: #15B2EE;">
-					<p class="col-8 text-white mb-0">感想・コメント</p>
-					<p th:text="${bookHistory.review}" class="p-1" style="background-color: #E8ECE8; height: 50px; border-radius: 10px;"></p>
-				</td>
-			  </tr>
-			  
-			  <tr class="text-center lending">
-  <!--                <td colspan="3" class="text-center text-muted">履歴がありません</td>-->
-  				<td th:text="${bookHistory.lendingDate}" style="background-color: #99B9C5; color: #fff;">5月20日</td>
-  				<td th:text="${bookHistory.userName}" style="background-color: #99B9C5; color: #fff;">木俣</td>
-  				<td style="background-color: #99B9C5; color: #fff;">貸出</td>
-              </tr>
-            </tbody>
+			 	<th:block th:each="history : ${bookHistoryList}">
+			 
+	 			 <!-- 履歴がある場合 -->
+	 			 <!-- 返却履歴 -->
+	 			 <tr class="text-center return" th:if="${history.returnDate != null}">
+	 				<td th:text="${history.returnDate}" class="text-white" style="background-color: #15B2EE;">5月29日</td>
+	 				<td th:text="${history.userName}" class="text-white" style="background-color: #15B2EE;">武藤</td>
+	 				<td class="text-white" style="background-color: #15B2EE;">返却</td>
+	             </tr>
+ 			  
+	 			  <tr class="comment" th:if="${history.review != null}">
+	 				<td colspan="3" class="p-0" style="background-color: #15B2EE;">
+	 					<p class="col-8 text-white mb-0 mx-1">感想・コメント</p>
+	 					<p th:text="${history.review}" class="ps-1 mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;"></p>
+	 				</td>
+	 			  </tr>
+ 			  
+	 			  <tr class="text-center lending" th:if="${history.lendingDate != null}">
+	   				<td th:text="${history.lendingDate}" style="background-color: #99B9C5; color: #fff;">5月20日</td>
+	   				<td th:text="${history.userName}" style="background-color: #99B9C5; color: #fff;">武藤</td>
+	   				<td style="background-color: #99B9C5; color: #fff;">貸出</td>
+　				  </tr>
+             </tbody>
           </table>
-	  		<style>
-				.comment {
-				    overflow: hidden;           /* はみ出しを隠す */
-				    opacity: 0;                 /* 透明 */
-				    transform: translateY(-10px); /* 上にずらしておく */
-				    transition: all 0.6s ease;  /* アニメーション */
-					pointer-events: none;
-					border: 1px white;
-				}
-				
-				.return:hover + .comment,
-				.comment:hover {
-				    max-height: 200px;          /* アニメーションで高さを展開 */
-				    opacity: 1;                 /* フェードイン */
-				    transform: translateY(0);   /* 元の位置に移動 */
-					pointer-events: auto;
-				}
-				
-				.lending {
-					transform: translateY(-99px);
-					transition: all 0.6s ease;  /* アニメーション */
-					border: 1px white;
-				}
-				
-				.return:hover ~ .lending,
-				.comment:hover ~ .lending {
-					transform: translateY(0);
-				}
-			</style>
+		  <style>
+			  #b-confirmation,
+	  		  #r-confirmation {
+	  			  display: flex;
+	  			  flex-flow: column;
+	  			  justify-content: space-between;
+	  			  left: 25%;
+	  			  border-radius: 10px;
+	  			  height: 180px;
+	  		  }
+	  		
+	  		  #b-confirmation {
+	  			  background-color: #E8E8EC;
+	  		  }
+	  		
+	  		  #r-confirmation{
+	  			  background-color: #ECE8E8;
+	  		  }
+						
+		      .comment {
+		          height: 0px;
+		          overflow: hidden;           /* はみ出しを隠す */
+		          opacity: 0;                 /* 透明 */
+		          /* transform: translateY(-10px); */
+		          /* transition: all 0.6s ease; */
+		          pointer-events: none;
+		          border: 1px white;
+		          transition: none; /* ← 通常時はアニメーションなし */
+		          margin: 0px;
+		      }
+	
+		      .comment p {
+		          height: 0px;
+		          opacity: 0;
+		      }
+		      
+		      .return:hover + .comment,
+		      .comment:hover {
+		          height: 100px;
+		          max-height: 100px;          /* アニメーションで高さを展開 */
+		          opacity: 1;                 /* フェードイン */
+		          transform: translateY(0);   /* 元の位置に移動 */
+		          pointer-events: auto;
+		          transition: all 0.6s ease; /* ← hover時だけアニメーション */
+		      }
+	
+		      .return:hover + .comment p,
+		      .comment:hover p {
+		          opacity: 1;
+		          height: 30px;
+		          transition: all 0.6s ease; /* ← hover時だけアニメーション */
+		      }
+	
+		      .return:hover + .comment p:nth-child(2),
+		      .comment:hover p:nth-child(2) {
+		          opacity: 1;                 /* フェードイン */
+		          height: 50px;
+		      }
+		      
+		      .lending {
+		          /* transform: translateY(-1px); */
+		          transition: all 0.6s ease;  /* アニメーション */
+		          border: 1px white;
+		      }
+		      
+		      .return:hover ~ .lending,
+		      .comment:hover ~ .lending {
+		          transform: translateY(0);
+		      }
+		  </style>
         </div>
       </div>
-
-
     </div>
 
-  </section>
-
+  
 
 
   <!-- 画像エラー処理用JavaScript -->
   <script>
+	const bc = document.getElementById('bc');
+	const rc = document.getElementById('rc');
+	const cancelB = document.getElementById('cancelB');
+    const cancelR = document.getElementById('cancelR');
+	
+	function bcShowConfirmation() {
+	    document.getElementById("b-confirmation").style.display = "flex";
+	}
+	
+	function rcShowConfirmation() {
+		document.getElementById("r-confirmation").style.display = "flex";
+	}
+
+	function bcHideConfirmation() {
+	    document.getElementById("b-confirmation").style.display = "none";
+	}
+	
+	function rcHideConfirmation() {
+		document.getElementById("r-confirmation").style.display = "none";
+	}
+	
+	if (bc) {
+	  bc.addEventListener('click', bcShowConfirmation);
+	}
+	if (rc) {
+	  rc.addEventListener('click', rcShowConfirmation);
+	}
+	if (cancelB) {
+	  cancelB.addEventListener('click', bcHideConfirmation);
+	}
+	if (cancelR) {
+	  cancelR.addEventListener('click', rcHideConfirmation);
+	}
+
+	
+	
     function handleImageError(img) {
       // 無限ループを防ぐため、既にエラー処理済みの場合は何もしない
       if (img.dataset.errorHandled === 'true') {
@@ -280,5 +357,6 @@
       `;
     }
   </script>
+  </section>
 </body>
 </html>
