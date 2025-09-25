@@ -269,7 +269,15 @@ public class InternalBooksController {
             
             // 書籍履歴を取得
             // TODO 実際の書籍履歴取得機能のロジックをここに記述してください。(サービスに記述したものを引っ張ってくる)
-            List<DtoBookHistory> dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            List<DtoBookHistory> dtoBookHistory;
+            
+            if(bookId == null) {
+            	Integer qrId = Integer.parseInt(qrData);
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            } else {
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            }
+            
 //            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
             model.addAttribute("bookHistoryList", dtoBookHistory);
             
@@ -314,7 +322,15 @@ public class InternalBooksController {
             model.addAttribute("categories", book.getCategories());           
             
             // 書籍履歴を取得
-            List<DtoBookHistory> dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            List<DtoBookHistory> dtoBookHistory;
+            
+            if(bookId == null) {
+            	Integer qrId = Integer.parseInt(qrData);
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            } else {
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            }
+            
             model.addAttribute("bookHistoryList", dtoBookHistory);
             
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
@@ -359,7 +375,15 @@ public class InternalBooksController {
             model.addAttribute("categories", book.getCategories());           
             
             // 書籍履歴を取得
-            List<DtoBookHistory> dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            List<DtoBookHistory> dtoBookHistory;
+            
+            if(bookId == null) {
+            	Integer qrId = Integer.parseInt(qrData);
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            } else {
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            }
+            
             model.addAttribute("bookHistoryList", dtoBookHistory);
             
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
