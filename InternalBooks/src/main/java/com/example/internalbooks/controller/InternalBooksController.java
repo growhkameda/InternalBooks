@@ -278,11 +278,8 @@ public class InternalBooksController {
             	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
             
-//            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
             model.addAttribute("bookHistoryList", dtoBookHistory);
             
-//            boolean showReturnButton = (fromQrSearch != null && fromQrSearch) || (fromCheckedOut != null && fromCheckedOut);
-//            model.addAttribute("showReturnButton", showReturnButton);
             
             // セッションから遷移フラグを削除
             session.removeAttribute("fromQrSearch");

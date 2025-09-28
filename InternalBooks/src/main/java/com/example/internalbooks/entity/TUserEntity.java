@@ -25,6 +25,9 @@ public class TUserEntity implements UserDetails {
     @Column(name = Const.USER_ID)
     private Integer userId;
     
+    @Column(name = Const.NAME)
+    private String name;
+    
     @Column(name = Const.MAILADDRESS)
     private String mailAddress;
     
@@ -40,8 +43,8 @@ public class TUserEntity implements UserDetails {
     @Column(name = Const.DELETE_FLG)
     private Integer deleteFlg;
     
-    @Column(name = "name")
-    private String name;
+//    @Column(name = "name")
+//    private String name;
 
     @Override
     /**
