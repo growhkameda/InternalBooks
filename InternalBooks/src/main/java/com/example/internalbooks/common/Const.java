@@ -14,6 +14,7 @@ public class Const {
 	public final static String DELETE_FLG = "delete_flg";
 	public final static String BOOK_ID = "book_id";
 	public final static String TITLE = "title";
+	public final static String CATEGORY = "category";
 	public final static String CATEGORIES = "categories";
 	public final static String BORROWER_ID = "borrower_id";
 	public final static String PROVIDER_ID = "provider_id";

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+  <title>ユーザー検索</title>
+</head>
+
+<body>
+  <section class="d-flex justify-content-center align-items-start py-5">
+    <div class="container d-flex justify-content-center align-items-start">
+      <div class="w-100" style="max-width: 350px;">
+
+        <!-- ================== ページメインタイトル ================== -->
+        <h1 class="fw-bold mt-5 display-3 mb-5 text-center">ユーザー検索</h1>
+
+        <!-- ================== 検索窓と検索ボタン ================== -->
+        <div class="mb-3 d-flex flex-column align-items-center">
+            <input type="text" 
+                class="text-center form-control bg-secondary-subtle shadow-sm"
+                style="width: 80%;"
+                id="search"
+                name="search"
+                placeholder="所属課または名前を入力">
+            <button type="button" class="btn btn-warning shadow-sm fs-6 w-25 mt-3" id="searchButton">検索</button>
+        </div>
+
+        <!-- ================== 戻るボタン ================== -->
+        <div class="border-0 mb-5 text-start">
+            <a href="/admin/adminusertop" class="text-black ms-1">
+                管理者TOPへ戻る
+                <i class="bi bi-arrow-return-left ms-1"></i>
+            </a>
+        </div>
+
+        <!-- ================== ユーザー一覧テーブル ================== -->
+        <div class="mt-5">
+          <div class="table-responsive">
+            <table class="table table-sm table-borderless w-100">
+              <thead class="table-primary">
+                <tr>
+                  <th class="text-center col-6 border-end border-2 border-white">所属課</th>
+                  <th class="text-center col-6 border-end border-2 border-white">名前</th>
+                </tr>
+              </thead>
+
+              <!-- ================== ユーザーデータの表示 ================== -->
+              <tbody id="userTableBody">
+                <tr th:each="user : ${users}" th:if="${users != null and !#lists.isEmpty(users)}" 
+                    class="user-row">
+                  <td colspan="2" class="text-center p-0">
+                    <a th:href="@{/admin/userconfirmationscreen(userId=${user.userId})}"
+                       class="btn btn-light w-100 p-0 border-0 rounded-0 shadow-sm text-start mb-2">
+                      <div class="card border-0 rounded-0 overflow-hidden bg-transparent">
+                        <div class="card-body p-2 text-center">
+                          <div class="row">
+                            
+                            <!--データ表示領域-->
+                            <div class="col-6">
+                              <span class="fw-bold text-dark department-name" th:text="${departmentNames[user.userId]}">所属課</span>
+                            </div>
+                            <div class="col-6">
+                              <span class="fw-bold text-dark user-name" th:text="${user.name}">名前</span>
+                            </div>
+                            
+                          </div>
+                        </div>
+                      </div>
+                    </a>
+                  </td>
+                </tr>
+                <!-- ユーザーがない場合(表示切替はJSで行う) -->
+                <tr class="no-users-message" style="display: none;">
+                  <td colspan="2" class="text-center bg-secondary-subtle text-muted">ユーザーが存在しません</td>
+                </tr>
+              </tbody>
+
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <!--================= 検索機能用JavaScript =================-->
+    <script th:inline="javascript">
+      // ページ読み込み時の初期化
+      document.addEventListener('DOMContentLoaded', () => {
+        // 初期状態の設定
+        const userRows = document.querySelectorAll('.user-row');
+        const noUsersMessage = document.querySelector('.no-users-message');
+        
+        // 初期表示時にユーザーが存在しない場合はメッセージを表示
+        if (userRows.length === 0 && noUsersMessage) {
+          noUsersMessage.style.display = '';
+        }
+        
+        // 検索ボタンクリックイベント
+        document.getElementById('searchButton').addEventListener('click', performSearch);
+        
+        // 検索入力欄のエンターキーイベント
+        document.getElementById('search').addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') {
+            performSearch();
+          }
+        });
+      });
+      
+      // 検索実行関数(main処理)
+      const performSearch = () => {
+        const searchTerm = document.getElementById('search').value.trim().toLowerCase();
+        const userRows = document.querySelectorAll('.user-row');
+        const noUsersMessage = document.querySelector('.no-users-message');
+        
+        // ユーザーのHIT数をカウント
+        let visibleCount = 0;
+
+        // 各ユーザー行の表示/非表示を切り替え
+        userRows.forEach(row => {
+          const departmentName = row.querySelector('.department-name').textContent.toLowerCase();
+          const userName = row.querySelector('.user-name').textContent.toLowerCase();
+          
+          // 所属課または名前で検索
+          const isMatch = departmentName.includes(searchTerm) || userName.includes(searchTerm);
+          
+          if (searchTerm === '' || isMatch) {
+            row.style.display = '';
+            if (searchTerm !== '') visibleCount++;
+          } else {
+            row.style.display = 'none';
+          }
+        });
+        
+        // エラーメッセージの表示制御
+        if (searchTerm !== '' && visibleCount === 0) {
+          // 検索結果が0件の場合、メッセージを表示
+          if (noUsersMessage) {
+            noUsersMessage.style.display = '';
+          }
+        } else if (searchTerm !== '') {
+          // 検索結果がある場合、メッセージを非表示
+          if (noUsersMessage) {
+            noUsersMessage.style.display = 'none';
+          }
+        }
+      };
+    </script>
+
+   </section>
+</body>

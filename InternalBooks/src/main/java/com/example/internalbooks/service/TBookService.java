@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +19,14 @@ import com.example.internalbooks.repository.TBookRepository;
  */
 public class TBookService {
 
-	@Autowired
-	private TBookRepository tBookRepository;
+	//DI用フィールド
+    private final TBookRepository tBookRepository;
+
+	//コンストラクタインジェクション
+    public TBookService(TBookRepository tBookRepository) {
+        this.tBookRepository = tBookRepository;
+    }
+
 
 	public List<String> getAllCategories() {
 		List<String> categoryList = new ArrayList<>();
@@ -116,7 +121,7 @@ public class TBookService {
 			dto.setCategory(categories);
 			
 			// カテゴリー（分割リストを保持）
-            if (categories != null && !categories.equals("未分類")) {
+            if (!categories.equals("未分類")) {
                 dto.setCategories(Arrays.asList(categories.split(",")));
             } else {
                 dto.setCategories(new ArrayList<>());
