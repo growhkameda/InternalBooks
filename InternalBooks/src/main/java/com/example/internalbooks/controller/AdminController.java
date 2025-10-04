@@ -21,8 +21,6 @@ import com.example.internalbooks.common.UserRegistrationForm;
 import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.entity.TUserEntity;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 import com.example.internalbooks.utils.JwtUtil;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
@@ -319,18 +317,10 @@ public class AdminController extends InternalBooksController {
                 return adminPermissionError(redirectAttributes);
             }
             
-            // 全ユーザー情報を取得
-            List<TUserEntity> users = tUserService.getAllUsers();
-            
             // 各ユーザーの所属課を取得してモデルに追加する
-            Map<Integer, String> departmentNames = new HashMap<>();
-            for (TUserEntity user : users) {
-                String departmentName = tUserService.getDepartmentNameById(user.getDepartmentId());
-                departmentNames.put(user.getUserId(), departmentName);
-            }
+            List<TUserEntity> userWithDepartmentName = tUserService.getUserDepartmentName();
             
-            model.addAttribute("users", users);
-            model.addAttribute("departmentNames", departmentNames);
+            model.addAttribute("users", userWithDepartmentName);
             model.addAttribute("isAdmin", isAdmin);
 
             // ログを出力

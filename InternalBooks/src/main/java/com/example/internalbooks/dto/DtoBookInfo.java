@@ -29,7 +29,10 @@ public class DtoBookInfo {
         // デフォルト値は設定せず、使用時に適切な値を設定する
     }
     
-    // 書籍IDに基づいて画像URLを設定するメソッド
+    
+    /*
+     * 書籍IDに基づいて画像URLを設定するメソッド
+     */
     public void setImageUrlFromBookId() {
         if (this.bookId != null) {
             // 書籍IDは4桁でカテゴリーごとに分けられる設計
