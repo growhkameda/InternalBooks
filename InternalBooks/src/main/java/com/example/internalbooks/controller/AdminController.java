@@ -23,7 +23,9 @@ import java.io.IOException;
 import java.util.Base64;
 
 import com.example.internalbooks.service.TUserService;
+import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoUserRegistration;
+import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import java.util.List;
 import java.util.Map;
@@ -38,20 +40,22 @@ import com.example.internalbooks.service.TBookService;
  */
 @Controller
 @RequestMapping("/admin")
-@SessionAttributes({"userdto, title,categories,providerId,providerComment"})
+@SessionAttributes({"userdto, bookdto"})
 public class AdminController extends InternalBooksController {
     
     //ロガー
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
     //DI用フィールド
     private final TUserService tUserService;
+    private final TBookService tBookService;
 
     //コンストラクタインジェクション    
     public AdminController(JwtUtil jwtUtil, AuthService authService, TBookService tBookService, TUserService tUserService) {
         super(jwtUtil, authService, tBookService);
         this.tUserService = tUserService;
+        this.tBookService = tBookService;
     }
-
+    
     /**
      * 管理者ユーザートップページに遷移
      */
@@ -89,6 +93,8 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             logger.info("bookediting() にアクセスされました");
+            
+            model.addAttribute("bookdto", new DtoBookInfo()); //空のDTOを返す
             
             return "page/bookediting";
         }
@@ -383,7 +389,11 @@ public class AdminController extends InternalBooksController {
     	
     	if (bindingResult.hasErrors()) {
     		for (FieldError error : bindingResult.getFieldErrors()) {
-    			// コンソールにも表示
+    			
+    			if("Pattern".equals(error.getCode())){
+    				
+    				// コンソールにも表示
+    			}
     			System.out.println(error.getField() + ":" + error.getDefaultMessage());
     			
     			return "page/UserRegistration"; 
@@ -445,12 +455,12 @@ public class AdminController extends InternalBooksController {
             
          // DBへ(userId,name,mailAddress,password,departmentId)を保存
             TUserEntity savedUser = tUserService.userRegistration(userdto);
-         // DBに保存した値をDTOWO経由して再度取得           
+         // DBに保存した値をDTOを経由して再度取得           
             DtoUserRegistration tuser = new DtoUserRegistration();
-            tuser.setUserId(savedUser.getUserId());
+            tuser.setUserId(savedUser.getUserIdAsString());
             tuser.setName(savedUser.getName());
             tuser.setMailAddress(savedUser.getMailAddress());
-            tuser.setDepartmentId(savedUser.getDepartmentId());
+            tuser.setDepartmentId(savedUser.getDepartmentIdAsString());
             tuser.setPassword(savedUser.getPassword());
             
             // 取得した情報を表示
@@ -471,13 +481,18 @@ public class AdminController extends InternalBooksController {
      * 書籍登録確認画面へ遷移
      */
     @PostMapping("/bookingconfirmation")
-    public String BookingConfirmation(HttpSession session, RedirectAttributes redirectAttributes,
-    	     @RequestParam ("booktitle") String title,
-             @RequestParam String categories,
-             @RequestParam String providerId,
-             @RequestParam String providerComment,
+    public String BookingConfirmation(@Valid @ModelAttribute("bookdto")DtoBookInfo bookDto, BindingResult bindingResult, HttpSession session, RedirectAttributes redirectAttributes,
              @RequestParam("imagefile")  
     	     MultipartFile file, Model model) {
+    	
+    	if (bindingResult.hasErrors()) {
+    		for (FieldError error : bindingResult.getFieldErrors()) {
+    			// コンソールにも表示
+    			System.out.println(error.getField() + ":" + error.getDefaultMessage());
+    			
+    			return "page/bookediting"; 
+    		}
+    	}
     	
     	// トークンと管理者権限の検証
         try {
@@ -488,10 +503,7 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
-            model.addAttribute("booktitle",title);
-            model.addAttribute("categories",categories);
-            model.addAttribute("providerId",providerId);
-            model.addAttribute("providerComment",providerComment);
+            model.addAttribute("bookdto",bookDto);
             
             if (!file.isEmpty()) {
                 try {
@@ -518,12 +530,8 @@ public class AdminController extends InternalBooksController {
      * 書籍登録完了画面へ遷移
      */
     @PostMapping("/bookingregistrationcomplete")
-    public String BookingRegistrationcomplete(SessionStatus status,HttpSession session, RedirectAttributes redirectAttributes, 
-    		@RequestParam ("booktitle") String title,
-            @RequestParam String categories,
-            @RequestParam String providerId,
-            @RequestParam String providerComment,
-   	        MultipartFile file, Model model) {
+    public String BookingRegistrationcomplete(@ModelAttribute("bookdto") DtoBookInfo bookDto,SessionStatus status,HttpSession session, RedirectAttributes redirectAttributes, 
+             MultipartFile file, Model model) {
     	
         // トークンと管理者権限の検証
         try {
@@ -534,21 +542,29 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
-            model.addAttribute("booktitle",title);
-            model.addAttribute("categories",categories);
-            model.addAttribute("providerId",providerId);
-            model.addAttribute("providerComment",providerComment);
+            // DBへ(tilte,catgory,providerId,providercommnet)を保存
+            TBookEntity savedBook = tBookService.bookEditing(bookDto);
+            // DBに保存した値をDTOWO経由して再度取得           
+            DtoBookInfo dbook = new DtoBookInfo();
+            dbook.setTitle(savedBook.getTitle());
+            dbook.setCategory(savedBook.getCategories());
+            dbook.setProviderId(savedBook.getProviderId());
+            dbook.setProviderComment(savedBook.getProviderComment());
             
             byte[] imageBytes = (byte[]) session.getAttribute("imageBytes");
             if (imageBytes != null) {
                 String base64Image = Base64.getEncoder().encodeToString(imageBytes);
                 model.addAttribute("imagePreview", base64Image);
             }
+            
+            
+            // 取得した情報を表示
+            model.addAttribute("dbook",dbook);
 
             // 完了後に画像をセッションから削除
             session.removeAttribute("imageBytes");
-         // セッション破棄（フォームを消す）
-            session.removeAttribute("bookingregistrationcomplete");
+            // セッション破棄（フォームを消す）
+            status.setComplete();
 
             return "page/BookingRegistrationComplete";
         }

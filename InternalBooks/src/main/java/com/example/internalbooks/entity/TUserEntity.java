@@ -38,7 +38,7 @@ public class TUserEntity implements UserDetails {
     private Integer role;
     
     @Column(name = Const.DEPARTMENT_ID)
-    private String departmentId;
+    private Integer departmentId;
     
     @Column(name = Const.DELETE_FLG)
     private Integer deleteFlg;
@@ -92,4 +92,14 @@ public class TUserEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+    
+//	IntegerをStringへ変換するメソッド
+    public String getUserIdAsString() {
+		return String.valueOf(userId);
+	}
+    
+//	IntegerをStringへ変換するメソッド
+    public String getDepartmentIdAsString() {
+		return String.valueOf(departmentId);
+	}
 }

@@ -2,55 +2,47 @@ package com.example.internalbooks.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
+import lombok.Data;
+
+@Data
 public class DtoUserRegistration {
 	
-	@NotNull(message = "ユーザーIDは必須です")
-	private Integer userId;
+	@NotBlank(message = "ユーザーIDは必須です")
+//	regexp = "\\d+"で１文字以上の数字を表す
+	@Pattern(regexp = "\\d+", message = "社員IDは数字で入力してください")
+	private String userId;
 	
 	@NotBlank(message = "名前は必須です")
 	private String name;
 	
+	@NotBlank(message = "メールアドレスは必須です")
 	@Email(message = "メールアドレスの形式が正しくありません")
 	private String mailAddress;
 	
 	@NotBlank(message = "所属課は必須です")
+//	regexp = "\\d+"で１文字以上の数字を表す
+	@Pattern(regexp = "\\d+", message = "所属課は数字で入力してください")
 	private String departmentId;
 	
 	@NotBlank(message = "パスワードは必須です")
 	private String password;
 	
-	public Integer getUserId() {
-		return userId;
-	}
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+//	初期値の設定
+	private Integer role = 0;
+
+//	初期値の設定
+	private Integer deleteFlg = 0;
+	
+//	StringをIntegerへ変換するメソッド
+	public Integer getUserIdAsIntger() {
+		return Integer.valueOf(userId);
 	}
 	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getMailAddress() {
-		return mailAddress;
-	}
-	public void setMailAddress(String mailAddress) {
-		this.mailAddress = mailAddress;
-	}
-	public String getDepartmentId() {
-		return departmentId;
-	}
-	public void setDepartmentId(String departmentId) {
-		this.departmentId = departmentId;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
+//	StringをIntegerへ変換するメソッド
+	public Integer getDepartmentIdAsInteger() {
+		return Integer.valueOf(departmentId);
 	}
 
 }
