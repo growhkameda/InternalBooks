@@ -37,15 +37,9 @@
       <!-- ========== 書籍カード表示 ========== -->
       <div class="text-center mb-1">
         <!-- 書籍画像エリア -->
-<!--        <div class="text-center p-4">-->
-<!--          <img th:src="@{${book.imageUrl}}" -->
-<!--               class="img-fluid rounded shadow w-25 h-auto" -->
-<!--               alt="書籍画像"-->
-<!--               onerror="handleImageError(this)" />-->
-<!--        </div>-->
-		
 		<div class="text-center p-4">
-          <img th:src="@{/images/1001.png}" 
+<!--		  <img th:src="@{|/images/${book.bookId}.png|}" -->
+		  <img th:src="@{'/images/' + '100' + ${book.bookId} + '.png'}"
                class="img-fluid rounded shadow w-25 h-auto" 
                alt="書籍画像"
                onerror="handleImageError(this)" />
@@ -59,9 +53,6 @@
           
           <!-- カテゴリー -->
           <div class="mb-3">
-<!--            <span class="badge bg-primary rounded-pill px-3 py-2 fs-6" -->
-<!--                  th:text="${book.category}">カテゴリー</span>-->
-				  
 			<span th:each="category : ${categories}"
 			      class="badge bg-primary rounded-pill me-3 px-3 py-2 fs-6"
 			      th:text="${category}">
