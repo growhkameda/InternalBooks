@@ -1,6 +1,7 @@
 package com.example.internalbooks.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
@@ -108,13 +109,50 @@ public class TBookService {
 				return null;
 			}
 			
-			// EntityからDTOに変換（共通メソッドを使用）
-			return convertEntityToDto(book);
+			// EntityからDTOに変換
+			DtoBookInfo dto = new DtoBookInfo();
+			dto.setBookId(book.getBookId());
+			
+			// タイトルが空の場合はデフォルト値を設定
+			String title = book.getTitle();
+			if (title == null || title.trim().isEmpty()) {
+				title = "書籍ID: " + book.getBookId();
+			}
+			dto.setTitle(title);
+			
+			// カテゴリーが空の場合はデフォルト値を設定
+			String categories = book.getCategories();
+			if (categories == null || categories.trim().isEmpty() || categories.equals(",")) {
+				categories = "未分類";
+			}
+			dto.setCategory(categories);
+			
+			// カテゴリー（分割リストを保持）
+            if (!categories.equals("未分類")) {
+                dto.setCategories(Arrays.asList(categories.split(",")));
+            } else {
+                dto.setCategories(new ArrayList<>());
+            }
+			
+			// 貸出状況を設定（borrower_idに基づいて動的に判定）
+			dto.setStatus(determineLendingStatus(book.getBorrowerId()));
+			
+			// 書籍IDに基づいて画像URLを設定
+			dto.setImageUrlFromBookId();
+			
+			// 書籍提供者コメントを設定
+			dto.setProviderComment(book.getProviderComment());
+			
+			// 返却 感想・コメント
+			dto.setMemo(book.getMemo());
+			
+			return dto;
 			
 		} catch (Exception e) {
 			throw e;
 		}
 	}
+	
 	
 	/**
 	 * 書籍検索リクエストを処理する

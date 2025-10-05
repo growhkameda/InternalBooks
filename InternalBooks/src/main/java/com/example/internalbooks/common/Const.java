@@ -14,13 +14,21 @@ public class Const {
 	public final static String DELETE_FLG = "delete_flg";
 	public final static String BOOK_ID = "book_id";
 	public final static String TITLE = "title";
+	public final static String CATEGORY = "category";
 	public final static String CATEGORIES = "categories";
 	public final static String BORROWER_ID = "borrower_id";
 	public final static String PROVIDER_ID = "provider_id";
 
 	public final static String PROVIDER_COMMENT = "provider_comment";
 	public final static String MEMO = "memo";
+<<<<<<< HEAD
 
 	public final static String DETAIL = "detail";
+=======
+	
+	public final static String LENDING_DATE = "lending_date";
+	public final static String RETURN_DATE = "return_date";
+	public final static String SCHEDULED_RETURN_DATE = "scheduled_return_date";
+	public final static String REVIEW = "review";
+>>>>>>> muto
 }
-

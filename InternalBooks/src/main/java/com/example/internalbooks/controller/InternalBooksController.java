@@ -1,26 +1,27 @@
 package com.example.internalbooks.controller;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import com.example.internalbooks.dto.DtoAuthRequest;
-import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoBookHistory;
+import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
+import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
-
 
 import io.micrometer.common.util.StringUtils;
 
@@ -42,6 +43,20 @@ public class InternalBooksController {
     }
     
 
+
+//    @Autowired
+//    private JwtUtil jwtUtil;
+//    
+//    @Autowired
+//    private AuthService authService;
+//    
+//    @Autowired
+//	private TBookService tBookService;
+//    
+    @Autowired
+    private TLendingHistoryService lendingHistoryService;
+
+    
     /**
      * トップページとしてloginを設定
      */
@@ -164,7 +179,7 @@ public class InternalBooksController {
     	}
     	catch (Exception e) {
     		return error(redirectAttributes);
-    	}  
+    	}
 
     }
     
@@ -197,8 +212,8 @@ public class InternalBooksController {
     public String searchResult(
         @RequestParam(name = "bookId", required = false) Integer bookId,
         @RequestParam(name = "qrData", required = false) String qrData,
-        HttpSession session, 
-        Model model, 
+        HttpSession session,
+        Model model,
         RedirectAttributes redirectAttributes) {
         
         try {
@@ -214,6 +229,9 @@ public class InternalBooksController {
             Boolean fromCheckedOut = (Boolean) session.getAttribute("fromCheckedOut");
             model.addAttribute("fromCheckedOut", fromCheckedOut != null ? fromCheckedOut : false);
             
+            // 書籍一覧から遷移した場合のフラグ設定
+            
+            
             // 返却ボタン表示判定（QRサーチまたは貸出中書籍ページからの遷移）
             boolean showReturnButton = (fromQrSearch != null && fromQrSearch) || (fromCheckedOut != null && fromCheckedOut);
             model.addAttribute("showReturnButton", showReturnButton);
@@ -221,11 +239,24 @@ public class InternalBooksController {
             // 書籍検索処理をServiceで処理
             DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
             model.addAttribute("book", book);
+            model.addAttribute("categories", book.getCategories());
             
             // 書籍履歴を取得
-            List<DtoBookHistory> bookHistory = new ArrayList<>();
+
+            
+
             // TODO 実際の書籍履歴取得機能のロジックをここに記述してください。(サービスに記述したものを引っ張ってくる)
-            model.addAttribute("bookHistory", bookHistory);
+            List<DtoBookHistory> dtoBookHistory;
+            
+            if(bookId == null) {
+            	Integer qrId = Integer.parseInt(qrData);
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            } else {
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            }
+            
+            model.addAttribute("bookHistoryList", dtoBookHistory);
+            
             
             // セッションから遷移フラグを削除
             session.removeAttribute("fromQrSearch");
@@ -238,6 +269,113 @@ public class InternalBooksController {
             return error(redirectAttributes);
         }
     }
+    
+    
+    /**
+     * 貸出完了ページに遷移
+     */
+    @PostMapping("/page/LendingCompleted")
+    public String LendingCompleted(
+    		@RequestParam("bookId") Integer bookId,
+    		@RequestParam(name = "qrData", required = false) String qrData,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+    	
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+            
+            // 書籍検索処理をServiceで処理
+            DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
+            model.addAttribute("book", book);
+            model.addAttribute("categories", book.getCategories());           
+            
+            // 書籍履歴を取得
+            List<DtoBookHistory> dtoBookHistory;
+            
+            if(bookId == null) {
+            	Integer qrId = Integer.parseInt(qrData);
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            } else {
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            }
+            
+            model.addAttribute("bookHistoryList", dtoBookHistory);
+            
+            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
+            model.addAttribute("bookHistory", latestHistory);
+            
+            if (bookId == null) {
+                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
+                return "redirect:/page/top";
+            }
+
+            return "page/LendingCompleted";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
+    
+    /**
+     * 返却完了ページに遷移
+     */
+    @PostMapping("/page/ReturnCompleted")
+    public String ReturnCompleted(
+    		@RequestParam("bookId") Integer bookId,
+    		@RequestParam(name = "qrData", required = false) String qrData,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+    	
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+            
+            // 書籍検索処理をServiceで処理
+            DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
+            model.addAttribute("book", book);
+            model.addAttribute("categories", book.getCategories());           
+            
+            // 書籍履歴を取得
+            List<DtoBookHistory> dtoBookHistory;
+            
+            if(bookId == null) {
+            	Integer qrId = Integer.parseInt(qrData);
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            } else {
+            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            }
+            
+            model.addAttribute("bookHistoryList", dtoBookHistory);
+            
+            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
+            model.addAttribute("bookHistory", latestHistory);
+            
+            if (bookId == null) {
+                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
+                return "redirect:/page/top";
+            }
+
+            return "page/ReturnCompleted";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
    
     /**
      * カテゴリー詳細ページに遷移
@@ -262,6 +400,98 @@ public class InternalBooksController {
     	}
         
     }
+    
+    
+    @GetMapping("/page/finishUserEdit")
+    public String finishUserEdit(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+
+            return "page/finishUserEdit";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
+    @GetMapping("/page/userConfirmation")
+    public String userConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+
+            return "page/userConfirmation";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
+    @GetMapping("/page/userDeleteConfirmation")
+    public String userDeleteConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+
+            return "page/userDeleteConfirmation";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
+    @GetMapping("/page/userEdit")
+    public String userEdit(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+
+            return "page/userEdit";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
+    @GetMapping("/page/userDeleteComplete")
+    public String userDeleteComplete(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+
+            return "page/userDeleteComplete";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
 
     /**
      * エラー処理

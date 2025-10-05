@@ -1,5 +1,7 @@
 package com.example.internalbooks.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 /**
@@ -17,12 +19,19 @@ public class DtoBookInfo {
     
     // カテゴリー
     private String category;
+    private List<String> categories;
     
     // 貸出状況
     private String status;
     
     // 書籍画像URL
     private String imageUrl;
+    
+    // 書籍提供者コメント
+    private String providerComment;
+    
+    // 返却 感想・コメント
+    private String memo;
     
     // デフォルトコンストラクタ
     public DtoBookInfo() {
@@ -42,5 +51,14 @@ public class DtoBookInfo {
             // デフォルト画像を設定
             this.imageUrl = "/images/default-book.png";
         }
+    }
+    
+    // getter/setter
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
     }
 }
