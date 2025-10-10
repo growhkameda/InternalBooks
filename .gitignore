@@ -37,3 +37,22 @@ out/
 ### VS Code ###
 .vscode/
 .DS_Store
+
+# MySQL data files
+mysql/data/
+!mysql/data/.gitkeep
+*.sock
+*.dblwr
+*.ibt
+*.ibd
+*.pem
+*.CSM
+*.CSV
+*.sdi
+auto.cnf
+binlog.*
+ib_buffer_pool
+ibdata*
+ibtmp*
+mysql_upgrade_history
+undo_*
