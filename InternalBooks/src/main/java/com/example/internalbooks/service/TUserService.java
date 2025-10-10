@@ -2,14 +2,12 @@ package com.example.internalbooks.service;
 
 import java.util.Optional;
 import java.util.List;
-import java.util.stream.*; 
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.internalbooks.common.Const;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TUserRepository;
@@ -95,11 +93,13 @@ public class TUserService implements UserDetailsService {
      */
       public TUserEntity userRegistration(DtoUserRegistration dtuser) {
     	  TUserEntity tuser = new TUserEntity();
-    	  tuser.setUserId(dtuser.getUserId());
+    	  tuser.setUserId(dtuser.getUserIdAsIntger());
     	  tuser.setName(dtuser.getName());
     	  tuser.setMailAddress(dtuser.getMailAddress());
     	  tuser.setPassword(dtuser.getPassword());
-    	  tuser.setDepartmentId(dtuser.getDepartmentId());
+    	  tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
+    	  tuser.setRole(dtuser.getRole());
+    	  tuser.setDeleteFlg(dtuser.getDeleteFlg());
     	  
     	  tUserRepository.save(tuser);
     	  

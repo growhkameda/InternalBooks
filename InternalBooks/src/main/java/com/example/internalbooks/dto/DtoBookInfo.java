@@ -1,6 +1,8 @@
 package com.example.internalbooks.dto;
 
 import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 書籍情報を格納するDTO
@@ -13,9 +15,11 @@ public class DtoBookInfo {
     private Integer bookId;
     
     // 書籍タイトル
+    @NotBlank(message = "書籍名は必須です")
     private String title;
     
     // カテゴリー
+    @NotBlank(message = "カテゴリーは必須です")
     private String category;
     
     // 貸出状況
@@ -23,6 +27,14 @@ public class DtoBookInfo {
     
     // 書籍画像URL
     private String imageUrl;
+    
+    // 書籍提供者
+    @NotNull(message = "書籍提供者は必須です")
+    private Integer providerId;
+    
+ // 書籍提供者のコメント
+    @NotBlank(message = "コメントは必須です")
+    private String providerComment;
     
     // デフォルトコンストラクタ
     public DtoBookInfo() {
