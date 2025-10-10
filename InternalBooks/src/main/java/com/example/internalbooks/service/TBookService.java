@@ -77,6 +77,9 @@ public class TBookService {
 		// 書籍IDに基づいて画像URLを設定
 		dto.setImageUrlFromBookId();
 		
+		// 返却 感想・コメント
+		dto.setMemo(book.getMemo());
+		
 		return dto;
 	}
 
@@ -207,6 +210,18 @@ public class TBookService {
 	 */
 	private String determineLendingStatus(Integer borrowerId) {
 		return borrowerId != null ? "貸出中" : "貸出可能";
+	}
+	
+	public TBookEntity bookEditing(DtoBookInfo dtbook) {
+		TBookEntity tbook = new TBookEntity();
+		tbook.setTitle(dtbook.getTitle());
+		tbook.setCategories(dtbook.getCategory());
+		tbook.setProviderId(dtbook.getProviderId());
+		tbook.setProviderComment(dtbook.getProviderComment());
+		
+		tBookRepository.save(tbook);
+		
+		return tbook;
 	}
 
 }

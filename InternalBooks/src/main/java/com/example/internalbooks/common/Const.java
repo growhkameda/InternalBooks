@@ -21,14 +21,12 @@ public class Const {
 
 	public final static String PROVIDER_COMMENT = "provider_comment";
 	public final static String MEMO = "memo";
-<<<<<<< HEAD
 
 	public final static String DETAIL = "detail";
-=======
-	
+
 	public final static String LENDING_DATE = "lending_date";
 	public final static String RETURN_DATE = "return_date";
 	public final static String SCHEDULED_RETURN_DATE = "scheduled_return_date";
 	public final static String REVIEW = "review";
->>>>>>> muto
+
 }

@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TUserRepository;
 import com.example.internalbooks.repository.MDepartmentRepository;
@@ -86,6 +87,7 @@ public class TUserService implements UserDetailsService {
             // その他のエラーの場合
             return "Error";
         }
+        
     }
 
     /**
@@ -105,4 +107,24 @@ public class TUserService implements UserDetailsService {
         return users;
     }
         
+    
+    /**
+     * ユーザー情報をDBへ保存するメソッド
+     */
+    public TUserEntity userRegistration(DtoUserRegistration dtuser) {
+    	TUserEntity tuser = new TUserEntity();
+    	tuser.setUserId(dtuser.getUserIdAsIntger());
+    	tuser.setName(dtuser.getName());
+    	tuser.setMailAddress(dtuser.getMailAddress());
+    	tuser.setPassword(dtuser.getPassword());
+    	tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
+    	tuser.setRole(dtuser.getRole());
+    	tuser.setDeleteFlg(dtuser.getDeleteFlg());
+    	  
+    	tUserRepository.save(tuser);
+    	  
+    	return tuser;
+    	  
+    }
+      
 }

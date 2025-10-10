@@ -101,4 +101,13 @@ public class TUserEntity implements UserDetails {
         return true;
     }
     
+    // IntegerをStringへ変換するメソッド
+    public String getUserIdAsString() {
+        return String.valueOf(userId);
+    }
+    
+    // IntegerをStringへ変換するメソッド
+    public String getDepartmentIdAsString() {
+        return String.valueOf(departmentId);
+    }
 }
