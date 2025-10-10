@@ -40,3 +40,21 @@ Thumbs.db
 # docker
 data/*
 !data/.gitkeep
+
+# MySQL data files
+mysql/data/
+*.sock
+*.dblwr
+*.ibt
+*.ibd
+*.pem
+*.CSM
+*.CSV
+*.sdi
+auto.cnf
+binlog.*
+ib_buffer_pool
+ibdata*
+ibtmp*
+mysql_upgrade_history
+undo_*
