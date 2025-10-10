@@ -43,6 +43,7 @@ data/*
 
 # MySQL data files
 mysql/data/
+!mysql/data/.gitkeep
 *.sock
 *.dblwr
 *.ibt
