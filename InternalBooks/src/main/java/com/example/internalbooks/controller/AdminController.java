@@ -9,7 +9,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -101,93 +100,7 @@ public class AdminController extends InternalBooksController {
         }
     }
     
-    /**
-     * ユーザー確認ページに遷移
-     */
-    @GetMapping("/userconfir")
-    public String UserConfir(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            logger.info("UserConfir() にアクセスされました");
-            
-            return "page/UserConfir";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
     
-    /**
-     * ユーザー登録完了ページに遷移
-     */
-    @GetMapping("/userregistrationcomplete")
-    public String UserRegistrationComplete(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            logger.info("UserRegistrationComplete() にアクセスされました");
-            
-            return "page/UserRegistrationComplete";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
-    
-    /**
-     * 書籍登録確認ページに遷移
-     */
-    @GetMapping("/bookingconfirmation")
-    public String BookingConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            logger.info("BookingConfirmation() にアクセスされました");
-            
-            return "page/BookingConfirmation";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
-    
-    /**
-     * 書籍登録完了ページに遷移
-     */
-    @GetMapping("/bookingregistrationcomplete")
-    public String BookingRegistrationComplete(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            logger.info("BookingRegistrationComplete() にアクセスされました");
-            
-            return "page/BookingRegistrationComplete";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
     
     /**
      * ユーザー編集完了画面へ遷移
