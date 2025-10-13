@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,7 +20,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.example.internalbooks.utils.JwtUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import org.springframework.lang.NonNull;
 
 @Component
 /**
@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain)
             throws ServletException, IOException {
-        
+    	
         final String requestTokenHeader = request.getHeader("Authorization");
 
         String username = null;
