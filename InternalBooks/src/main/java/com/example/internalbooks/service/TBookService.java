@@ -1,6 +1,7 @@
 package com.example.internalbooks.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
@@ -48,6 +49,51 @@ public class TBookService {
 		}
 		return categoryList;
 	}
+	
+//	public List<Integer> getCategoriesdetail(String category){
+//	    List<Integer> categorydetailList = new ArrayList<>();
+//	    try {
+//	        // 条件に一致する本情報のみ取得
+//	        List<TBookEntity> bookList = tBookRepository.findByCategories(category);
+//
+//	        for (TBookEntity book : bookList) {
+//	        	Integer bookid = book.getBookId();
+//				categorydetailList.add(bookid);
+//	        }
+//
+//	    } catch (Exception e) {
+//	        throw e;
+//	    }
+//	    return categorydetailList;
+//	}
+
+	
+	public List<Integer> getCategoriesdetail(String category){
+		List<Integer> bookid_list = new ArrayList<>();
+		try {
+
+			// 全本情報を取得
+			List<TBookEntity> bookList = tBookRepository.findAll();
+			
+			// カテゴリー情報を登録されている本情報から取得する
+			for (TBookEntity book : bookList) {
+				String book_categories = book.getCategories();
+				// 複数のカテゴリーをカンマ区切りにする
+				String[] categoriesArray = book_categories.split(",");
+				for (String list_category : categoriesArray) {
+					// 引数のカテゴリーの値が含まれている本情報のみbookid_listに追加する
+				    if (list_category.trim().equals(category)) {
+				        bookid_list.add(book.getBookId());
+				        break;
+				    }
+				}
+			}
+				
+		} catch (Exception e) {
+			throw e;
+		}
+		return bookid_list;
+	}
 
 	/**
 	 * TBookEntityからDtoBookInfoに変換する共通メソッド
@@ -75,6 +121,9 @@ public class TBookService {
 		
 		// 書籍IDに基づいて画像URLを設定
 		dto.setImageUrlFromBookId();
+		
+		// 返却 感想・コメント
+		dto.setMemo(book.getMemo());
 		
 		return dto;
 	}
@@ -108,13 +157,50 @@ public class TBookService {
 				return null;
 			}
 			
-			// EntityからDTOに変換（共通メソッドを使用）
-			return convertEntityToDto(book);
+			// EntityからDTOに変換
+			DtoBookInfo dto = new DtoBookInfo();
+			dto.setBookId(book.getBookId());
+			
+			// タイトルが空の場合はデフォルト値を設定
+			String title = book.getTitle();
+			if (title == null || title.trim().isEmpty()) {
+				title = "書籍ID: " + book.getBookId();
+			}
+			dto.setTitle(title);
+			
+			// カテゴリーが空の場合はデフォルト値を設定
+			String categories = book.getCategories();
+			if (categories == null || categories.trim().isEmpty() || categories.equals(",")) {
+				categories = "未分類";
+			}
+			dto.setCategory(categories);
+			
+			// カテゴリー（分割リストを保持）
+            if (!categories.equals("未分類")) {
+                dto.setCategories(Arrays.asList(categories.split(",")));
+            } else {
+                dto.setCategories(new ArrayList<>());
+            }
+			
+			// 貸出状況を設定（borrower_idに基づいて動的に判定）
+			dto.setStatus(determineLendingStatus(book.getBorrowerId()));
+			
+			// 書籍IDに基づいて画像URLを設定
+			dto.setImageUrlFromBookId();
+			
+			// 書籍提供者コメントを設定
+			dto.setProviderComment(book.getProviderComment());
+			
+			// 返却 感想・コメント
+			dto.setMemo(book.getMemo());
+			
+			return dto;
 			
 		} catch (Exception e) {
 			throw e;
 		}
 	}
+	
 	
 	/**
 	 * 書籍検索リクエストを処理する
@@ -169,6 +255,18 @@ public class TBookService {
 	 */
 	private String determineLendingStatus(Integer borrowerId) {
 		return borrowerId != null ? "貸出中" : "貸出可能";
+	}
+	
+	public TBookEntity bookEditing(DtoBookInfo dtbook) {
+		TBookEntity tbook = new TBookEntity();
+		tbook.setTitle(dtbook.getTitle());
+		tbook.setCategories(dtbook.getCategory());
+		tbook.setProviderId(dtbook.getProviderId());
+		tbook.setProviderComment(dtbook.getProviderComment());
+		
+		tBookRepository.save(tbook);
+		
+		return tbook;
 	}
 
 }

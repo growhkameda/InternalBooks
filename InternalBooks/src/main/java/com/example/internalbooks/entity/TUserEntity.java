@@ -29,6 +29,9 @@ public class TUserEntity implements UserDetails {
     @Column(name = Const.NAME)
     private String name;
     
+//    @Column(name = Const.NAME)
+//    private String name;
+    
     @Column(name = Const.MAILADDRESS)
     private String mailAddress;
     
@@ -96,5 +99,15 @@ public class TUserEntity implements UserDetails {
      */
     public boolean isEnabled() {
         return true;
+    }
+    
+    // IntegerをStringへ変換するメソッド
+    public String getUserIdAsString() {
+        return String.valueOf(userId);
+    }
+    
+    // IntegerをStringへ変換するメソッド
+    public String getDepartmentIdAsString() {
+        return String.valueOf(departmentId);
     }
 }
