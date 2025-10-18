@@ -487,8 +487,7 @@ public class AdminController extends InternalBooksController {
      * 書籍登録確認画面へ遷移
      */
     @PostMapping("/bookingconfirmation")
-    public String BookingConfirmation(@Valid @ModelAttribute("bookdto")DtoBookInfo bookDto, BindingResult bindingResult, HttpSession session, RedirectAttributes redirectAttributes,
-            
+    public String BookingConfirmation(@Valid @ModelAttribute("bookdto")DtoBookInfo bookDto, BindingResult bindingResult, HttpSession session, RedirectAttributes redirectAttributes,            
     	     MultipartFile file, Model model) {
     	
     	if (bindingResult.hasErrors()) {
@@ -538,7 +537,7 @@ public class AdminController extends InternalBooksController {
             // DBへ(tilte,catgory,providerId,providercommnet)を保存
             TBookEntity savedBook = tBookService.bookEditing(bookDto);
             // DBに保存した値をDTOWO経由して再度取得           
-            DtoBookInfo dbook = new DtoBookInfo();
+            DtoBookInfo dbook = new DtoBooknfo();
             dbook.setTitle(savedBook.getTitle());
             dbook.setCategory(savedBook.getCategories());
             dbook.setProviderId(savedBook.getProviderId());

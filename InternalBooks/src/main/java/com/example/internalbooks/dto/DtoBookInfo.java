@@ -39,7 +39,7 @@ public class DtoBookInfo {
     @NotBlank(message = "コメントは必須です")
     private String providerComment;
     
-    private MultipartFile  imgPath;
+    private MultipartFile imgPath;
     
     // デフォルトコンストラクタ
     public DtoBookInfo() {
