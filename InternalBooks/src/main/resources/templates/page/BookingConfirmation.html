@@ -68,8 +68,8 @@
 	  <div class = "col-auto mt-1 pt-2 ms-3">
 			<label for = "id">書籍画像</label>
 	  </div>
-	  <div th:if="${imagePreview}" class = "col-7 col-md-8 text-start">
-			 <img th:src="'data:image/jpeg;base64,' + ${imagePreview}" alt="アップロード画像" class="img-fluid mt-4 " style="height:200px">
+	  <div class = "col-7 col-md-8 text-start">
+			 <img th:src="@{${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4 " style="height:200px">
       </div>
   </div>
 </div>	
@@ -91,7 +91,7 @@
 </div>
 
 <!-- 登録 -->
-<form th:action="@{/admin/bookingregistrationcomplete}" th:object= "${bookdto}" method="post" enctype="multipart/form-data"> 
+<form th:action="@{/admin/bookingregistrationcomplete}"  method="post" th:object= "${bookdto}" enctype="multipart/form-data"> 
  <div class ="container text-center mt-4">
 	  <div class = "col-auto">
 	 <button type="submit" class="btn btn-success">登録</button>
@@ -101,7 +101,7 @@
           <input type="hidden" th:field="*{category}">
           <input type="hidden" th:field="*{providerId}">
           <input type="hidden" th:field="*{providerComment}">
-          <input type="hidden" name="imagePreview" th:value="${imagePreview}">
+          <input type="hidden" th:field="*{imageUrl}">
           
 	  </div>
 </div>

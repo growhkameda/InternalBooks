@@ -1,6 +1,9 @@
 package com.example.internalbooks.dto;
 
 import lombok.Data;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -35,6 +38,8 @@ public class DtoBookInfo {
  // 書籍提供者のコメント
     @NotBlank(message = "コメントは必須です")
     private String providerComment;
+    
+    private MultipartFile  imgPath;
     
     // デフォルトコンストラクタ
     public DtoBookInfo() {

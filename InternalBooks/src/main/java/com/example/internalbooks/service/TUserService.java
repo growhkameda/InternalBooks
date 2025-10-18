@@ -86,7 +86,7 @@ public class TUserService implements UserDetailsService {
             default: return "不明";
         }
         
-    }
+    }    
     
     /**
      * ユーザー情報をDBへ保存するメソッド

@@ -4,6 +4,18 @@
 
 <head>
     <title>書籍編集登録画面</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+<style>
+.icon-hover {
+   color: gray;
+   cursor: pointer;		
+}
+.icon-hover:hover {
+  fill: #0d6efd;            /* hover時の色（Bootstrapのprimary） */
+  transform: scale(1.1);     /* 少し拡大 */
+}
+</style>
 </head>
 
 <body>
@@ -77,21 +89,29 @@
   <div class ="row justify-content-center"> 
 	  <div class = "col-auto mt-1 pt-2 ms-3">
 			<label for = "id">書籍画像</label>
-	  </div>
+	  </div>	   
 	   <div class = "col-7 col-md-8">
 			<div class="border rounded bg-light d-flex flex-column justify-content-center align-items-center" style="height: 150px;">
             <span class="me-2 mb-1">ファイルを選択</span>
-			<label for="file-upload" class="custom-file-upload">
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-copy me-2 mb-3" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M4 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1z"/> 
-            </svg>
-			</label>
-			<input id="file-upload" type="file" name="imagefile" class="d-none"/>
-            </div>
-	   </div>
-  </div>
+            <button type="button" class="btn btn-outline-promary" data-bs-toggle="collapse" data-bs-target="#imageSelect">
+			<i class="bi bi-copy icon-hover"></i>
+            </button> 
+           <div>
+			<div id="imageSelect" class="collapse">
+             <select class="form-select w-50 mx-auto" th:field="*{imageUrl}" id="imageSelectBox">
+	         <option value="">-- 選択してください --</option>
+		      <option th:each="img : ${imageFiles}" 
+		              th:value="@{'/images/' + ${img}}" 
+		              th:text="${img}"> 
+		      </option> 
+	          </select> 
+			</div>         				
+			</div>						
+         </div> 
+        </div>
+    </div>
 </div>
-
+   
 <!-- 戻る -->
 <div class="container mt-5">
   <div class="row">

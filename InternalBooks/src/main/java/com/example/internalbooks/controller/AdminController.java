@@ -19,6 +19,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
 import jakarta.servlet.http.HttpSession;
+
+import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
 
@@ -91,8 +93,12 @@ public class AdminController extends InternalBooksController {
                 return adminPermissionError(redirectAttributes);
             }
             
-            model.addAttribute("isAdmin", isAdmin);
-            logger.info("bookediting() にアクセスされました");
+            
+            File uploadDir = new File("src/main/resources/static/images/");
+            String[] imageFiles = uploadDir.list((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png"));
+            if (imageFiles == null) imageFiles = new String[0];
+
+            model.addAttribute("imageFiles", imageFiles);
             
             model.addAttribute("bookdto", new DtoBookInfo()); //空のDTOを返す
             
@@ -482,7 +488,7 @@ public class AdminController extends InternalBooksController {
      */
     @PostMapping("/bookingconfirmation")
     public String BookingConfirmation(@Valid @ModelAttribute("bookdto")DtoBookInfo bookDto, BindingResult bindingResult, HttpSession session, RedirectAttributes redirectAttributes,
-             @RequestParam("imagefile")  
+            
     	     MultipartFile file, Model model) {
     	
     	if (bindingResult.hasErrors()) {
@@ -504,19 +510,6 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
             
             model.addAttribute("bookdto",bookDto);
-            
-            if (!file.isEmpty()) {
-                try {
-                    byte[] imageBytes = file.getBytes();
-                    session.setAttribute("imageBytes", imageBytes);
-
-                    String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-                    model.addAttribute("imagePreview", base64Image);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
 
             return "page/BookingConfirmation"; 
         }
@@ -531,7 +524,7 @@ public class AdminController extends InternalBooksController {
      */
     @PostMapping("/bookingregistrationcomplete")
     public String BookingRegistrationcomplete(@ModelAttribute("bookdto") DtoBookInfo bookDto,SessionStatus status,HttpSession session, RedirectAttributes redirectAttributes, 
-             MultipartFile file, Model model) {
+    		MultipartFile file, Model model) {
     	
         // トークンと管理者権限の検証
         try {
@@ -541,7 +534,7 @@ public class AdminController extends InternalBooksController {
             }
             
             model.addAttribute("isAdmin", isAdmin);
-            
+                        
             // DBへ(tilte,catgory,providerId,providercommnet)を保存
             TBookEntity savedBook = tBookService.bookEditing(bookDto);
             // DBに保存した値をDTOWO経由して再度取得           
@@ -550,19 +543,9 @@ public class AdminController extends InternalBooksController {
             dbook.setCategory(savedBook.getCategories());
             dbook.setProviderId(savedBook.getProviderId());
             dbook.setProviderComment(savedBook.getProviderComment());
-            
-            byte[] imageBytes = (byte[]) session.getAttribute("imageBytes");
-            if (imageBytes != null) {
-                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-                model.addAttribute("imagePreview", base64Image);
-            }
-            
-            
+                        
             // 取得した情報を表示
             model.addAttribute("dbook",dbook);
-
-            // 完了後に画像をセッションから削除
-            session.removeAttribute("imageBytes");
             // セッション破棄（フォームを消す）
             status.setComplete();
 

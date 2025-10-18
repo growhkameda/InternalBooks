@@ -30,9 +30,9 @@
 	
 <!-- 画像 -->
 <div class="text-center">
-   <div th:if="${imagePreview}">
-    <img th:src="'data:image/jpeg;base64,' + ${imagePreview}" class="img-fluid mt-4" style="height:400px" alt="image"/>
-   </div>
+   	  <div class = "text-start">
+			 <img th:src="@{${dbook.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4" style="height:400px">
+      </div>
 </div>
 
 <!-- 書籍名・カテゴリー -->
