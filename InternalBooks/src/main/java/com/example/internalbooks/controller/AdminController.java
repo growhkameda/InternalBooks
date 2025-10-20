@@ -2,26 +2,30 @@ package com.example.internalbooks.controller;
 
 import java.io.IOException;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.internalbooks.common.BookingRegistrationForm;
-import com.example.internalbooks.common.UserRegistrationForm;
+import com.example.internalbooks.dto.DtoBookInfo;
+import com.example.internalbooks.dto.DtoUserRegistration;
+import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
@@ -34,19 +38,22 @@ import com.example.internalbooks.utils.JwtUtil;
  */
 @Controller
 @RequestMapping("/admin")
+@SessionAttributes({"userdto, bookdto"})
 public class AdminController extends InternalBooksController {
     
     //ロガー
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
     //DI用フィールド
     private final TUserService tUserService;
+    private final TBookService tBookService;
 
     //コンストラクタインジェクション    
     public AdminController(JwtUtil jwtUtil, AuthService authService, TBookService tBookService, TUserService tUserService) {
         super(jwtUtil, authService, tBookService);
         this.tUserService = tUserService;
+        this.tBookService = tBookService;
     }
-
+    
     /**
      * 管理者ユーザートップページに遷移
      */
@@ -85,6 +92,8 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
             logger.info("bookediting() にアクセスされました");
             
+            model.addAttribute("bookdto", new DtoBookInfo()); //空のDTOを返す
+            
             return "page/bookediting";
         }
         catch (Exception e) {
@@ -92,93 +101,7 @@ public class AdminController extends InternalBooksController {
         }
     }
     
-    /**
-     * ユーザー確認ページに遷移
-     */
-    @GetMapping("/userconfir")
-    public String UserConfir(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            logger.info("UserConfir() にアクセスされました");
-            
-            return "page/UserConfir";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
     
-    /**
-     * ユーザー登録完了ページに遷移
-     */
-    @GetMapping("/userregistrationcomplete")
-    public String UserRegistrationComplete(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            logger.info("UserRegistrationComplete() にアクセスされました");
-            
-            return "page/UserRegistrationComplete";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
-    
-    /**
-     * 書籍登録確認ページに遷移
-     */
-    @GetMapping("/bookingconfirmation")
-    public String BookingConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            logger.info("BookingConfirmation() にアクセスされました");
-            
-            return "page/BookingConfirmation";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
-    
-    /**
-     * 書籍登録完了ページに遷移
-     */
-    @GetMapping("/bookingregistrationcomplete")
-    public String BookingRegistrationComplete(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            logger.info("BookingRegistrationComplete() にアクセスされました");
-            
-            return "page/BookingRegistrationComplete";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
     
     /**
      * ユーザー編集完了画面へ遷移
@@ -411,18 +334,10 @@ public class AdminController extends InternalBooksController {
                 return adminPermissionError(redirectAttributes);
             }
             
-            // 全ユーザー情報を取得
-            List<TUserEntity> users = tUserService.getAllUsers();
-            
             // 各ユーザーの所属課を取得してモデルに追加する
-            Map<Integer, String> departmentNames = new HashMap<>();
-            for (TUserEntity user : users) {
-                String departmentName = tUserService.getDepartmentNameById(user.getDepartmentId());
-                departmentNames.put(user.getUserId(), departmentName);
-            }
+            List<TUserEntity> userWithDepartmentName = tUserService.getUserDepartmentName();
             
-            model.addAttribute("users", users);
-            model.addAttribute("departmentNames", departmentNames);
+            model.addAttribute("users", userWithDepartmentName);
             model.addAttribute("isAdmin", isAdmin);
 
             // ログを出力
@@ -440,7 +355,7 @@ public class AdminController extends InternalBooksController {
      * ユーザー登録画面へ遷移
      */
     @GetMapping("/userregistration")
-    public String UserRegistration(@ModelAttribute("UserRegistration") UserRegistrationForm form, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String UserRegistration(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         try {
            // 管理者権限の検証
            boolean isAdmin = validateTokenAndCheckAdmin(session);
@@ -449,6 +364,8 @@ public class AdminController extends InternalBooksController {
            }
             
             model.addAttribute("isAdmin", isAdmin);
+            
+            model.addAttribute("userDto", new DtoUserRegistration()); //空のDTOを返す
 
             return "page/UserRegistration"; 
             
@@ -462,7 +379,22 @@ public class AdminController extends InternalBooksController {
      * ユーザー登録確認画面に遷移
      */
     @PostMapping("/userconfir")
-    public String UserConfir(@ModelAttribute("UserRegistration") UserRegistrationForm form, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String UserConfir(@ModelAttribute("userDto") DtoUserRegistration userDto, BindingResult bindingResult, HttpSession session, RedirectAttributes redirectAttributes,
+            Model model) {
+    	
+    	if (bindingResult.hasErrors()) {
+    		for (FieldError error : bindingResult.getFieldErrors()) {
+    			
+    			if("Pattern".equals(error.getCode())){
+    				
+    				// コンソールにも表示
+    			}
+    			System.out.println(error.getField() + ":" + error.getDefaultMessage());
+    			
+    			return "page/UserRegistration"; 
+    		}
+    		
+    	}
         // トークンと管理者権限の検証
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
@@ -478,12 +410,12 @@ public class AdminController extends InternalBooksController {
             return error(redirectAttributes);
         }
     }
-
-    /**
-     * 書籍登録確認画面へ遷移
-     */
-    @PostMapping("/bookingconfirmation")
-    public String BookingConfirmation(@ModelAttribute("BookingRegistration") BookingRegistrationForm form, @RequestParam("imagefile") MultipartFile file, HttpSession session, Model model, RedirectAttributes redirectAttributes) throws IOException {
+    
+ // 戻る（入力画面へ戻す）入力画面へ戻った際にセッションが残っていなかった為追加。
+    @PostMapping("/back")
+    public String UserRegistrationBack(@ModelAttribute("userDto")DtoUserRegistration userDto, HttpSession session, RedirectAttributes redirectAttributes,
+            Model model) {
+    	
         // トークンと管理者権限の検証
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
@@ -492,6 +424,81 @@ public class AdminController extends InternalBooksController {
             }
             
             model.addAttribute("isAdmin", isAdmin);
+            
+            model.addAttribute("userDto", userDto);
+            
+            return "page/UserRegistration";
+        }
+        catch (Exception e) {
+            return error(redirectAttributes);
+        }
+   
+    }
+       
+ // ユーザー登録完了の送信処理
+    @PostMapping("/userregistrationcomplete")
+    public String UserRegistrationComplete(@ModelAttribute("userDto") DtoUserRegistration userdto, SessionStatus status, HttpSession session, RedirectAttributes redirectAttributes, Model model) {
+    	
+    	 // トークンと管理者権限の検証
+        try {
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+            
+            model.addAttribute("isAdmin", isAdmin);
+            
+         // DBへ(userId,name,mailAddress,password,departmentId)を保存
+            TUserEntity savedUser = tUserService.userRegistration(userdto);
+         // DBに保存した値をDTOを経由して再度取得           
+            DtoUserRegistration tuser = new DtoUserRegistration();
+            tuser.setUserId(savedUser.getUserIdAsString());
+            tuser.setName(savedUser.getName());
+            tuser.setMailAddress(savedUser.getMailAddress());
+            tuser.setDepartmentId(savedUser.getDepartmentIdAsString());
+            tuser.setPassword(savedUser.getPassword());
+            
+            // 取得した情報を表示
+            model.addAttribute("tuser",tuser);
+    	
+            status.setComplete();
+
+            return "page/UserRegistrationComplete"; 
+        
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+
+    /**
+     * 書籍登録確認画面へ遷移
+     */
+    @PostMapping("/bookingconfirmation")
+    public String BookingConfirmation(@Valid @ModelAttribute("bookdto")DtoBookInfo bookDto, BindingResult bindingResult, HttpSession session, RedirectAttributes redirectAttributes,
+             @RequestParam("imagefile")  
+    	     MultipartFile file, Model model) {
+    	
+    	if (bindingResult.hasErrors()) {
+    		for (FieldError error : bindingResult.getFieldErrors()) {
+    			// コンソールにも表示
+    			System.out.println(error.getField() + ":" + error.getDefaultMessage());
+    			
+    			return "page/bookediting"; 
+    		}
+    	}
+    	
+    	// トークンと管理者権限の検証
+        try {
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+            
+            model.addAttribute("isAdmin", isAdmin);
+            
+            model.addAttribute("bookdto",bookDto);
             
             if (!file.isEmpty()) {
                 try {
@@ -518,7 +525,9 @@ public class AdminController extends InternalBooksController {
      * 書籍登録完了画面へ遷移
      */
     @PostMapping("/bookingregistrationcomplete")
-    public String BookingRegistrationcomplete(@ModelAttribute("BookingRegistration") BookingRegistrationForm form, @RequestParam("imagefile") MultipartFile file, HttpSession session, Model model, RedirectAttributes redirectAttributes) throws IOException {
+    public String BookingRegistrationcomplete(@ModelAttribute("bookdto") DtoBookInfo bookDto,SessionStatus status,HttpSession session, RedirectAttributes redirectAttributes, 
+             MultipartFile file, Model model) {
+    	
         // トークンと管理者権限の検証
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
@@ -528,14 +537,29 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
+            // DBへ(tilte,catgory,providerId,providercommnet)を保存
+            TBookEntity savedBook = tBookService.bookEditing(bookDto);
+            // DBに保存した値をDTOWO経由して再度取得           
+            DtoBookInfo dbook = new DtoBookInfo();
+            dbook.setTitle(savedBook.getTitle());
+            dbook.setCategory(savedBook.getCategories());
+            dbook.setProviderId(savedBook.getProviderId());
+            dbook.setProviderComment(savedBook.getProviderComment());
+            
             byte[] imageBytes = (byte[]) session.getAttribute("imageBytes");
             if (imageBytes != null) {
                 String base64Image = Base64.getEncoder().encodeToString(imageBytes);
                 model.addAttribute("imagePreview", base64Image);
             }
+            
+            
+            // 取得した情報を表示
+            model.addAttribute("dbook",dbook);
 
             // 完了後に画像をセッションから削除
             session.removeAttribute("imageBytes");
+            // セッション破棄（フォームを消す）
+            status.setComplete();
 
             return "page/BookingRegistrationComplete";
         }
@@ -545,17 +569,4 @@ public class AdminController extends InternalBooksController {
         
     }
 
-    /**
-     * どこで使うかわからないのでとりあえずおいておきます。
-     * 次回push時に削除するか適切な位置に移動するか決めてください -> 佐野さん
-     */
-    @ModelAttribute("UserRegistration")
-    public UserRegistrationForm setUpUserRegistration() {
-        return new UserRegistrationForm();
-    }
-
-    @ModelAttribute("BookingRegistration")
-    public BookingRegistrationForm setUpBookingRegistration() {
-        return new BookingRegistrationForm();
-    }
 }

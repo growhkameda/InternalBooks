@@ -8,9 +8,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.MDepartmentRepository;
 import com.example.internalbooks.repository.TUserRepository;
+import com.example.internalbooks.repository.MDepartmentRepository;
 
 @Service
 @Transactional
@@ -88,7 +90,6 @@ public class TUserService implements UserDetailsService {
     }
     /**
      * 部門IDから部門名を取得する
-     * (現在は仮で設定)
      */
     public String getDepartmentNameById(Integer departmentId) {
         if (departmentId == null) {
@@ -108,6 +109,44 @@ public class TUserService implements UserDetailsService {
             // その他のエラーの場合
             return "Error";
         }
+        
     }
 
+    /**
+     * ユーザーの所属課を取得する
+     * DBへのアクセス回数が多いためパフォーマンス上げるならJOINクエリとかRepositoryに追加するといい！
+     */
+    public List<TUserEntity> getUserDepartmentName() {
+        // 全ユーザー情報を取得
+        List<TUserEntity> users = getAllUsers();
+
+        // 各ユーザーの所属課を取得
+        for (TUserEntity user : users) {
+            String departmentName = getDepartmentNameById(user.getDepartmentId());
+            user.setDepartmentName(departmentName);
+        }
+
+        return users;
+    }
+        
+    
+    /**
+     * ユーザー情報をDBへ保存するメソッド
+     */
+    public TUserEntity userRegistration(DtoUserRegistration dtuser) {
+    	TUserEntity tuser = new TUserEntity();
+    	tuser.setUserId(dtuser.getUserIdAsIntger());
+    	tuser.setName(dtuser.getName());
+    	tuser.setMailAddress(dtuser.getMailAddress());
+    	tuser.setPassword(dtuser.getPassword());
+    	tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
+    	tuser.setRole(dtuser.getRole());
+    	tuser.setDeleteFlg(dtuser.getDeleteFlg());
+    	  
+    	tUserRepository.save(tuser);
+    	  
+    	return tuser;
+    	  
+    }
+      
 }
