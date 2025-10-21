@@ -352,7 +352,6 @@ public class InternalBooksController {
     	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
         return "redirect:/page/login";
     }
- 
     
     /**
      * 管理者権限エラー処理

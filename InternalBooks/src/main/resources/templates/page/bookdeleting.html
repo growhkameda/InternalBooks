@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+  <title>書籍削除画面</title>
+</head>
+
+<body>
+  <section class="d-flex justify-content-center align-items-start py-5">
+    <div class="container d-flex justify-content-center align-items-start">
+      <div class="w-100" style="max-width: 400px;">
+
+
+        <!-- ================== ページメインタイトル ================== -->
+        <h1 class="fw-bold mt-5 display-3 mb-5 text-center">書籍削除</h1>
+
+
+        <!-- ========== カテゴリー選択ボタン ========== -->
+        <div class="container fixed-page-width">
+          <div class="row">
+            <a th:href="@{/page/categories}" class="col-auto btn"
+              style="margin-bottom: 10px; font-size: 16px; text-align: left;">
+              カテゴリー選択へ戻る↵
+            </a>
+          </div>
+        </div>
+
+        <div class="container fixed-page-width">
+          <div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
+            <a th:each="bookId : ${bookIdList}" th:href="@{'/admin/bookdeletingconfirmation?bookid=' + ${bookId}}"
+              class="col-md-6 mb-6 btn" style="text-decoration: none;">
+              <img th:src="@{'/images/' + ${bookId} + '.png'}" alt="Book Image" class="img-fluid fixed-size-img" />
+            </a>
+          </div>
+
+          <div th:if="${#lists.isEmpty(bookIdList)}">
+            <p>該当する本が見つかりませんでした。</p>
+          </div>
+
+          <div class="pagination-buttons fixed-page-width">
+            <button id="prev-button" class="btn btn-outline-primary">← 前のページ</button>
+            <button id="next-button" class="btn btn-outline-primary">次のページ →</button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+</body>
+
+</html>
