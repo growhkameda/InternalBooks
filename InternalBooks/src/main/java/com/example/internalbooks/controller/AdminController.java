@@ -42,7 +42,6 @@ import com.example.internalbooks.service.TBookService;
  */
 @Controller
 @RequestMapping("/admin")
-@SessionAttributes({"userdto, bookdto"})
 public class AdminController extends InternalBooksController {
     
     //ロガー
@@ -93,11 +92,12 @@ public class AdminController extends InternalBooksController {
                 return adminPermissionError(redirectAttributes);
             }
             
-            
+            //既に保存されている画像をリスト化して表示させる
             File uploadDir = new File("src/main/resources/static/images/");
+            //jpgまたはpngのファイルをString配列として取得。
             String[] imageFiles = uploadDir.list((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png"));
-            if (imageFiles == null) imageFiles = new String[0];
-
+                       
+            //取得した画像を表示
             model.addAttribute("imageFiles", imageFiles);
             
             model.addAttribute("bookdto", new DtoBookInfo()); //空のDTOを返す
@@ -487,8 +487,7 @@ public class AdminController extends InternalBooksController {
      * 書籍登録確認画面へ遷移
      */
     @PostMapping("/bookingconfirmation")
-    public String BookingConfirmation(@Valid @ModelAttribute("bookdto")DtoBookInfo bookDto, BindingResult bindingResult, HttpSession session, RedirectAttributes redirectAttributes,            
-    	     MultipartFile file, Model model) {
+    public String BookingConfirmation(@Valid @ModelAttribute("bookdto")DtoBookInfo bookDto, BindingResult bindingResult, HttpSession session, RedirectAttributes redirectAttributes,Model model) {
     	
     	if (bindingResult.hasErrors()) {
     		for (FieldError error : bindingResult.getFieldErrors()) {
@@ -517,13 +516,35 @@ public class AdminController extends InternalBooksController {
         }
         
     }
+ // 戻る（入力画面へ戻す）入力画面へ戻った際にセッションが残っていなかった為追加。
+    @PostMapping("/dbback")
+    public String bookeditingBack(@ModelAttribute("bookdto")DtoBookInfo bookDto, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        // トークンと管理者権限の検証
+        try {
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+            
+            
+            model.addAttribute("isAdmin", isAdmin);
+            
+            model.addAttribute("bookdto",bookDto);
+            
+            
+            return "page/bookediting";
+        }
+        catch (Exception e) {
+            return error(redirectAttributes);
+        }
+    }
 
     /**
      * 書籍登録完了画面へ遷移
      */
     @PostMapping("/bookingregistrationcomplete")
     public String BookingRegistrationcomplete(@ModelAttribute("bookdto") DtoBookInfo bookDto,SessionStatus status,HttpSession session, RedirectAttributes redirectAttributes, 
-    		MultipartFile file, Model model) {
+    		Model model) {
     	
         // トークンと管理者権限の検証
         try {
@@ -537,7 +558,7 @@ public class AdminController extends InternalBooksController {
             // DBへ(tilte,catgory,providerId,providercommnet)を保存
             TBookEntity savedBook = tBookService.bookEditing(bookDto);
             // DBに保存した値をDTOWO経由して再度取得           
-            DtoBookInfo dbook = new DtoBooknfo();
+            DtoBookInfo dbook = new DtoBookInfo();
             dbook.setTitle(savedBook.getTitle());
             dbook.setCategory(savedBook.getCategories());
             dbook.setProviderId(savedBook.getProviderId());
@@ -545,6 +566,8 @@ public class AdminController extends InternalBooksController {
                         
             // 取得した情報を表示
             model.addAttribute("dbook",dbook);
+            
+            
             // セッション破棄（フォームを消す）
             status.setComplete();
 

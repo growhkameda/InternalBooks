@@ -1,9 +1,7 @@
 package com.example.internalbooks.dto;
 
+import java.util.List;
 import lombok.Data;
-
-import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -15,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
 public class DtoBookInfo {
     
     // 書籍ID
-    private Integer bookId;
+    private Integer bookId= 1;
     
     // 書籍タイトル
     @NotBlank(message = "書籍名は必須です")
@@ -25,21 +23,26 @@ public class DtoBookInfo {
     @NotBlank(message = "カテゴリーは必須です")
     private String category;
     
+    private List<String> categories;
+    
     // 貸出状況
     private String status;
     
+    // 返却 感想・コメント
+    private String memo;
+    
     // 書籍画像URL
+    // カテゴリー
+    @NotBlank(message = "書籍画像は必須です。")
     private String imageUrl;
     
     // 書籍提供者
     @NotNull(message = "書籍提供者は必須です")
     private Integer providerId;
     
- // 書籍提供者のコメント
+    // 書籍提供者のコメント
     @NotBlank(message = "コメントは必須です")
     private String providerComment;
-    
-    private MultipartFile imgPath;
     
     // デフォルトコンストラクタ
     public DtoBookInfo() {
@@ -56,5 +59,14 @@ public class DtoBookInfo {
             // デフォルト画像を設定
             this.imageUrl = "/images/default-book.png";
         }
+    }
+    
+    // getter/setter for categories
+    public List<String> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<String> categories) {
+        this.categories = categories;
     }
 }

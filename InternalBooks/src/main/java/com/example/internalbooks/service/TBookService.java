@@ -263,6 +263,7 @@ public class TBookService {
 		tbook.setCategories(dtbook.getCategory());
 		tbook.setProviderId(dtbook.getProviderId());
 		tbook.setProviderComment(dtbook.getProviderComment());
+		tbook.setBookId(dtbook.getBookId());
 		
 		tBookRepository.save(tbook);
 		

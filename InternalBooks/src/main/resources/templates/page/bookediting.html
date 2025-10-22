@@ -90,25 +90,28 @@
 	  <div class = "col-auto mt-1 pt-2 ms-3">
 			<label for = "id">書籍画像</label>
 	  </div>	   
-	   <div class = "col-7 col-md-8">
-			<div class="border rounded bg-light d-flex flex-column justify-content-center align-items-center" style="height: 150px;">
-            <span class="me-2 mb-1">ファイルを選択</span>
-            <button type="button" class="btn btn-outline-promary" data-bs-toggle="collapse" data-bs-target="#imageSelect">
-			<i class="bi bi-copy icon-hover"></i>
-            </button> 
-           <div>
-			<div id="imageSelect" class="collapse">
-             <select class="form-select w-50 mx-auto" th:field="*{imageUrl}" id="imageSelectBox">
-	         <option value="">-- 選択してください --</option>
-		      <option th:each="img : ${imageFiles}" 
-		              th:value="@{'/images/' + ${img}}" 
-		              th:text="${img}"> 
-		      </option> 
-	          </select> 
-			</div>         				
-			</div>						
+	     <div class = "col-7 col-md-8">
+		　 　<!-- バリデーションエラーを表示 -->
+		      <span th:errors="*{imageUrl}" class="text-danger"></span>
+			   <div class="border rounded bg-light d-flex flex-column justify-content-center align-items-center" style="height: 150px;">
+			    <!-- collapse機能でアイコンを押すことでid="imageSelectが表示 -->
+                <span class="me-2 mb-1">ファイルを選択</span>
+                <button type="button" class="btn btn-outline-promary" data-bs-toggle="collapse" data-bs-target="#imageSelect">
+			     <i class="bi bi-copy icon-hover"></i>
+                </button>		
+               <!-- id="imageSelectでdata-bs-targetと繋がる -->
+			    <div id="imageSelect" class="collapse">
+                <select class="form-select w-50 mx-auto" th:field="*{imageUrl}" id="imageSelectBox">
+	             <option value="">-- 選択してください --</option>
+	             <!-- AdminControllerで渡したリストを表示 -->
+		         <option th:each="img : ${imageFiles}" 
+		                 th:value="@{'/images/' + ${img}}" 
+		                 th:text="${img}"> 
+		         </option> 
+	            </select> 
+			    </div>
+		      </div> 
          </div> 
-        </div>
     </div>
 </div>
    
