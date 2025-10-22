@@ -12,7 +12,7 @@
 	<h1 class= "text-center">図書館システム</h1>
   </div>
   <div class="row">
-	<h2 class= "text-center mt-4">ユーザー編集画面</h2>
+	<h2 class= "text-center mt-4">ユーザー編集確認画面</h2>
   </div>	
 
 	<!-- ================== 社員ID表示 ================== -->
@@ -69,7 +69,7 @@
   <!-- ================== 完了ボタン ================== -->
    <div class ="container text-center mt-5">
 	<div class = "row justify-content-center">
-	  <a th:href="@{/admin/usereditconfirmation(userId=${putUser.userId})}"
+	  <a th:href="@{/admin/finishuseredit(userId=${putUser.userId})}"
 	    class="btn btn-success text-align-center col-4">編集</a>
 	</div>
    </div>
