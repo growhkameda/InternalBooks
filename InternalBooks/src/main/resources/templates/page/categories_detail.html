@@ -32,6 +32,22 @@
         font-size: 16px;
       }
     </style>
+	
+	<script>
+	  function changePage(pageNumber) {
+	    const category = /*[[${category}]]*/ 'default'; // Thymeleafで埋め込む
+	    
+	    // 例：fetch APIで非同期にデータ取得（要バックエンド対応）
+	    fetch(`/page/categories_detail_fragment?category=${encodeURIComponent(category)}&page=${pageNumber}`)
+	      .then(response => response.text())
+	      .then(html => {
+	        document.getElementById('image-gallery').innerHTML = html;
+	      })
+	      .catch(error => {
+	        console.error('ページ切り替えエラー:', error);
+	      });
+	  }
+	</script>
 
     <div class="container text-center fixed-page-width"
          style="margin-bottom: 60px; font-size: 30px; font-weight: 600;">
@@ -53,7 +69,7 @@
 
     <div class="container fixed-page-width">
 		<div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
-		  <a th:each="bookId : ${bookId}"
+		  <a th:each="bookId : ${bookIdList}"
 		     th:href="@{'/page/book_detail?bookid=' + ${bookId}}"
 		     class="col-md-6 mb-6 btn"
 		     style="text-decoration: none;">
@@ -62,15 +78,28 @@
 		         class="img-fluid fixed-size-img" />
 		  </a>
 		</div>
-	  <div th:if="${#lists.isEmpty(bookId)}">
+		<!-- ページネーションボタン -->
+		<div class="pagination-buttons fixed-page-width">
+		  <!-- 前のページ -->
+		  <button th:if="${currentPage > 0}"
+		          class="btn btn-outline-primary"
+		          onclick="changePage([[${currentPage} - 1]])">
+		    ← 前のページ
+		  </button>
+
+		  <!-- 次のページ -->
+		  <button th:if="${currentPage + 1 < totalPages}"
+		          class="btn btn-outline-primary"
+		          onclick="changePage([[${currentPage} + 1]])">
+		    次のページ →
+		  </button>
+		</div>
+	  <div th:if="${#lists.isEmpty(bookIdList)}">
 	    <p>該当する本が見つかりませんでした。</p>
 	  </div>
-
-      <div class="pagination-buttons fixed-page-width">
-        <button id="prev-button" class="btn btn-outline-primary">← 前のページ</button>
-        <button id="next-button" class="btn btn-outline-primary">次のページ →</button>
-      </div>
     </div>
   </section>
 </body>
 </html>
+
+

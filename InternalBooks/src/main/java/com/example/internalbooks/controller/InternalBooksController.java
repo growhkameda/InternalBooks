@@ -260,15 +260,32 @@ public class InternalBooksController {
     }
    
     @GetMapping("/page/categories_detail")
-    public String categories_detail(@RequestParam("category") String category,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String categories_detail(
+    		@RequestParam("category") String category,
+    	    @RequestParam(value = "page", defaultValue = "0") int page,
+    	    HttpSession session,
+    	    Model model,
+    	    RedirectAttributes redirectAttributes) {
     	try {
             // トークンの検証（共通メソッド）
-            validateTokenAndGetUserId(session);
+    		validateTokenAndGetUserId(session);
+
+    		//
+            List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
+
+            //表示する画像の枚数
+            int pageSize = 6;
             
-            // 対象カテゴリーのbookIdを取得
-            List<Integer> bookIdList = tBookService.getCategoriesdetail(category);
-            model.addAttribute("bookIdList", bookIdList);
+            int totalPages = (int) Math.ceil((double) allBookIds.size() / pageSize);
+            int fromIndex = page * pageSize;
+            int toIndex = Math.min(fromIndex + pageSize, allBookIds.size());
+
+            List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
+
+            model.addAttribute("bookIdList", pagedBookIds);
             model.addAttribute("category", category);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", totalPages);
 
             return "page/categories_detail";
     	}
