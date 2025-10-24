@@ -210,7 +210,7 @@ public class AdminController extends InternalBooksController {
      * 書籍削除確認ページに遷移
      */
     @GetMapping("/bookdeletingconfirmation")
-    public String BookDeletingConfirmation(@RequestParam("bookid") Integer bookid, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String bookdeletingconfirmation(@RequestParam("bookid") Integer bookid, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         // トークンと管理者権限の検証
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);

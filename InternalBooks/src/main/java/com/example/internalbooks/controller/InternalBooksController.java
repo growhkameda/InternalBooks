@@ -251,7 +251,7 @@ public class InternalBooksController {
             session.removeAttribute("fromQrSearch");
             session.removeAttribute("fromCheckedOut");
 
-            return "page/SearchResult";
+            return "page/searchresult";
             
         } catch (Exception e) {
             logger.error("検索結果詳細ページでエラーが発生しました", e);
