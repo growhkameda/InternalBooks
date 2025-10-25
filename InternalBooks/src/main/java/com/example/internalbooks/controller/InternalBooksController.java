@@ -213,7 +213,7 @@ public class InternalBooksController {
      */
     @GetMapping("/page/searchresult")
     public String searchResult(
-		@ModelAttribute("dtLend") DtoBookHistoryRegistration dtLend,
+		@ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
         @RequestParam(name = "bookId", required = false) Integer bookId,
         @RequestParam(name = "qrData", required = false) String qrData,
         HttpSession session,
@@ -269,8 +269,13 @@ public class InternalBooksController {
             // セッションから遷移フラグを削除
             session.removeAttribute("fromQrSearch");
             session.removeAttribute("fromCheckedOut");
+            
+            if (bookId == null) {
+                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
+                return "redirect:/page/top";
+            }
 
-            return "page/SearchResult";
+            return "page/searchresult";
             
         } catch (Exception e) {
             logger.error("検索結果詳細ページでエラーが発生しました", e);
@@ -278,6 +283,58 @@ public class InternalBooksController {
         }
     }
     
+    
+    @PostMapping("/page/ReturnCompleted")
+    public String searchResult(
+    		@ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
+    		@RequestParam(name = "qrData", required = false) String qrData,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+    	
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+    		Integer bookId = dtlend.getBookId();
+            Integer userId = jwtUtil.extractUserId(token);
+            
+            dtlend.setBookId(bookId);
+            dtlend.setUserId(userId);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+            
+            // DBへ(userId,name,mailAddress,password,departmentId)を保存
+            TLendingHistoryEntity savedLend = lendingHistoryService.lendRegistration(dtlend);
+            // DBに保存した値をDTOを経由して再度取得
+            DtoBookHistoryRegistration tlend = new DtoBookHistoryRegistration();
+            tlend.setBookId(savedLend.getBookId());
+            tlend.setLendingDate(savedLend.getLendingDate());
+            tlend.setScheduledReturnDate(savedLend.getScheduledReturnDate());
+            tlend.setReturnDate(savedLend.getReturnDate());
+            tlend.setUserId(savedLend.getUserId());
+            tlend.setReview(savedLend.getReview());
+            
+            // 取得した情報を表示
+            model.addAttribute("tlend",tlend);
+            
+            
+            if (bookId == null) {
+                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
+                return "redirect:/page/top";
+            }
+            
+            redirectAttributes.addAttribute("bookId", bookId);
+            if (qrData != null) {
+            	redirectAttributes.addAttribute("qrData", qrData);
+            }
+            return "page/ReturnCompleted";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
     
     /**
      * 貸出完了ページに遷移
@@ -374,51 +431,6 @@ public class InternalBooksController {
             
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
             model.addAttribute("bookHistory", latestHistory);
-            
-            
-            if (bookId == null) {
-                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
-                return "redirect:/page/top";
-            }
-            
-            return "page/ReturnCompleted";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
-        
-    }
-    
-    @PostMapping("/page/ReturnCompleted")
-    public String ReturnCompleted(
-    		@ModelAttribute("dtLend") DtoBookHistoryRegistration dtlend,
-    		@RequestParam("bookId") Integer bookId,
-    		@RequestParam(name = "qrData", required = false) String qrData,
-            HttpSession session,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-    	
-    	try {
-    		// torkenの検証
-    		String token = (String) session.getAttribute("token");
-            jwtUtil.extractUserId(token);
-            
-            boolean isAdmin = jwtUtil.extractIsAdmin(token);
-            model.addAttribute("isAdmin", isAdmin);
-            
-            // DBへ(userId,name,mailAddress,password,departmentId)を保存
-            TLendingHistoryEntity savedLend = lendingHistoryService.lendRegistration(dtlend);
-            // DBに保存した値をDTOを経由して再度取得           
-            DtoBookHistoryRegistration tlend = new DtoBookHistoryRegistration();
-            tlend.setBookId(savedLend.getBookId());
-            tlend.setLendingDate(savedLend.getLendingDate());
-            tlend.setScheduledReturnDate(savedLend.getScheduledReturnDate());
-            tlend.setReturnDate(savedLend.getReturnDate());
-            tlend.setUserId(savedLend.getUserId());
-            tlend.setReview(savedLend.getReview());
-            
-            // 取得した情報を表示
-            model.addAttribute("dtLend",tlend);
             
             
             if (bookId == null) {

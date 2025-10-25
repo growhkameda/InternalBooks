@@ -100,11 +100,11 @@
 <!--	  			</button>-->
 				
 				<form id="return-form-modal" method="post" th:action="@{/page/ReturnCompleted}" 
-				th:object= "${dtLend}" class="d-flex w-50 border-0 align-items-center justify-content-center" 
+				th:object= "${tlend}" class="d-flex w-50 border-0 align-items-center justify-content-center" 
 				style="background-color: #E83838; border-bottom-left-radius: 10px;">
-				    <input type="hidden" name="bookId" th:value="${book.bookId}">
-<!--					<input type="hidden" th:field="*{bookId}">-->
-					<input type="hidden" th:field="*{lendingDate}" value="${lendingDate}">
+<!--				    <input type="hidden" name="bookId" th:value="${book.bookId}">-->
+					<input type="hidden" th:field="*{bookId}">
+					<input type="hidden" th:field="*{lendingDate}">
 				    <input type="hidden" th:field="*{scheduledReturnDate}">
 				    <input type="hidden" th:field="*{returnDate}">
 					<input type="hidden" th:field="*{userId}">
@@ -128,7 +128,7 @@
 		</p>
 	</div>
 	
-	<form th:action="@{/page/ReturnCompleted}" th:object="${dtLend}" method="post">
+	<form th:action="@{/page/ReturnCompleted}" th:object="${tlend}" method="post">
 		<div class="row d-flex justify-content-center mb-4" th:if="${book.status == '貸出中'}">
 			<label class="col-8" for="comment">感想・コメント</label>
 			<textarea id="comment" class="col-8 ps-2" th:field="*{review}" placeholder="こちらに感想やコメントを記入してください。" 
