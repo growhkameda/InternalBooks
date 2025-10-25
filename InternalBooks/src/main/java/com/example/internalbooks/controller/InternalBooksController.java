@@ -11,13 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.internalbooks.dto.DtoAuthRequest;
 import com.example.internalbooks.dto.DtoBookHistory;
+import com.example.internalbooks.dto.DtoBookHistoryRegistration;
 import com.example.internalbooks.dto.DtoBookInfo;
+import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.service.TLendingHistoryService;
@@ -210,6 +213,7 @@ public class InternalBooksController {
      */
     @GetMapping("/page/searchresult")
     public String searchResult(
+		@ModelAttribute("dtLend") DtoBookHistoryRegistration dtLend,
         @RequestParam(name = "bookId", required = false) Integer bookId,
         @RequestParam(name = "qrData", required = false) String qrData,
         HttpSession session,
@@ -228,6 +232,8 @@ public class InternalBooksController {
             // 貸出中書籍ページからの遷移判定フラグを設定
             Boolean fromCheckedOut = (Boolean) session.getAttribute("fromCheckedOut");
             model.addAttribute("fromCheckedOut", fromCheckedOut != null ? fromCheckedOut : false);
+            
+            model.addAttribute("bookdto", new DtoBookHistoryRegistration());
             
             // 書籍一覧から遷移した場合のフラグ設定
             
@@ -249,9 +255,11 @@ public class InternalBooksController {
             List<DtoBookHistory> dtoBookHistory;
             
             if(bookId == null) {
+            	// QRコードから遷移した場合
             	Integer qrId = Integer.parseInt(qrData);
             	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
             } else {
+            	// 一覧から遷移した場合
             	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
             
@@ -299,9 +307,11 @@ public class InternalBooksController {
             List<DtoBookHistory> dtoBookHistory;
             
             if(bookId == null) {
+            	// QRコードから遷移した場合
             	Integer qrId = Integer.parseInt(qrData);
             	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
             } else {
+            	// 一覧から遷移した場合
             	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
             
@@ -327,7 +337,7 @@ public class InternalBooksController {
     /**
      * 返却完了ページに遷移
      */
-    @PostMapping("/page/ReturnCompleted")
+    @GetMapping("/page/ReturnCompleted")
     public String ReturnCompleted(
     		@RequestParam("bookId") Integer bookId,
     		@RequestParam(name = "qrData", required = false) String qrData,
@@ -346,15 +356,17 @@ public class InternalBooksController {
             // 書籍検索処理をServiceで処理
             DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
             model.addAttribute("book", book);
-            model.addAttribute("categories", book.getCategories());           
+            model.addAttribute("categories", book.getCategories());       
             
             // 書籍履歴を取得
             List<DtoBookHistory> dtoBookHistory;
             
             if(bookId == null) {
+            	// QRコードから遷移した場合
             	Integer qrId = Integer.parseInt(qrData);
             	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
             } else {
+            	// 一覧から遷移した場合
             	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
             
@@ -363,11 +375,57 @@ public class InternalBooksController {
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
             model.addAttribute("bookHistory", latestHistory);
             
+            
             if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
                 return "redirect:/page/top";
             }
-
+            
+            return "page/ReturnCompleted";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
+    @PostMapping("/page/ReturnCompleted")
+    public String ReturnCompleted(
+    		@ModelAttribute("dtLend") DtoBookHistoryRegistration dtlend,
+    		@RequestParam("bookId") Integer bookId,
+    		@RequestParam(name = "qrData", required = false) String qrData,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+    	
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+            
+            // DBへ(userId,name,mailAddress,password,departmentId)を保存
+            TLendingHistoryEntity savedLend = lendingHistoryService.lendRegistration(dtlend);
+            // DBに保存した値をDTOを経由して再度取得           
+            DtoBookHistoryRegistration tlend = new DtoBookHistoryRegistration();
+            tlend.setBookId(savedLend.getBookId());
+            tlend.setLendingDate(savedLend.getLendingDate());
+            tlend.setScheduledReturnDate(savedLend.getScheduledReturnDate());
+            tlend.setReturnDate(savedLend.getReturnDate());
+            tlend.setUserId(savedLend.getUserId());
+            tlend.setReview(savedLend.getReview());
+            
+            // 取得した情報を表示
+            model.addAttribute("dtLend",tlend);
+            
+            
+            if (bookId == null) {
+                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
+                return "redirect:/page/top";
+            }
+            
             return "page/ReturnCompleted";
     	}
     	catch (Exception e) {
