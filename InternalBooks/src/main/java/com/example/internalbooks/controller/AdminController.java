@@ -277,6 +277,8 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("putUser", putUser);
             model.addAttribute("departmentNames", departmentNames);
+            //空のDTOを返す
+            model.addAttribute("userDto", new DtoUserRegistration());
             return "page/useredit";
         }
         catch (Exception e) {
@@ -321,7 +323,7 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
-            return "page/usereditconfirmation";
+            return "page/userEditConfirmation";
         }
         catch (Exception e) {
             return error(redirectAttributes);
