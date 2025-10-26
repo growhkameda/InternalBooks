@@ -151,14 +151,9 @@ public class InternalBooksController {
     		// tokenの検証とユーザーIDの取得
     		Integer userId = validateTokenAndGetUserId(session);
             
-            // 現在のユーザーの貸出中書籍を取得
+            // 現在のユーザーの貸出中書籍を取得（返却予定日も含む）
             List<DtoBookInfo> checkedOutBooks = tBookService.getCheckedOutBooksByUserId(userId);
             
-            // ====★★★【テスト用】貸し出し書籍なしの状態をテストする場合は以下をコメントアウト★★★ ===/
-            //checkedOutBooks = null;               // null                                     // 
-            // ================================================================================//
-            
-            // 書籍リストをModelに設定（全ての書籍を一度に表示）
             model.addAttribute("checkedOutBooks", checkedOutBooks);
             
             // 貸出中書籍ページからの遷移フラグをセッションに設定
@@ -251,7 +246,7 @@ public class InternalBooksController {
             session.removeAttribute("fromQrSearch");
             session.removeAttribute("fromCheckedOut");
 
-            return "page/SearchResult";
+            return "page/searchresult";
             
         } catch (Exception e) {
             logger.error("検索結果詳細ページでエラーが発生しました", e);
@@ -352,7 +347,6 @@ public class InternalBooksController {
     	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
         return "redirect:/page/login";
     }
- 
     
     /**
      * 管理者権限エラー処理
