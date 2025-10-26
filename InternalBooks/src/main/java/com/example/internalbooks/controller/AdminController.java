@@ -293,8 +293,8 @@ public class AdminController extends InternalBooksController {
     @PostMapping("/usereditconfirmation")
     public String userEditComfirmation(
     		@Valid 
-    		@ModelAttribute("userDto") 
-            DtoUserRegistration userDto, 
+    		@ModelAttribute("userDto")DtoUserRegistration userDto, 
+            Integer userId,
             BindingResult bindingResult, 
             HttpSession session, 
             RedirectAttributes redirectAttributes,
@@ -315,13 +315,23 @@ public class AdminController extends InternalBooksController {
     		
     	}
         // トークンと管理者権限の検証
-        try {
+    	try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
+            //ユーザーIDがnullかどうかを確かめる
+            if (userId == null) {
+                redirectAttributes.addFlashAttribute("error", "ユーザーIDが指定されていません");
+                return "redirect:/usersearch";
+            }
+            // "userIdからユーザー情報を取得
+            TUserEntity putUser = tUserService.getUserById(userId);
             
+            // ユーザーが所属している部署IDを取得
+            model.addAttribute("putUser", putUser);
             model.addAttribute("isAdmin", isAdmin);
+            model.addAttribute("userDto", userDto);
             
             return "page/userEditConfirmation";
         }
