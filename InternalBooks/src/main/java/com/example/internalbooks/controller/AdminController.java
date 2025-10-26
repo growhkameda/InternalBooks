@@ -288,19 +288,44 @@ public class AdminController extends InternalBooksController {
      * フォームからのPostリクエストを受け取る
      */
  
-    @PostMapping("/useredit")
-    public String userEditReceive(
-            @RequestParam Integer userId,
-            @RequestParam("name") String name,
-            @RequestParam("departmentName") Integer departmentId,
+    @PostMapping("/usereditconfirmation")
+    public String userEditComfirmation(
+    		@Valid 
+    		@ModelAttribute("userDto") 
+            DtoUserRegistration userDto, 
+            BindingResult bindingResult, 
+            HttpSession session, 
+            RedirectAttributes redirectAttributes,
             Model model) {
-        // Serviceに処理を依頼
-        TUserEntity updateUser = tUserService.userEditReceive(userId, name, departmentId);
-        
-        // 画面に渡す
-        model.addAttribute("updateUser", updateUser);
-        
-        return "page/finishuseredit";
+    	
+     //入力値のバリデーションチェック
+    	if (bindingResult.hasErrors()) {
+    		for (FieldError error : bindingResult.getFieldErrors()) {
+    			
+    			if("Pattern".equals(error.getCode())){
+    				
+    				// コンソールにも表示
+    			}
+    			System.out.println(error.getField() + ":" + error.getDefaultMessage());
+    			
+    			return "page/UserRegistration"; 
+    		}
+    		
+    	}
+        // トークンと管理者権限の検証
+        try {
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+            
+            model.addAttribute("isAdmin", isAdmin);
+            
+            return "page/usereditconfirmation";
+        }
+        catch (Exception e) {
+            return error(redirectAttributes);
+        }
     }
     /**
      * ユーザー削除完了ページに遷移
