@@ -1,6 +1,7 @@
 package com.example.internalbooks.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -154,12 +155,17 @@ public class InternalBooksController {
             // 現在のユーザーの貸出中書籍を取得
             List<DtoBookInfo> checkedOutBooks = tBookService.getCheckedOutBooksByUserId(userId);
             
-            // ====★★★【テスト用】貸し出し書籍なしの状態をテストする場合は以下をコメントアウト★★★ ===/
-            //checkedOutBooks = null;               // null                                     // 
-            // ================================================================================//
+            // 書籍IDのリストを作成
+            List<Integer> bookIds = new ArrayList<>();
+            for (DtoBookInfo book : checkedOutBooks) {
+                bookIds.add(book.getBookId());
+            }
             
-            // 書籍リストをModelに設定（全ての書籍を一度に表示）
+            // 各書籍の返却予定日を取得（Serviceに処理を委譲）
+            List<DtoBookHistory> bookHistoryList = lendingHistoryService.getScheduledReturnDatesByBookIds(bookIds);
+            
             model.addAttribute("checkedOutBooks", checkedOutBooks);
+            model.addAttribute("bookHistoryList", bookHistoryList);
             
             // 貸出中書籍ページからの遷移フラグをセッションに設定
             session.setAttribute("fromCheckedOut", true);
