@@ -30,12 +30,12 @@
             </a>
           </div>
         </div>
-
+ 
         <!-- ================== 貸出中書籍ありの場合の表示 ================== -->
         <div th:if="${checkedOutBooks != null and not #lists.isEmpty(checkedOutBooks)}">
           
-          <!-- ========== 書籍一覧表示エリア（新規Dto作成をせずiterStatを使用） ========== -->
-          <div th:each="book, iterStat : ${checkedOutBooks}" class="text-center mb-4">
+          <!-- ========== 書籍一覧表示エリア ========== -->
+          <div th:each="book : ${checkedOutBooks}" class="text-center mb-4">
             <!-- 書籍カード（検索結果詳細ページにリンク） -->
             <a th:href="@{/page/searchresult(bookId=${book.bookId})}" 
                class="btn btn-light w-100 p-0 border-0 shadow-sm rounded-4 text-start text-decoration-none">
@@ -55,7 +55,7 @@
                   <!-- 返却予定日 -->
                   <div class="mb-2">
                     <span class="text-muted">返却予定日: </span>
-                    <span th:text="${bookHistoryList[iterStat.index].scheduledReturnDate}">-</span>
+                    <span th:text="${book.scheduledReturnDate}">-</span>
                   </div>
                 </div>
               </div>

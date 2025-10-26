@@ -1,7 +1,6 @@
 package com.example.internalbooks.controller;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -152,20 +151,10 @@ public class InternalBooksController {
     		// tokenの検証とユーザーIDの取得
     		Integer userId = validateTokenAndGetUserId(session);
             
-            // 現在のユーザーの貸出中書籍を取得
+            // 現在のユーザーの貸出中書籍を取得（返却予定日も含む）
             List<DtoBookInfo> checkedOutBooks = tBookService.getCheckedOutBooksByUserId(userId);
             
-            // 書籍IDのリストを作成
-            List<Integer> bookIds = new ArrayList<>();
-            for (DtoBookInfo book : checkedOutBooks) {
-                bookIds.add(book.getBookId());
-            }
-            
-            // 各書籍の返却予定日を取得（Serviceに処理を委譲）
-            List<DtoBookHistory> bookHistoryList = lendingHistoryService.getScheduledReturnDatesByBookIds(bookIds);
-            
             model.addAttribute("checkedOutBooks", checkedOutBooks);
-            model.addAttribute("bookHistoryList", bookHistoryList);
             
             // 貸出中書籍ページからの遷移フラグをセッションに設定
             session.setAttribute("fromCheckedOut", true);
