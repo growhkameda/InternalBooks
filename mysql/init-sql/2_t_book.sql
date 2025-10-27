@@ -41,6 +41,7 @@ CREATE TABLE `t_book` (
 LOCK TABLES `t_book` WRITE;
 /*!40000 ALTER TABLE `t_book` DISABLE KEYS */;
 INSERT INTO `t_book` VALUES 
+<<<<<<< HEAD
 (1001,'Javaテスト1','Java,資格',2,3,'基本情報とらせたい！','一度読んでほしい'),
 (1002,'Javaテスト2','Java',2,3,'基本情報とらせたい！','一度読んでほしい'),
 (2001,'プログラミングテスト3','プログラミング',2,3,'基本情報とらせたい！','一度読んでほしい'),
@@ -61,6 +62,18 @@ INSERT INTO `t_book` VALUES
 (40004002,'資格テスト8','資格',2,3,'基本情報とらせたい！','一度読んでほしい'),
 (50005001,'ITパスポートテスト9','ITパスポート,資格',2,3,'基本情報とらせたい！','一度読んでほしい'),
 (50005002,'ITパスポートテスト10','ITパスポート,資格',2,3,'基本情報とらせたい！','一度読んでほしい');
+=======
+  (10010001,'Javatest1','Java,プログラミング',1,2,'test1','test1'),
+  (10010002,'Javatest2','Java,プログラミング',1,2,'test2','test2'),
+  (10010003,'Javatest3','Java,プログラミング',1,2,'test3','test3'),
+  (10010004,'Javatest4','Java,プログラミング',1,2,'test4','test4'),
+  (10090001,'基本情報test1','試験参考書',1,2,'test5','test5'),
+  (10090002,'ITパスポートtest1','試験参考書',null,2,'test6','test6'),
+  (10020001,'C言語test1','C言語,プログラミング',1,2,'test7','test7'),
+  (10020002,'C言語test2','C言語,プログラミング',null,2,'test8','test8'),
+  (10030001,'Pythontest1','Python,プログラミング',1,2,'test9','test9'),
+  (10030002,'Pythontest2','Python,プログラミング',null,2,'test10','test10');
+>>>>>>> develop
 /*!40000 ALTER TABLE `t_book` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

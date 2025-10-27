@@ -42,6 +42,9 @@ public class DtoBookInfo {
     @NotBlank(message = "コメントは必須です")
     private String providerComment;
     
+    // 返却予定日（貸出中書籍の表示用）
+    private String scheduledReturnDate;
+    
     // デフォルトコンストラクタ
     public DtoBookInfo() {
         // デフォルト値は設定せず、使用時に適切な値を設定する
