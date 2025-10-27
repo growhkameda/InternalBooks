@@ -260,40 +260,50 @@ public class InternalBooksController {
     }
    
     @GetMapping("/page/categories_detail")
-    public String categories_detail(
-    		@RequestParam("category") String category,
-    	    @RequestParam(value = "page", defaultValue = "0") int page,
-    	    HttpSession session,
-    	    Model model,
-    	    RedirectAttributes redirectAttributes) {
-    	try {
-            // トークンの検証（共通メソッド）
-    		validateTokenAndGetUserId(session);
+    public String showCategoryDetail(
+        @RequestParam("category") String category,
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        HttpSession session,
+        Model model,
+        RedirectAttributes redirectAttributes) {
 
-    		//
-            List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
+      try {
+        // ユーザー認証（共通処理）
+        validateTokenAndGetUserId(session);
 
-            //表示する画像の枚数
-            int pageSize = 6;
-            
-            int totalPages = (int) Math.ceil((double) allBookIds.size() / pageSize);
-            int fromIndex = page * pageSize;
-            int toIndex = Math.min(fromIndex + pageSize, allBookIds.size());
+        //1ページに表示する画像数
+        final int ITEMS_PER_PAGE = 6;
 
-            List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
-
-            model.addAttribute("bookIdList", pagedBookIds);
-            model.addAttribute("category", category);
-            model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", totalPages);
-
-            return "page/categories_detail";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
+        // カテゴリーに属するすべての本のIDを取得
+        List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
         
+        //取得した本の要素数を取得
+        int totalItems = allBookIds.size();
+        
+        //指定した表示画像数と、取得した要素数で必要なページ数を計算
+        int totalPages = (int) Math.ceil((double) totalItems / ITEMS_PER_PAGE);
+
+        // ページ範囲を計算
+        int fromIndex = page * ITEMS_PER_PAGE;
+        int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, totalItems);
+
+        // 表示対象の本IDリストを抽出
+        List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
+
+        // Viewに渡すモデル属性を設定
+        model.addAttribute("bookIdList", pagedBookIds);
+        model.addAttribute("category", category);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+
+        return "page/categories_detail";
+
+      } catch (Exception e) {
+        return error(redirectAttributes);
+      }
     }
+
+
     
     /**
      * 返却完了ページに遷移
