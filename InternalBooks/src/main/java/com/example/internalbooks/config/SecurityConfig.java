@@ -41,10 +41,10 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())  // CSRFを無効化
             .authorizeHttpRequests(auth -> auth
-//<<<<<<< HEAD
 
-                .requestMatchers("/", "/page/**", "/action/**","/test/**", "/webjars/**", "/logo/**","/favicon.ico", "/images/**").permitAll()  // 認証不要のエンドポイント
-//>>>>>>> origin/develop
+
+                .requestMatchers("/", "/page/**", "/action/**", "/admin/**", "/test/**", "/webjars/**", "/logo/**","/favicon.ico", "/images/**", "/js/**").permitAll()  // 認証不要のエンドポイント
+
                 .anyRequest().authenticated()  // 他のエンドポイントは認証が必要
             )
             .sessionManagement(session -> session

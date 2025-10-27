@@ -3,37 +3,30 @@
       th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-    <title>ユーザー登録完了</title>
+    <title>User</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 
 <body>
-	
 <section class = "container justify-content-center mt-5">
 	
     <h1 class= "text-center">図書館システム</h1>
     <br>
-    <h3 class= "text-center mt-4">ユーザー登録完了</h3>
+    <h3 class= "text-center mt-4">ユーザー登録</h3>
     <br>
-    
-<!-- 完了ラベル -->
-<div class="text-dark">
-  <div class="container ms-2 text-center">
-    <div class="row justify-content-center">
-      <div class="col-12 bg-dark-subtle pt-2 text-start" style="height:40px">
-        以下のユーザーを登録しました。
-      </div>
-    </div>
-  </div>
-</div>
+
+<form th:action="@{/admin/userconfir}" method="post" th:object= "${userDto}" enctype="application/x-www-form-urlencoded">
 
 <!-- 社員ID -->
 <div class ="container mt-4">
   <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
+	 
+  	  <div class = "col-8 pt-2">
 	      	<label for = "id" class="form-label text-start">社員ID</label>
-	      	<p th:text="${tuser.userId}" class="form-control bg-white border-dark">
-	  </div>
+	        <!-- バリデーションエラーを表示 -->
+	      	<span th:errors="*{userId}" class="text-danger ms-3"></span>
+	      	<input type="text" th:field="*{userId}" class="form-control bg-light">
+	  </div> 
   </div>
 </div>
 
@@ -42,7 +35,9 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "mail" class="form-label text-start">メールアドレス </label>
-	      	<p th:text="${tuser.mailAddress}" class="form-control bg-white border-dark">
+	      	 <!-- バリデーションエラーを表示 -->
+	      	<span th:errors="*{mailAddress}" class="text-danger ms-3"></span>
+	      	<input type="text" th:field="*{mailAddress}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
@@ -52,47 +47,61 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "password" class="form-label text-start"> パスワード</label>
-	      	<p th:text="${tuser.password}" class="form-control bg-white border-dark">
+	      	<!-- バリデーションエラーを表示 -->
+	      	<span th:errors="*{password}" class="text-danger ms-3"></span>
+	      	<input type="text" th:field="*{password}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
  
-<!-- 名前 -->
+ <!-- 名前 -->
 <div class ="container mt-3">
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "name" class="form-label text-start">名前</label>
-	      	<p th:text="${tuser.name}" class="form-control bg-white border-dark">
-	  </div>
-  </div>
-</div>
- 
-<!-- 所属課 -->
-<div class ="container mt-3">
-  <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
-	      	<label for = "department" class="form-label text-start">所属課</label>
-	      	<p th:text="${tuser.departmentId}" class="form-control bg-white border-dark">
+	      	 <!-- バリデーションエラーを表示 -->
+	      	<span th:errors="*{name}" class="text-danger ms-3"></span>
+	      	<input type="text" th:field="*{name}" class="form-control bg-light">
 	  </div>
   </div>
 </div>
 
-<!-- Topへ -->
-<div class="container mt-5">
+<!-- 所属課  -->
+<div class ="container mt-3">
+  <div class = "row justify-content-center">
+	  <div class = "col-8 pt-2">
+	      	<label for = "department" class="form-label text-start">所属課</label>
+	      	<!-- バリデーションエラーを表示 -->
+	      	<span th:errors="*{departmentId}" class="text-danger ms-3"></span>
+	      	<input type="text" th:field="*{departmentId}" class="form-control bg-light">
+	  </div>
+  </div>
+</div>
+
+<!-- 戻る -->
+ <div class="container mt-5">
   <div class="row">
     <div class="col-12 text-start ms-lg-5">
       <a href="/admin/adminusertop" class="btn fs-6">
-        TOPへ戻る
+        戻る
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
              class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">
           <path fill-rule="evenodd"
                 d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
         </svg>
-      </a>
-    </div>
+       </a>
+     </div>
   </div>
 </div>
 
+<!-- 登録確認 -->
+<div class ="container text-center mt-4">
+	  <div class = "col-auto">
+	 <button type="submit" class="btn btn-primary">登録確認</button>
+	  </div>
+</div>
+
+</form>
 </section>
 </body>
 </html>

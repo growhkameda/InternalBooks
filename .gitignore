@@ -1,11 +1,12 @@
 HELP.md
+
+### Build ###
 .gradle
 build/
 !gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+!gradle/wrapper/gradle-wrapper.properties
 
-### STS ###
+### STS / Eclipse ###
 .apt_generated
 .classpath
 .factorypath
@@ -14,8 +15,6 @@ build/
 .springBeans
 .sts4-cache
 bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
 
 ### IntelliJ IDEA ###
 .idea
@@ -23,8 +22,6 @@ bin/
 *.iml
 *.ipr
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -35,3 +32,30 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+# docker
+data/*
+!data/.gitkeep
+
+# MySQL data files
+mysql/data/
+!mysql/data/.gitkeep
+*.sock
+*.dblwr
+*.ibt
+*.ibd
+*.pem
+*.CSM
+*.CSV
+*.sdi
+auto.cnf
+binlog.*
+ib_buffer_pool
+ibdata*
+ibtmp*
+mysql_upgrade_history
+undo_*

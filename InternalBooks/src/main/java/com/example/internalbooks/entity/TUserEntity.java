@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +25,12 @@ public class TUserEntity implements UserDetails {
     @Id
     @Column(name = Const.USER_ID)
     private Integer userId;
+
+    @Column(name = Const.NAME)
+    private String name;
+    
+//    @Column(name = Const.NAME)
+//    private String name;
     
     @Column(name = Const.MAILADDRESS)
     private String mailAddress;
@@ -39,6 +46,10 @@ public class TUserEntity implements UserDetails {
     
     @Column(name = Const.DELETE_FLG)
     private Integer deleteFlg;
+    
+    //TUserServiceで所属課を取得するためのフィールド
+    @Transient
+    private String departmentName;
 
     @Override
     /**
@@ -88,5 +99,15 @@ public class TUserEntity implements UserDetails {
      */
     public boolean isEnabled() {
         return true;
+    }
+    
+    // IntegerをStringへ変換するメソッド
+    public String getUserIdAsString() {
+        return String.valueOf(userId);
+    }
+    
+    // IntegerをStringへ変換するメソッド
+    public String getDepartmentIdAsString() {
+        return String.valueOf(departmentId);
     }
 }

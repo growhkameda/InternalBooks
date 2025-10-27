@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+  <title>貸出中書籍</title>
+</head>
+
+<body>
+  <section th:fragment="section" class="d-flex justify-content-center align-items-start py-5">
+    <div class="container d-flex justify-content-center align-items-start">
+      <div class="w-100" style="max-width: 330px;">
+        
+        <!-- ================== ページメインタイトル ================== -->
+        <h1 class="fw-bold mt-5 display-3 mb-5 text-center">貸出中書籍</h1>
+        <p class="text-muted mt-5 mb-3 fs-6 text-center">書籍の画像を選択すると書籍返却画面に移ります</p>
+
+        <!-- ================== 貸出中書籍なしの場合の表示 ================== -->
+        <div th:if="${checkedOutBooks == null or #lists.isEmpty(checkedOutBooks)}" 
+             class="text-center text-muted mt-5 pt-5">
+          <!-- 本のアイコン表示 -->
+          <i class="bi bi-book display-1 text-secondary"></i>
+          <!-- メッセージ表示 -->
+          <p class="fs-5 mt-4">現在貸出中の書籍はありません</p>
+          <!-- トップページへの戻りボタン -->
+          <div class="col-12 border-0 mt-4">
+            <a href="/page/top" class="text-black ms-2">
+                TOPに戻る
+                <i class="bi bi-arrow-return-left ms-1"></i>
+            </a>
+          </div>
+        </div>
+ 
+        <!-- ================== 貸出中書籍ありの場合の表示 ================== -->
+        <div th:if="${checkedOutBooks != null and not #lists.isEmpty(checkedOutBooks)}">
+          
+          <!-- ========== 書籍一覧表示エリア ========== -->
+          <div th:each="book : ${checkedOutBooks}" class="text-center mb-4">
+            <!-- 書籍カード（検索結果詳細ページにリンク） -->
+            <a th:href="@{/page/searchresult(bookId=${book.bookId})}" 
+               class="btn btn-light w-100 p-0 border-0 shadow-sm rounded-4 text-start text-decoration-none">
+              <div class="card border-0 rounded-4 overflow-hidden bg-transparent">
+                <!-- 書籍画像エリア -->
+                <div class="text-center p-4">
+                  <img th:src="@{${book.imageUrl}}" 
+                       class="img-fluid rounded shadow w-75 h-auto"
+                       alt="書籍画像"
+                       onerror="handleImageError(this)" />
+                </div>
+                
+                <!-- 書籍情報エリア -->
+                <div class="card-body p-4 pt-1 text-center">
+                  <!-- 書籍名 -->
+                  <h5 class="card-title fw-bold mb-2 text-dark" th:text="${book.title}">書籍名</h5>
+                  <!-- 返却予定日 -->
+                  <div class="mb-2">
+                    <span class="text-muted">返却予定日: </span>
+                    <span th:text="${book.scheduledReturnDate}">-</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- ========== トップページへ戻るリンク ========== -->
+          <div class="border-0 mt-4 mb-5 text-start">
+            <a href="/page/top" class="text-black ms-1">
+                 TOPに戻る
+                 <i class="bi bi-arrow-return-left ms-1"></i>
+            </a>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- 画像エラー処理用JavaScript -->
+  <script>
+    function handleImageError(img) {
+      // 無限ループを防ぐため、既にエラー処理済みの場合は何もしない
+      if (img.dataset.errorHandled === 'true') {
+        return;
+      }
+      
+      // エラー処理済みフラグを設定
+      img.dataset.errorHandled = 'true';
+      
+      // 画像の代わりにBootstrapアイコンを表示するため、親要素を変更
+      const parent = img.parentElement;
+      parent.innerHTML = `
+        <div class="d-flex align-items-center justify-content-center py-5 text-muted">
+          <i class="bi bi-book display-2"></i>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html> 
