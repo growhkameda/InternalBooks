@@ -255,24 +255,49 @@ public class InternalBooksController {
     }
    
     @GetMapping("/page/categories_detail")
-    public String categories_detail(@RequestParam("category") String category,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-            // トークンの検証（共通メソッド）
+    public String showCategoryDetail(
+        @RequestParam("category") String category,
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        HttpSession session,
+        Model model,
+        RedirectAttributes redirectAttributes) {
+
+        //1ページに表示する本の数
+        final int ITEMS_PER_PAGE = 6;
+
+        try {
+            // ユーザー認証（共通処理）
             validateTokenAndGetUserId(session);
+
+            // カテゴリーに属するすべての本のIDを取得
+            List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
             
-            // 対象カテゴリーのbookIdを取得
-            List<Integer> bookIdList = tBookService.getCategoriesdetail(category);
-            model.addAttribute("bookIdList", bookIdList);
+            //取得した本の要素数を取得
+            int totalItems = allBookIds.size();
+            
+            //指定した表示画像数と、取得した要素数で必要なページ数を計算
+            int totalPages = (int) Math.ceil((double) totalItems / ITEMS_PER_PAGE);
+
+            // ページ範囲を計算
+            int fromIndex = page * ITEMS_PER_PAGE;
+            int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, totalItems);
+
+            // 表示対象の本IDリストを抽出
+            List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
+
+            // Viewに渡すモデル属性を設定
+            model.addAttribute("bookIdList", pagedBookIds);
             model.addAttribute("category", category);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", totalPages);
 
             return "page/categories_detail";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
-        
+
+        } catch (Exception e) {
+            return error(redirectAttributes);
+        }
     }
-    
+
     /**
      * 返却完了ページに遷移
      */
@@ -321,24 +346,6 @@ public class InternalBooksController {
         
     }
    
-    /**
-     * カテゴリー詳細ページに遷移
-     */
-    @GetMapping("/page/book_detail")
-    public String book_detail(@RequestParam("category") String category,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-            // トークンの検証（共通メソッド）
-            validateTokenAndGetUserId(session);
-            
-            model.addAttribute("category", category);
-            
-            return "page/book_detail";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
-    }
-
     /**
      * エラー処理
      * セッション切れなどの際にloginページにリダイレクト
