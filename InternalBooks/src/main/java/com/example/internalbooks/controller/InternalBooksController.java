@@ -353,23 +353,6 @@ public class InternalBooksController {
         
     }
    
-    /**
-     * カテゴリー詳細ページに遷移
-     */
-    @GetMapping("/page/book_detail")
-    public String book_detail(@RequestParam("category") String category,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-            // トークンの検証（共通メソッド）
-            validateTokenAndGetUserId(session);
-            
-            model.addAttribute("category", category);
-            
-            return "page/book_detail";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
-    }
 
     /**
      * エラー処理
