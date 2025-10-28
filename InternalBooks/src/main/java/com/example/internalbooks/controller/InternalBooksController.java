@@ -284,7 +284,7 @@ public class InternalBooksController {
     }
     
     @PostMapping("page/LendingCompleted")
-    public String searchResult(
+    public String searchResultLend(
     		@ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
     		@RequestParam(name = "qrData", required = false) String qrData,
             HttpSession session,
@@ -323,8 +323,9 @@ public class InternalBooksController {
     
     
     @PostMapping("/page/ReturnCompleted")
-    public String searchResult(
+    public String searchResultReturn(
     		@ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
+    		@RequestParam(name = "qrData", required = false) String qrData,
             HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
@@ -332,7 +333,14 @@ public class InternalBooksController {
     	try {
     		// torkenの検証
     		String token = (String) session.getAttribute("token");
-    		Integer bookId = dtlend.getBookId();
+    		Integer bookId;
+    		if (qrData != null) {
+    			// QRコードで読み取った場合
+    			bookId = Integer.parseInt(qrData);
+    		} else {
+    			// 一覧画面から遷移した場合
+    			bookId = dtlend.getBookId();
+    		}
             Integer userId = jwtUtil.extractUserId(token);
             
             dtlend.setBookId(bookId);
