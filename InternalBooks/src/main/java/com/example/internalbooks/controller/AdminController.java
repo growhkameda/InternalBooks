@@ -254,7 +254,7 @@ public class AdminController extends InternalBooksController {
             // ログを出力
             logger.info("UserSearchにアクセスされました");
             
-            return "page/UserSearch";
+            return "page/usersearch";
         }
         catch (Exception e) {
             logger.error("UserSearchでエラーが発生しました", e);
@@ -510,33 +510,57 @@ public class AdminController extends InternalBooksController {
 
     /**
      * 書籍削除画面を表示
+     * 現在は松永さんが作成したコントローラーを持ってきているので
+     * 今後修正があった場合は反映させること
      */
     @GetMapping("/bookdeleting")
-    public String BookDeleting(@RequestParam("category") String category, HttpSession session, Model model,
-                               RedirectAttributes redirectAttributes) {
+    public String bookDeleting(
+        @RequestParam("category") String category,
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        HttpSession session,
+        Model model,
+        RedirectAttributes redirectAttributes) {
+
+        //1ページに表示する本の数
+        final int ITEMS_PER_PAGE = 6;
 
         try {
             // トークンと管理者権限の検証
-    		boolean isAdmin = validateTokenAndCheckAdmin(session);
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
             
             model.addAttribute("isAdmin", isAdmin);
 
-            // 対象カテゴリーのbookIdを取得してbookIdListに格納
-            List<Integer> bookIdList = tBookService.getCategoriesdetail(category);
+            // カテゴリーに属するすべての本のIDを取得
+            List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
+            
+            //取得した本の要素数を取得
+            int totalItems = allBookIds.size();
+            
+            //指定した表示画像数と、取得した要素数で必要なページ数を計算
+            int totalPages = (int) Math.ceil((double) totalItems / ITEMS_PER_PAGE);
 
+            // ページ範囲を計算
+            int fromIndex = page * ITEMS_PER_PAGE;
+            int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, totalItems);
+
+            // 表示対象の本IDリストを抽出
+            List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
+
+            // Viewに渡すモデル属性を設定
+            model.addAttribute("bookIdList", pagedBookIds);
             model.addAttribute("category", category);
-            model.addAttribute("bookIdList", bookIdList);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", totalPages);
 
             return "page/bookdeleting";
     	}
     	catch (Exception e) {
     		// 認証失敗時はログインページにリダイレクト
             return error(redirectAttributes);
-    	}
-
+        }
     }
 
 }
