@@ -3,8 +3,10 @@ package com.example.internalbooks.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.internalbooks.entity.TBookEntity;
 
@@ -19,4 +21,15 @@ public interface TBookRepository extends JpaRepository<TBookEntity, Integer> {
 	@Query("SELECT b FROM TBookEntity b WHERE b.borrowerId = :borrowerId")
 	List<TBookEntity> findByBorrowerId(@Param("borrowerId") Integer borrowerId);
 		
+	// 書籍返却時にborrowerIdをNULLに更新する
+	@Modifying
+    @Transactional
+    @Query("UPDATE TBookEntity b SET b.borrowerId = NULL WHERE b.bookId = :bookId")
+    void clearBorrowerByBookId(@Param("bookId") Integer bookId);
+	
+	@Modifying
+	@Transactional
+	@Query("UPDATE TBookEntity b SET b.borrowerId = :userId WHERE b.id = :bookId")
+	void updateBorrowerByBookId(@Param("bookId") Integer bookId, @Param("userId") Integer userId);
+
 }

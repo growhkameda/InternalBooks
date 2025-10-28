@@ -74,9 +74,10 @@
 	  		 <div class="d-flex h-25">
 				
 				<form id="lending-form-modal" method="post" th:action="@{/page/LendingCompleted}" 
-				class="d-flex w-50 border-0 align-items-center justify-content-center" 
+				th:object= "${tlend}" class="d-flex w-50 border-0 align-items-center justify-content-center" 
 				style="background-color: #494CD8; border-bottom-left-radius: 10px;">
-				    <input type="hidden" name="bookId" th:value="${book.bookId}">
+					<input type="hidden" th:field="*{bookId}">
+					<input type="hidden" th:if="${param.qrData != null}" name="qrData" th:value="${param.qrData}">
 				    <button type="submit" class="w-50 border border-0 text-white" 
 					style="background-color: #494CD8; border-bottom-left-radius: 10px;">
 						借りる
@@ -108,6 +109,7 @@
 				    <input type="hidden" th:field="*{scheduledReturnDate}">
 				    <input type="hidden" th:field="*{returnDate}">
 					<input type="hidden" th:field="*{userId}">
+					<input type="hidden" id="review-hidden" name="review">
 				    <button type="submit" class="w-50 border border-0 text-white" 
 					style="background-color: #E83838; border-bottom-left-radius: 10px;">
 						返す
@@ -348,6 +350,11 @@
         </div>
       `;
     }
+	
+	document.querySelector('#return-form-modal').addEventListener('submit', function() {
+	  // textareaの値をhiddenにコピー
+	  document.querySelector('#review-hidden').value = document.querySelector('#comment').value;
+	});
   </script>
   </section>
 </body>

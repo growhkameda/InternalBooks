@@ -1,5 +1,6 @@
 package com.example.internalbooks.service;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import com.example.internalbooks.dto.DtoBookHistory;
 import com.example.internalbooks.dto.DtoBookHistoryRegistration;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.entity.TUserEntity;
+import com.example.internalbooks.repository.TBookRepository;
 import com.example.internalbooks.repository.TLendingHistoryRepository;
 import com.example.internalbooks.repository.TUserRepository;
 
@@ -24,6 +26,9 @@ public class TLendingHistoryService {
     
     @Autowired
     private TUserRepository userRepository;
+    
+    @Autowired
+    private TBookRepository bookRepository;
     
     //コンストラクタインジェクション
 //    public TLendingHistoryService(TLendingHistoryRepository lendingHistoryRepository, TUserRepository userRepository) {
@@ -58,26 +63,71 @@ public class TLendingHistoryService {
         }
         return dtoList;
     }
+    
 	
+    /**
+     * 貸出時にレビューをDBへ保存するメソッド
+     */
+	public TLendingHistoryEntity rentalCompleted(DtoBookHistoryRegistration dtlend) {
+		
+		TLendingHistoryEntity tlend = new TLendingHistoryEntity();
+
+		// dtoの内容をEntityにマッピング
+        tlend.setBookId(dtlend.getBookId());
+        
+        tlend.setLendingDate(LocalDateTime.now());
+        
+    	tlend.setScheduledReturnDate(LocalDateTime.now().plusDays(7));
+        
+        tlend.setReturnDate(null);
+        tlend.setUserId(dtlend.getUserId());
+    	tlend.setReview(null);
+//        tlend.setStatus("返却済み");
+		
+        lendingHistoryRepository.save(tlend);
+        
+        // 書籍の borrowerId を貸出ユーザーIDに更新
+        bookRepository.updateBorrowerByBookId(dtlend.getBookId(), dtlend.getUserId());
+		
+		return tlend;
+    }
+    
     
 	/**
      * 返却時にレビューをDBへ保存するメソッド
      */
-	public TLendingHistoryEntity lendRegistration(DtoBookHistoryRegistration dtlend) {
+	public TLendingHistoryEntity returnCompleted(DtoBookHistoryRegistration dtlend) {
 		
-		TLendingHistoryEntity tlend = new TLendingHistoryEntity();
+		TLendingHistoryEntity tlend = lendingHistoryRepository.
+				findActiveLendingHistory(dtlend.getBookId(), dtlend.getUserId()).orElse(new TLendingHistoryEntity());
+//				new TLendingHistoryEntity();
 		// dtoの内容をEntityにマッピング
         tlend.setBookId(dtlend.getBookId());
-        tlend.setLendingDate(dtlend.getLendingDate());
-        tlend.setScheduledReturnDate(dtlend.getScheduledReturnDate());
-        tlend.setReturnDate(dtlend.getReturnDate());
+        
+        // DTOの値がnullでなければ上書き
+        if (dtlend.getLendingDate() != null) {
+        	tlend.setLendingDate(dtlend.getLendingDate());
+        }
+        
+        if (dtlend.getScheduledReturnDate() != null) {
+        	tlend.setScheduledReturnDate(dtlend.getScheduledReturnDate());
+        }
+        
+        tlend.setReturnDate(LocalDateTime.now());
         tlend.setUserId(dtlend.getUserId());
-        tlend.setReview(dtlend.getReview());
+        
+        // reviewが入力されていれば更新
+        if (dtlend.getReview() != null && !dtlend.getReview().isEmpty()) {
+        	tlend.setReview(dtlend.getReview());
+        }
 //        tlend.setStatus("返却済み");
 		
-        lendingHistoryRepository.save(tlend);        
+        lendingHistoryRepository.save(tlend);
+        
+        bookRepository.clearBorrowerByBookId(dtlend.getBookId());
 		
 		return tlend;
     }
+
 
 }
