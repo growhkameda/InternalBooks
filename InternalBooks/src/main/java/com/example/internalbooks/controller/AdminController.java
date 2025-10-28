@@ -310,7 +310,7 @@ public class AdminController extends InternalBooksController {
     			}
     			System.out.println(error.getField() + ":" + error.getDefaultMessage());
     			
-    			return "page/UserRegistration"; 
+    			return "page/userEdit"; 
     		}
     		
     	}

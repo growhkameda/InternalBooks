@@ -16,7 +16,7 @@
   </div>	
 
 	<!-- ================== 社員ID表示 ================== -->
- <form action="/userEdit" method="post">    
+ 
    <div class ="container">
 	 <div class = "row justify-content-center">
 	   <div class = "col-8 pt-2">
@@ -61,7 +61,11 @@
        </div>
   　 </div>
    </div>
-  
+   <!-- hiddenで値を保持 -->
+   <input type="hidden" th:field="*{userId}">
+   <input type="hidden" th:field="*{name}">
+   <input type="hidden" th:field="*{departmentId}">
+   
   <!-- ================== 完了ボタン ================== -->
    <div class ="container text-center mt-5">
 	<div class = "row justify-content-center">
@@ -69,7 +73,6 @@
 	    class="btn btn-success text-align-center col-4">編集</a>
 	</div>
    </div>
- </form>
 </section>
 </body>
 </html>
