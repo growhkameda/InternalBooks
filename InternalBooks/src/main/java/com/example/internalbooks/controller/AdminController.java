@@ -46,6 +46,7 @@ public class AdminController extends InternalBooksController {
     
     //ロガー
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+
     //DI用フィールド
     private final TUserService tUserService;
     private final TBookService tBookService;
@@ -197,6 +198,7 @@ public class AdminController extends InternalBooksController {
         }
     }
     
+
     /**
      * ユーザー編集完了画面へ遷移
      */
@@ -306,7 +308,7 @@ public class AdminController extends InternalBooksController {
      * 書籍削除確認ページに遷移
      */
     @GetMapping("/bookdeletingconfirmation")
-    public String BookDeletingConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String bookdeletingconfirmation(@RequestParam("bookid") Integer bookid, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         // トークンと管理者権限の検証
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
@@ -316,6 +318,10 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
+            // bookidに基づいて書籍情報を取得
+            DtoBookInfo bookInfo = tBookService.getBookById(bookid);
+            model.addAttribute("bookInfo", bookInfo);
+
             return "page/bookdeletingconfirmation";
         }
         catch (Exception e) {
@@ -577,6 +583,65 @@ public class AdminController extends InternalBooksController {
             return error(redirectAttributes);
         }
         
+    }
+
+    /**
+     * 削除対象カテゴリーリストを表示
+     */
+    @GetMapping("/bookdeletingcategories")
+    public String bookdeletingcategories(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+       
+        try {
+    		// トークンと管理者権限の検証
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+            
+            model.addAttribute("isAdmin", isAdmin);
+            
+            // カテゴリーリストを取得
+            List<String> categoryList = tBookService.getAllCategories();
+            
+            model.addAttribute("categories", categoryList);
+
+            return "page/bookdeletingcategories";
+    	}
+    	catch (Exception e) {
+            return error(redirectAttributes);
+    	}
+        
+    }
+
+    /**
+     * 書籍削除画面を表示
+     */
+    @GetMapping("/bookdeleting")
+    public String BookDeleting(@RequestParam("category") String category, HttpSession session, Model model,
+                               RedirectAttributes redirectAttributes) {
+
+        try {
+            // トークンと管理者権限の検証
+    		boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+            
+            model.addAttribute("isAdmin", isAdmin);
+
+            // 対象カテゴリーのbookIdを取得してbookIdListに格納
+            List<Integer> bookIdList = tBookService.getCategoriesdetail(category);
+
+            model.addAttribute("category", category);
+            model.addAttribute("bookIdList", bookIdList);
+
+            return "page/bookdeleting";
+    	}
+    	catch (Exception e) {
+    		// 認証失敗時はログインページにリダイレクト
+            return error(redirectAttributes);
+    	}
+
     }
 
 }

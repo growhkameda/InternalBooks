@@ -1,5 +1,6 @@
 package com.example.internalbooks.service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TBookEntity;
+import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.repository.TBookRepository;
+import com.example.internalbooks.repository.TLendingHistoryRepository;
 
 @Service
 @Transactional
@@ -21,10 +24,12 @@ public class TBookService {
 
 	//DI用フィールド
     private final TBookRepository tBookRepository;
+    private final TLendingHistoryRepository lendingHistoryRepository;
 
 	//コンストラクタインジェクション
-    public TBookService(TBookRepository tBookRepository) {
+    public TBookService(TBookRepository tBookRepository, TLendingHistoryRepository lendingHistoryRepository) {
         this.tBookRepository = tBookRepository;
+        this.lendingHistoryRepository = lendingHistoryRepository;
     }
 
 
@@ -125,7 +130,30 @@ public class TBookService {
 		// 返却 感想・コメント
 		dto.setMemo(book.getMemo());
 		
+		// 返却予定日を取得して設定（貸出中の場合のみ）
+		if (book.getBorrowerId() != null) {
+			setScheduledReturnDate(dto, book.getBookId());
+		}
+		
 		return dto;
+	}
+	
+	/**
+	 * 書籍IDから返却予定日を取得してDTOに設定する
+	 */
+	private void setScheduledReturnDate(DtoBookInfo dto, Integer bookId) {
+		List<TLendingHistoryEntity> histories = lendingHistoryRepository.findByBookId(bookId);
+		if (!histories.isEmpty()) {
+			TLendingHistoryEntity latestHistory = histories.get(0);
+			if (latestHistory.getScheduledReturnDate() != null) {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
+				dto.setScheduledReturnDate(latestHistory.getScheduledReturnDate().format(formatter));
+			} else {
+				dto.setScheduledReturnDate("-");
+			}
+		} else {
+			dto.setScheduledReturnDate("-");
+		}
 	}
 
 	/**

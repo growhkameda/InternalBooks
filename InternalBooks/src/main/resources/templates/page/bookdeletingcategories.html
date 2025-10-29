@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <title>削除対象カテゴリー</title>
+</head>
+
+<body>
+<section class="vh-100 d-flex justify-content-center align-items-center">
+	<div class="container vh-100 d-flex justify-content-center align-items-center">
+	  <div class="w-100" style="max-width: 400px;">
+	    <h1 class="mb-4 text-center">カテゴリー</h1>
+
+	    <div class="row g-3">
+	      <!-- 2列レイアウト -->
+	      <div class="col-6" th:each="category : ${categories}">
+	        <a 			class="btn btn-primary w-100"
+			   th:href="@{'/admin/bookdeleting?category=' + ${category}}"
+			   th:text="${category}">Button</a>
+	      </div>
+	    </div>
+
+		<!-- ========== 管理者TOPへ戻るボタン ========== -->
+		<div class="border-0 mt-4 mb-3 text-start">
+			<a href="/admin/adminusertop" class="text-black ms-1">
+				 管理者TOPへ戻る
+				 <i class="bi bi-arrow-return-left ms-1"></i>
+			</a>
+		</div>
+		
+	  </div>
+	</div>
+</section>
+</body>
+</html>
