@@ -255,7 +255,7 @@ public class InternalBooksController {
     }
    
     @GetMapping("/page/categories_detail")
-    public String showCategoryDetail(
+    public String scategories_detail(
         @RequestParam("category") String category,
         @RequestParam(value = "page", defaultValue = "0") int page,
         HttpSession session,
