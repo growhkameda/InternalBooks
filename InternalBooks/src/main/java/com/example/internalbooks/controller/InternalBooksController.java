@@ -263,7 +263,7 @@ public class InternalBooksController {
         RedirectAttributes redirectAttributes) {
 
         //1ページに表示する本の数
-        final int ITEMS_PER_PAGE = 6;
+        final int BOOKS_PER_PAGE = 6;
 
         try {
             // ユーザー認証（共通処理）
@@ -273,14 +273,14 @@ public class InternalBooksController {
             List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
             
             //取得した本の要素数を取得
-            int totalItems = allBookIds.size();
+            int TOTAL_BOOK_COUNT = allBookIds.size();
             
             //指定した表示画像数と、取得した要素数で必要なページ数を計算
-            int totalPages = (int) Math.ceil((double) totalItems / ITEMS_PER_PAGE);
+            int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / BOOKS_PER_PAGE);
 
             // ページ範囲を計算
-            int fromIndex = page * ITEMS_PER_PAGE;
-            int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, totalItems);
+            int fromIndex = page * BOOKS_PER_PAGE;
+            int toIndex = Math.min(fromIndex + BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
 
             // 表示対象の本IDリストを抽出
             List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
