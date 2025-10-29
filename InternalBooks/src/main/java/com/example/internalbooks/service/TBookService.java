@@ -54,23 +54,6 @@ public class TBookService {
 		}
 		return categoryList;
 	}
-	
-//	public List<Integer> getCategoriesdetail(String category){
-//	    List<Integer> categorydetailList = new ArrayList<>();
-//	    try {
-//	        // 条件に一致する本情報のみ取得
-//	        List<TBookEntity> bookList = tBookRepository.findByCategories(category);
-//
-//	        for (TBookEntity book : bookList) {
-//	        	Integer bookid = book.getBookId();
-//				categorydetailList.add(bookid);
-//	        }
-//
-//	    } catch (Exception e) {
-//	        throw e;
-//	    }
-//	    return categorydetailList;
-//	}
 
 	
 	public List<Integer> getCategoriesdetail(String category){
