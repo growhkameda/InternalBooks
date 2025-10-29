@@ -270,13 +270,9 @@ public class AdminController extends InternalBooksController {
             }
             // "userIdからユーザー情報を取得
             TUserEntity putUser = tUserService.getUserById(userId);
-            // ユーザーが所属している部署IDを取得
-            Integer departmentId = putUser.getDepartmentId(); 
-            //departmentIdから所属課を取得
-            String departmentNames = tUserService.getDepartmentNameById(departmentId);
 
             model.addAttribute("putUser", putUser);
-            model.addAttribute("departmentNames", departmentNames);
+            model.addAttribute("isAdmin", isAdmin);
             //空のDTOを返す
             model.addAttribute("userDto", new DtoUserRegistration());
             return "page/useredit";
@@ -320,17 +316,12 @@ public class AdminController extends InternalBooksController {
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
-            //ユーザーIDがnullかどうかを確かめる
-            if (userId == null) {
-                redirectAttributes.addFlashAttribute("error", "ユーザーIDが指定されていません");
-                return "redirect:/usersearch";
-            }
+          
             // "userIdからユーザー情報を取得
             TUserEntity putUser = tUserService.getUserById(userId);
             
             // ユーザーが所属している部署IDを取得
             model.addAttribute("putUser", putUser);
-            model.addAttribute("isAdmin", isAdmin);
             model.addAttribute("userDto", userDto);
             
             return "page/userEditConfirmation";

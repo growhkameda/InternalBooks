@@ -20,7 +20,7 @@
    <div class ="container">
 	 <div class = "row justify-content-center">
 	   <div class = "col-8 pt-2">
-	     <p class="form-label text-start">社員ID</p>
+	     <label class="form-label text-start">社員ID</label>
 	     <!--UserIdを表示-->
 	     <div class="rounded-2 h-75 border border-black">
 	       <span class="mt-3 ms-2 fw-normal h6" th:text="${putUser.userId}"></span>
@@ -32,7 +32,7 @@
    <div class ="container">
      <div class = "row justify-content-center">
 	   <div class = "col-8 pt-2">
-     	 <p class="form-label text-start">名前</p>
+     	 <label class="form-label text-start">名前</label>
 		 <div class="rounded-2 h-75 border border-black">
 	       <p class="mt-3 ms-2 fw-normal h6" th:text = "${userDto.name}"></p>
 		 </div>
@@ -43,7 +43,7 @@
    <div class ="container mt-4">
      <div class = "row justify-content-center">
        <div class = "col-8 pt-2">
-		 <p class="form-label text-start">所属課</p>
+		 <label class="form-label text-start">所属課</label>
 		 <div class="rounded-2 h-75 border border-black">
            <p class="mt-3 ms-2 fw-normal h6" th:text = "${userDto.departmentId}"></p>
 	     </div>
