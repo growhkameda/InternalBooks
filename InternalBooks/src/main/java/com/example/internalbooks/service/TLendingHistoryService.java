@@ -80,4 +80,34 @@ public class TLendingHistoryService {
 		return tlend;
     }
 
+    /** 木俣(2025/10/26)
+     * 書籍IDのリストから返却予定日のリストを取得する
+     */
+    public List<DtoBookHistory> getScheduledReturnDatesByBookIds(List<Integer> bookIds) {
+        List<DtoBookHistory> bookHistoryList = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
+        
+        for (Integer bookId : bookIds) {
+            DtoBookHistory history = new DtoBookHistory();
+            
+            // 書籍IDから最新の貸出履歴を取得する
+            List<TLendingHistoryEntity> entities = lendingHistoryRepository.findByBookId(bookId);
+            if (!entities.isEmpty()) {
+                TLendingHistoryEntity latestHistory = entities.get(0);
+                if (latestHistory.getScheduledReturnDate() != null) {
+                    history.setScheduledReturnDate(latestHistory.getScheduledReturnDate().format(formatter));
+                } else {
+                    history.setScheduledReturnDate("-");
+                }
+            } else {
+                // 履歴がない場合は"-"を設定(DB管理者に連絡してね)
+                history.setScheduledReturnDate("-");
+            }
+            
+            bookHistoryList.add(history);
+        }
+        
+        return bookHistoryList;
+    }
+
 }

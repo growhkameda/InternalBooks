@@ -57,7 +57,7 @@
                             
                             <!--データ表示領域-->
                             <div class="col-6">
-                              <span class="fw-bold text-dark department-name" th:text="${departmentNames[user.userId]}">所属課</span>
+                              <span class="fw-bold text-dark department-name" th:text="${user.departmentName}">所属課</span>
                             </div>
                             <div class="col-6">
                               <span class="fw-bold text-dark user-name" th:text="${user.name}">名前</span>

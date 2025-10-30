@@ -8,8 +8,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TUserRepository;
+import com.example.internalbooks.repository.MDepartmentRepository;
 
 @Service
 @Transactional
@@ -20,10 +22,12 @@ public class TUserService implements UserDetailsService {
  
     //DI用フィールド
     private final TUserRepository tUserRepository;
+    private final MDepartmentRepository mDepartmentRepository;
 
     //コンストラクタインジェクション
-    public TUserService(TUserRepository tUserRepository) {
+    public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository) {
         this.tUserRepository = tUserRepository;
+        this.mDepartmentRepository = mDepartmentRepository;
     }
     
 
@@ -64,26 +68,63 @@ public class TUserService implements UserDetailsService {
 
     /**
      * 部門IDから部門名を取得する
-     * (現在は仮で設定)
      */
     public String getDepartmentNameById(Integer departmentId) {
         if (departmentId == null) {
             return "未設定";
         }
         
-        switch (departmentId) {
-            case 1: return "11課";
-            case 2: return "22課";
-            case 3: return "33課";
-            case 4: return "44課";
-            case 5: return "55課";
-            case 6: return "66課";
-            case 7: return "77課";
-            case 8: return "88課";
-            case 9: return "99課";
-            case 10: return "100課";
-            default: return "不明";
+        try {
+            // リポジトリを使用してデータベースから部門名を取得
+            Optional<String> departmentName = mDepartmentRepository.findNameById(departmentId);
+            
+            return departmentName.orElse("不明");
+            
+        } catch (NumberFormatException e) {
+            // 数値に変換できない場合
+            return "不明";
+        } catch (Exception e) {
+            // その他のエラーの場合
+            return "Error";
         }
+        
     }
 
+    /**
+     * ユーザーの所属課を取得する
+     * DBへのアクセス回数が多いためパフォーマンス上げるならJOINクエリとかRepositoryに追加するといい！
+     */
+    public List<TUserEntity> getUserDepartmentName() {
+        // 全ユーザー情報を取得
+        List<TUserEntity> users = getAllUsers();
+
+        // 各ユーザーの所属課を取得
+        for (TUserEntity user : users) {
+            String departmentName = getDepartmentNameById(user.getDepartmentId());
+            user.setDepartmentName(departmentName);
+        }
+
+        return users;
+    }
+        
+    
+    /**
+     * ユーザー情報をDBへ保存するメソッド
+     */
+    public TUserEntity userRegistration(DtoUserRegistration dtuser) {
+    	TUserEntity tuser = new TUserEntity();
+    	tuser.setUserId(dtuser.getUserIdAsIntger());
+    	tuser.setName(dtuser.getName());
+    	tuser.setMailAddress(dtuser.getMailAddress());
+    	tuser.setPassword(dtuser.getPassword());
+    	tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
+    	tuser.setRole(dtuser.getRole());
+    	tuser.setDeleteFlg(dtuser.getDeleteFlg());
+    	  
+    	tUserRepository.save(tuser);
+    	  
+    	return tuser;
+    	  
+    }
+      
 }

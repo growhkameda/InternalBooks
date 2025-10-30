@@ -13,7 +13,7 @@
         
         <!-- ================== ページメインタイトル ================== -->
         <h1 class="fw-bold mt-5 display-3 mb-5 text-center">貸出中書籍</h1>
-        <p class="text-muted mt-5 mb-3 fs-6 text-center">書籍をタップするとカード詳細画面に遷移します</p>
+        <p class="text-muted mt-5 mb-3 fs-6 text-center">書籍の画像を選択すると書籍返却画面に移ります</p>
 
         <!-- ================== 貸出中書籍なしの場合の表示 ================== -->
         <div th:if="${checkedOutBooks == null or #lists.isEmpty(checkedOutBooks)}" 
@@ -30,11 +30,11 @@
             </a>
           </div>
         </div>
-
+ 
         <!-- ================== 貸出中書籍ありの場合の表示 ================== -->
         <div th:if="${checkedOutBooks != null and not #lists.isEmpty(checkedOutBooks)}">
           
-          <!-- ========== 書籍一覧表示エリア（縦並び） ========== -->
+          <!-- ========== 書籍一覧表示エリア ========== -->
           <div th:each="book : ${checkedOutBooks}" class="text-center mb-4">
             <!-- 書籍カード（検索結果詳細ページにリンク） -->
             <a th:href="@{/page/searchresult(bookId=${book.bookId})}" 
@@ -52,18 +52,10 @@
                 <div class="card-body p-4 pt-1 text-center">
                   <!-- 書籍名 -->
                   <h5 class="card-title fw-bold mb-2 text-dark" th:text="${book.title}">書籍名</h5>
-                  
-                  <!-- ★★★","で区切ってカテゴリ表示できるように修正する★★★ -->
-                  <!-- カテゴリー -->
+                  <!-- 返却予定日 -->
                   <div class="mb-2">
-                    <span class="badge bg-primary rounded-pill px-3 py-2 fs-6" 
-                          th:text="${book.category}">カテゴリー</span>
-                  </div>
-                  
-                  <!-- 貸出状況 -->
-                  <div class="mb-0">
-                    <span th:if="${book.status == '貸出中'}" class="text-danger fw-bold">貸出中</span>
-                    <span th:if="${book.status != '貸出中'}" class="text-success fw-bold">書籍所</span>
+                    <span class="text-muted">返却予定日: </span>
+                    <span th:text="${book.scheduledReturnDate}">-</span>
                   </div>
                 </div>
               </div>

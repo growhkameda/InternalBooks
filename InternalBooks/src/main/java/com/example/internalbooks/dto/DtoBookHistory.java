@@ -10,7 +10,7 @@ public class DtoBookHistory {
     /**
      * ここにフィールドなど記述する感じになると思います(木俣)
      */
-	
+    
 //	private Integer id;
 	
 	// 書籍ID

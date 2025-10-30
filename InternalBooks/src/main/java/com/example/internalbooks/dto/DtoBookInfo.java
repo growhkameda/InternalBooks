@@ -1,8 +1,9 @@
 package com.example.internalbooks.dto;
 
 import java.util.List;
-
 import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 書籍情報を格納するDTO
@@ -15,23 +16,34 @@ public class DtoBookInfo {
     private Integer bookId;
     
     // 書籍タイトル
+    @NotBlank(message = "書籍名は必須です")
     private String title;
     
     // カテゴリー
+    @NotBlank(message = "カテゴリーは必須です")
     private String category;
+    
     private List<String> categories;
     
     // 貸出状況
     private String status;
     
+    // 返却 感想・コメント
+    private String memo;
+    
     // 書籍画像URL
     private String imageUrl;
     
-    // 書籍提供者コメント
+    // 書籍提供者
+    @NotNull(message = "書籍提供者は必須です")
+    private Integer providerId;
+    
+ // 書籍提供者のコメント
+    @NotBlank(message = "コメントは必須です")
     private String providerComment;
     
-    // 返却 感想・コメント
-    private String memo;
+    // 返却予定日（貸出中書籍の表示用）
+    private String scheduledReturnDate;
     
     // デフォルトコンストラクタ
     public DtoBookInfo() {
@@ -50,7 +62,7 @@ public class DtoBookInfo {
         }
     }
     
-    // getter/setter
+    // getter/setter for categories
     public List<String> getCategories() {
         return categories;
     }

@@ -1,5 +1,6 @@
 package com.example.internalbooks.service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TBookEntity;
+import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.repository.TBookRepository;
+import com.example.internalbooks.repository.TLendingHistoryRepository;
 
 @Service
 @Transactional
@@ -21,10 +24,12 @@ public class TBookService {
 
 	//DI用フィールド
     private final TBookRepository tBookRepository;
+    private final TLendingHistoryRepository lendingHistoryRepository;
 
 	//コンストラクタインジェクション
-    public TBookService(TBookRepository tBookRepository) {
+    public TBookService(TBookRepository tBookRepository, TLendingHistoryRepository lendingHistoryRepository) {
         this.tBookRepository = tBookRepository;
+        this.lendingHistoryRepository = lendingHistoryRepository;
     }
 
 
@@ -50,6 +55,90 @@ public class TBookService {
 		return categoryList;
 	}
 
+	
+	public List<Integer> getCategoriesdetail(String category){
+		List<Integer> bookid_list = new ArrayList<>();
+		try {
+
+			// 全本情報を取得
+			List<TBookEntity> bookList = tBookRepository.findAll();
+			
+			// カテゴリー情報を登録されている本情報から取得する
+			for (TBookEntity book : bookList) {
+				String book_categories = book.getCategories();
+				// 複数のカテゴリーをカンマ区切りにする
+				String[] categoriesArray = book_categories.split(",");
+				for (String list_category : categoriesArray) {
+					// 引数のカテゴリーの値が含まれている本情報のみbookid_listに追加する
+				    if (list_category.trim().equals(category)) {
+				        bookid_list.add(book.getBookId());
+				        break;
+				    }
+				}
+			}
+				
+		} catch (Exception e) {
+			throw e;
+		}
+		return bookid_list;
+	}
+
+	/**
+	 * TBookEntityからDtoBookInfoに変換する共通メソッド
+	 */
+	private DtoBookInfo convertEntityToDto(TBookEntity book) {
+		DtoBookInfo dto = new DtoBookInfo();
+		dto.setBookId(book.getBookId());
+		
+		// タイトルが空の場合はデフォルト値を設定
+		String title = book.getTitle();
+		if (title == null || title.trim().isEmpty()) {
+			title = "書籍ID: " + book.getBookId();
+		}
+		dto.setTitle(title);
+		
+		// カテゴリーが空の場合はデフォルト値を設定
+		String categories = book.getCategories();
+		if (categories == null || categories.trim().isEmpty() || categories.equals(",")) {
+			categories = "未分類";
+		}
+		dto.setCategory(categories);
+		
+		// 貸出状況を設定（borrower_idに基づいて動的に判定）
+		dto.setStatus(determineLendingStatus(book.getBorrowerId()));
+		
+		// 書籍IDに基づいて画像URLを設定
+		dto.setImageUrlFromBookId();
+		
+		// 返却 感想・コメント
+		dto.setMemo(book.getMemo());
+		
+		// 返却予定日を取得して設定（貸出中の場合のみ）
+		if (book.getBorrowerId() != null) {
+			setScheduledReturnDate(dto, book.getBookId());
+		}
+		
+		return dto;
+	}
+	
+	/**
+	 * 書籍IDから返却予定日を取得してDTOに設定する
+	 */
+	private void setScheduledReturnDate(DtoBookInfo dto, Integer bookId) {
+		List<TLendingHistoryEntity> histories = lendingHistoryRepository.findByBookId(bookId);
+		if (!histories.isEmpty()) {
+			TLendingHistoryEntity latestHistory = histories.get(0);
+			if (latestHistory.getScheduledReturnDate() != null) {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
+				dto.setScheduledReturnDate(latestHistory.getScheduledReturnDate().format(formatter));
+			} else {
+				dto.setScheduledReturnDate("-");
+			}
+		} else {
+			dto.setScheduledReturnDate("-");
+		}
+	}
+
 	/**
 	 * 指定されたユーザーIDの貸出中書籍を取得する
 	 */
@@ -59,32 +148,9 @@ public class TBookService {
 		// 借りているユーザーIDで書籍を検索
 		List<TBookEntity> borrowedBooks = tBookRepository.findByBorrowerId(userId);
 		
-		// EntityからDTOに変換
+		// EntityからDTOに変換（共通メソッドを使用）
 		for (TBookEntity book : borrowedBooks) {
-			DtoBookInfo dto = new DtoBookInfo();
-			dto.setBookId(book.getBookId());
-			
-			// タイトルが空の場合はデフォルト値を設定
-			String title = book.getTitle();
-			if (title == null || title.trim().isEmpty()) {
-				title = "書籍ID: " + book.getBookId();
-			}
-			dto.setTitle(title);
-			
-			// カテゴリーが空の場合はデフォルト値を設定
-			String categories = book.getCategories();
-			if (categories == null || categories.trim().isEmpty() || categories.equals(",")) {
-				categories = "未分類";
-			}
-			dto.setCategory(categories);
-			
-			// 貸出状況を設定（borrower_idに基づいて動的に判定）
-			dto.setStatus(determineLendingStatus(book.getBorrowerId()));
-			
-			// 書籍IDに基づいて画像URLを設定
-			dto.setImageUrlFromBookId();
-			
-			checkedOutBooks.add(dto);
+			checkedOutBooks.add(convertEntityToDto(book));
 		}
 		
 		return checkedOutBooks;
@@ -200,6 +266,18 @@ public class TBookService {
 	 */
 	private String determineLendingStatus(Integer borrowerId) {
 		return borrowerId != null ? "貸出中" : "貸出可能";
+	}
+	
+	public TBookEntity bookEditing(DtoBookInfo dtbook) {
+		TBookEntity tbook = new TBookEntity();
+		tbook.setTitle(dtbook.getTitle());
+		tbook.setCategories(dtbook.getCategory());
+		tbook.setProviderId(dtbook.getProviderId());
+		tbook.setProviderComment(dtbook.getProviderComment());
+		
+		tBookRepository.save(tbook);
+		
+		return tbook;
 	}
 
 }
