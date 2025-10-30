@@ -74,9 +74,10 @@
 	  		 <div class="d-flex h-25">
 				
 				<form id="lending-form-modal" method="post" th:action="@{/page/LendingCompleted}" 
-				class="d-flex w-50 border-0 align-items-center justify-content-center" 
+				th:object= "${tlend}" class="d-flex w-50 border-0 align-items-center justify-content-center" 
 				style="background-color: #494CD8; border-bottom-left-radius: 10px;">
-				    <input type="hidden" name="bookId" th:value="${book.bookId}">
+					<input type="hidden" th:field="*{bookId}">
+					<input type="hidden" th:if="${param.qrData != null}" name="qrData" th:value="${param.qrData}">
 				    <button type="submit" class="w-50 border border-0 text-white" 
 					style="background-color: #494CD8; border-bottom-left-radius: 10px;">
 						借りる
@@ -100,14 +101,16 @@
 <!--	  			</button>-->
 				
 				<form id="return-form-modal" method="post" th:action="@{/page/ReturnCompleted}" 
-				th:object= "${dtLend}" class="d-flex w-50 border-0 align-items-center justify-content-center" 
+				th:object= "${tlend}" class="d-flex w-50 border-0 align-items-center justify-content-center" 
 				style="background-color: #E83838; border-bottom-left-radius: 10px;">
-				    <input type="hidden" name="bookId" th:value="${book.bookId}">
-<!--					<input type="hidden" th:field="*{bookId}">-->
-					<input type="hidden" th:field="*{lendingDate}" value="${lendingDate}">
+<!--				    <input type="hidden" name="bookId" th:value="${book.bookId}">-->
+					<input type="hidden" th:field="*{bookId}">
+					<input type="hidden" th:if="${param.qrData != null}" name="qrData" th:value="${param.qrData}">
+					<input type="hidden" th:field="*{lendingDate}">
 				    <input type="hidden" th:field="*{scheduledReturnDate}">
 				    <input type="hidden" th:field="*{returnDate}">
 					<input type="hidden" th:field="*{userId}">
+					<input type="hidden" id="review-hidden" name="review">
 				    <button type="submit" class="w-50 border border-0 text-white" 
 					style="background-color: #E83838; border-bottom-left-radius: 10px;">
 						返す
@@ -128,7 +131,7 @@
 		</p>
 	</div>
 	
-	<form th:action="@{/page/ReturnCompleted}" th:object="${dtLend}" method="post">
+	<form th:action="@{/page/ReturnCompleted}" th:object="${tlend}" method="post">
 		<div class="row d-flex justify-content-center mb-4" th:if="${book.status == '貸出中'}">
 			<label class="col-8" for="comment">感想・コメント</label>
 			<textarea id="comment" class="col-8 ps-2" th:field="*{review}" placeholder="こちらに感想やコメントを記入してください。" 
@@ -348,6 +351,11 @@
         </div>
       `;
     }
+	
+	document.querySelector('#return-form-modal').addEventListener('submit', function() {
+	  // textareaの値をhiddenにコピー
+	  document.querySelector('#review-hidden').value = document.querySelector('#comment').value;
+	});
   </script>
   </section>
 </body>

@@ -64,7 +64,7 @@
 	
 	<div class="row d-flex justify-content-center mb-4">
 		<label class="col-8" for="comment">感想・コメント</label>
-		<p th:text="${dtLend.review}" class="col-8 ps-2" style="background-color: #E8ECE8; height: 50px; border-radius: 10px;"></p>
+		<p th:text="${tlend.review}" class="col-8 ps-2" style="background-color: #E8ECE8; height: 50px; border-radius: 10px;"></p>
 	</div>
 
       <!-- ========== 一覧へ戻るボタン ========== -->
@@ -105,10 +105,10 @@
  				<td class="text-white" style="background-color: #15B2EE;">返却</td>
              </tr>
   			  
- 			  <tr class="comment" th:if="${dtLend.review != null}">
+ 			  <tr class="comment" th:if="${tlend.review != null}">
  				<td colspan="3" class="p-0" style="background-color: #15B2EE;">
  					<p class="col-8 text-white mb-0 mx-1">感想・コメント</p>
-                    <p th:text="${dtLend.review}" class="ps-1 mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;"></p>
+ 					<p th:text="${tlend.review}" class="ps-1 mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;"></p>
  				</td>
  			  </tr>
   			  

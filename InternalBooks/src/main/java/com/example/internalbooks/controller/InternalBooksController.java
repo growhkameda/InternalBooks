@@ -197,7 +197,7 @@ public class InternalBooksController {
      */
     @GetMapping("/page/searchresult")
     public String searchResult(
-		@ModelAttribute("dtLend") DtoBookHistoryRegistration dtLend,
+		@ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
         @RequestParam(name = "bookId", required = false) Integer bookId,
         @RequestParam(name = "qrData", required = false) String qrData,
         HttpSession session,
@@ -238,7 +238,7 @@ public class InternalBooksController {
             // TODO 実際の書籍履歴取得機能のロジックをここに記述してください。(サービスに記述したものを引っ張ってくる)
             List<DtoBookHistory> dtoBookHistory;
             
-            if(bookId == null) {
+            if(bookId == null && qrData != null) {
             	// QRコードから遷移した場合
             	Integer qrId = Integer.parseInt(qrData);
             	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
@@ -253,6 +253,11 @@ public class InternalBooksController {
             // セッションから遷移フラグを削除
             session.removeAttribute("fromQrSearch");
             session.removeAttribute("fromCheckedOut");
+            
+            if (bookId == null && qrData == null) {
+                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
+                return "redirect:/page/top";
+            }
 
             return "page/searchresult";
             
@@ -262,10 +267,108 @@ public class InternalBooksController {
         }
     }
     
+    @PostMapping("page/LendingCompleted")
+    public String searchResultLend(
+    		@ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
+    		@RequestParam(name = "qrData", required = false) String qrData,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+    	
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+    		Integer bookId;
+    		if (qrData != null) {
+    			// QRコードで読み取った場合
+    			bookId = Integer.parseInt(qrData);
+    		} else {
+    			// 一覧画面から遷移した場合
+    			bookId = dtlend.getBookId();
+    		}
+            Integer userId = jwtUtil.extractUserId(token);
+            
+            dtlend.setBookId(bookId);
+            dtlend.setUserId(userId);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+            
+//            TLendingHistoryEntity savedLend = 
+    		lendingHistoryService.rentalCompleted(dtlend);
+//            DtoBookHistoryRegistration tlend = new DtoBookHistoryRegistration();
+            
+    	} catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+    	
+    	return "page/LendingCompleted";
+    }
+    
+    
+    @PostMapping("/page/ReturnCompleted")
+    public String searchResultReturn(
+    		@ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
+    		@RequestParam(name = "qrData", required = false) String qrData,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+    	
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+    		Integer bookId;
+    		if (qrData != null) {
+    			// QRコードで読み取った場合
+    			bookId = Integer.parseInt(qrData);
+    		} else {
+    			// 一覧画面から遷移した場合
+    			bookId = dtlend.getBookId();
+    		}
+            Integer userId = jwtUtil.extractUserId(token);
+            
+            dtlend.setBookId(bookId);
+            dtlend.setUserId(userId);
+            
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            model.addAttribute("isAdmin", isAdmin);
+            
+            // DBへ(userId,name,mailAddress,password,departmentId)を保存
+            TLendingHistoryEntity savedLend = lendingHistoryService.returnCompleted(dtlend);
+            // DBに保存した値をDTOを経由して再度取得
+            DtoBookHistoryRegistration tlend = new DtoBookHistoryRegistration();
+            tlend.setBookId(savedLend.getBookId());
+            tlend.setLendingDate(savedLend.getLendingDate());
+            tlend.setScheduledReturnDate(savedLend.getScheduledReturnDate());
+            tlend.setReturnDate(savedLend.getReturnDate());
+            tlend.setUserId(savedLend.getUserId());
+            tlend.setReview(savedLend.getReview());
+            
+            // 取得した情報を表示
+            model.addAttribute("tlend",tlend);
+            
+            
+            if (bookId == null) {
+                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
+                return "redirect:/page/top";
+            }
+            
+            redirectAttributes.addAttribute("bookId", bookId);
+//            if (qrData != null) {
+//            	redirectAttributes.addAttribute("qrData", qrData);
+//            }
+            return "page/ReturnCompleted";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
     /**
      * 貸出完了ページに遷移
      */
-    @PostMapping("/page/LendingCompleted")
+    @GetMapping("/page/LendingCompleted")
     public String LendingCompleted(
     		@RequestParam("bookId") Integer bookId,
     		@RequestParam(name = "qrData", required = false) String qrData,
@@ -412,52 +515,7 @@ public class InternalBooksController {
     		return error(redirectAttributes);
     	}
         
-    }
-    
-    @PostMapping("/page/ReturnCompleted")
-    public String ReturnCompleted(
-    		@ModelAttribute("dtLend") DtoBookHistoryRegistration dtlend,
-    		@RequestParam("bookId") Integer bookId,
-    		@RequestParam(name = "qrData", required = false) String qrData,
-            HttpSession session,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-    	
-    	try {
-    		// torkenの検証
-    		String token = (String) session.getAttribute("token");
-            jwtUtil.extractUserId(token);
-            
-            boolean isAdmin = jwtUtil.extractIsAdmin(token);
-            model.addAttribute("isAdmin", isAdmin);
-            
-            // DBへ(userId,name,mailAddress,password,departmentId)を保存
-            TLendingHistoryEntity savedLend = lendingHistoryService.lendRegistration(dtlend);
-            // DBに保存した値をDTOを経由して再度取得           
-            DtoBookHistoryRegistration tlend = new DtoBookHistoryRegistration();
-            tlend.setBookId(savedLend.getBookId());
-            tlend.setLendingDate(savedLend.getLendingDate());
-            tlend.setScheduledReturnDate(savedLend.getScheduledReturnDate());
-            tlend.setReturnDate(savedLend.getReturnDate());
-            tlend.setUserId(savedLend.getUserId());
-            tlend.setReview(savedLend.getReview());
-            
-            // 取得した情報を表示
-            model.addAttribute("dtLend",tlend);
-            
-            
-            if (bookId == null) {
-                redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
-                return "redirect:/page/top";
-            }
-            
-            return "page/ReturnCompleted";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
-        
-    }
+    }    
    
     /**
      * エラー処理
