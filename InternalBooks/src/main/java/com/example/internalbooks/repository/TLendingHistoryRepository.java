@@ -3,9 +3,11 @@ package com.example.internalbooks.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.internalbooks.entity.TLendingHistoryEntity;
 
@@ -24,4 +26,13 @@ public interface TLendingHistoryRepository extends JpaRepository<TLendingHistory
 
     // 必要なら複数件返すバージョン
 //    List<TLendingHistoryEntity> findAllByBookIdAndStatus(Integer bookId, String status);
+
+    /** 11/03 木俣
+     * 指定されたbook_idの貸出履歴をすべて削除
+     * 書籍削除時のカスケード削除に使用
+     */
+    @Modifying
+    @Transactional
+    void deleteByBookId(Integer bookId);
+    
 }

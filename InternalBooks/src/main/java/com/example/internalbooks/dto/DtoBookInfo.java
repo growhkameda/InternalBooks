@@ -2,6 +2,8 @@ package com.example.internalbooks.dto;
 
 import java.util.List;
 import lombok.Data;
+import java.util.Arrays;
+import java.util.ArrayList;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -23,6 +25,7 @@ public class DtoBookInfo {
     @NotBlank(message = "カテゴリーは必須です")
     private String category;
     
+    // カテゴリーリスト
     private List<String> categories;
     
     // 貸出状況
@@ -34,11 +37,14 @@ public class DtoBookInfo {
     // 書籍画像URL
     private String imageUrl;
     
-    // 書籍提供者
+    // 書籍提供者ID
     @NotNull(message = "書籍提供者は必須です")
     private Integer providerId;
     
- // 書籍提供者のコメント
+    // 書籍提供者名
+    private String providerName;
+    
+    // 書籍提供者のコメント
     @NotBlank(message = "コメントは必須です")
     private String providerComment;
     
@@ -50,10 +56,12 @@ public class DtoBookInfo {
         // デフォルト値は設定せず、使用時に適切な値を設定する
     }
     
-    // 書籍IDに基づいて画像URLを設定するメソッド
+    /**
+     * 書籍IDに基づいて画像URLを設定するメソッド
+     */
     public void setImageUrlFromBookId() {
         if (this.bookId != null) {
-            // 書籍IDは4桁でカテゴリーごとに分けられる設計
+            // 書籍のbook_idに基づいて画像を生成
             String imageName = this.bookId + ".png";
             this.imageUrl = "/images/" + imageName;
         } else {
