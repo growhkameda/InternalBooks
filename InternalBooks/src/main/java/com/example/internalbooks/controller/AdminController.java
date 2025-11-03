@@ -138,40 +138,8 @@ public class AdminController extends InternalBooksController {
         }
     }
     
-    /**
-     * ユーザー編集確認画面へ遷移
-     */
-    @GetMapping("/usereditconfirmation")
-    public String usereditconfirmation(
-            Integer userId,
-            String name,
-            Integer departmentId,
-    		HttpSession session, 
-    		Model model, 
-    		RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            // "userIdからユーザー情報を取得
-            TUserEntity putUser = tUserService.getUserById(userId);
-            //ユーザーが所属している部署IDを取得
-            Integer putdepartmentId = putUser.getDepartmentId(); 
-            //departmentIdから所属課を取得
-            String departmentNames = tUserService.getDepartmentNameById(putdepartmentId);
-      
-            model.addAttribute("putUser", putUser);
-            model.addAttribute("departmentNames", departmentNames);
-            
-            return "page/usereditconfirmation";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
+ 
+
     
     /**
      * ユーザー確認画面に遷移
