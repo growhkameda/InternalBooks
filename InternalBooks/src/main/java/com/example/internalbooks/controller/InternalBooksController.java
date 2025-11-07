@@ -216,14 +216,26 @@ public class InternalBooksController {
             Boolean fromCheckedOut = (Boolean) session.getAttribute("fromCheckedOut");
             model.addAttribute("fromCheckedOut", fromCheckedOut != null ? fromCheckedOut : false);
             
-            model.addAttribute("bookdto", new DtoBookHistoryRegistration());
+            Boolean cateDetail = (Boolean) session.getAttribute("cateDetail");
+            model.addAttribute("cateDetail", cateDetail != null ? cateDetail : false);
             
-            // 書籍一覧から遷移した場合のフラグ設定
+            model.addAttribute("bookdto", new DtoBookHistoryRegistration());
             
             
             // 返却ボタン表示判定（QRサーチまたは貸出中書籍ページからの遷移）
-            boolean showReturnButton = (fromQrSearch != null && fromQrSearch) || (fromCheckedOut != null && fromCheckedOut);
-            model.addAttribute("showReturnButton", showReturnButton);
+            boolean showButton = (fromQrSearch != null && fromQrSearch) || (fromCheckedOut != null && fromCheckedOut);
+            model.addAttribute("showButton", showButton);
+            
+            // 書籍一覧から遷移した場合のフラグ設定
+            boolean showComment = true;
+
+            // カテゴリー一覧から遷移は非表示、QRまたは貸出中書籍からの遷移は表示
+            if (cateDetail != null) {
+                showComment = false;
+            } else if ((fromQrSearch != null && fromQrSearch) || (fromCheckedOut != null && fromCheckedOut)) {
+            	showComment = true;
+            }
+            model.addAttribute("showComment", showComment);
             
             // 書籍検索処理をServiceで処理
             DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
@@ -458,6 +470,9 @@ public class InternalBooksController {
             model.addAttribute("category", category);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", totalPages);
+            
+            // カテゴリー一覧からの遷移フラグをセッションに設定
+            session.setAttribute("cateDetail", true);
 
             return "page/categories_detail";
 

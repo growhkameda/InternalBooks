@@ -38,7 +38,7 @@
         <!-- 書籍画像エリア -->
         <div class="text-center p-4">
 <!--		  <img th:src="@{|/images/${book.bookId}.png|}" -->
-		  <img th:src="@{'/images/' + '100' + ${book.bookId} + '.png'}"
+		  <img th:src="@{'/images/' + ${book.bookId} + '.png'}"
                class="img-fluid rounded shadow w-25 h-auto" 
                alt="書籍画像"
                onerror="handleImageError(this)" />
@@ -95,15 +95,9 @@
 	  	<div id="r-confirmation" class="col-6 pt-3 position-fixed top-50" style="display: none; z-index: 999;">
 	  		<p class="text-center mt-5 mb-5" style="font-size: 20px;">この書籍を返却しますか？</p>
 	  		<div class="d-flex h-25">
-<!--	  			<button class="w-50 border border-0" style="background-color: #E83838; border-bottom-left-radius: 10px;"-->
-<!--				onclick="document.getElementById('return-form').submit();">-->
-<!--					返す-->
-<!--	  			</button>-->
-				
 				<form id="return-form-modal" method="post" th:action="@{/page/ReturnCompleted}" 
 				th:object= "${tlend}" class="d-flex w-50 border-0 align-items-center justify-content-center" 
 				style="background-color: #E83838; border-bottom-left-radius: 10px;">
-<!--				    <input type="hidden" name="bookId" th:value="${book.bookId}">-->
 					<input type="hidden" th:field="*{bookId}">
 					<input type="hidden" th:if="${param.qrData != null}" name="qrData" th:value="${param.qrData}">
 					<input type="hidden" th:field="*{lendingDate}">
@@ -123,25 +117,20 @@
 	  		 </div>
 	  	</div>
 		
-		
-	 <div class="row d-flex justify-content-center" th:if="${book.status != '貸出中'}">
-	 	<p class="col-8">書籍提供者：武藤</p>	<!-- 書籍提供者　バックエンドから持ってくる -->
+	 <div class="row d-flex justify-content-center" th:if="${book.status != '貸出中'}" th:each="history : ${bookHistoryList}">
+	 	<p th:text="${history.userName}" class="col-8">書籍提供者：武藤</p>
 	 	<p th:text="${book.providerComment}" class="col-8 p-3" style="background-color: #E8ECE8; border-radius: 10px;">
 		書籍提供者コメント
 		</p>
 	</div>
 	
-	<form th:action="@{/page/ReturnCompleted}" th:object="${tlend}" method="post">
-		<div class="row d-flex justify-content-center mb-4" th:if="${book.status == '貸出中'}">
+	<form th:action="@{/page/ReturnCompleted}" th:if="${showComment == true}" th:object="${tlend}" method="post">
+		<div th:if="${book.status == '貸出中'}" class="row d-flex justify-content-center mb-4">
 			<label class="col-8" for="comment">感想・コメント</label>
 			<textarea id="comment" class="col-8 ps-2" th:field="*{review}" placeholder="こちらに感想やコメントを記入してください。" 
 					  style="background-color: #E8ECE8; border-radius: 10px; border: 0px none;;"></textarea>
 		</div>
 	</form>
-	
-	
-	
-<!--	<p th:text="${book.Memo}"></p>-->
 
       <!-- ========== 一覧へ戻るボタン ========== -->
       <div class="row d-flex justify-content-center border-0 mt-0 mb-5">
@@ -152,11 +141,11 @@
       </div>
 
 		<!-- ========== 返却/借りるボタン（QRサーチまたは貸出中書籍ページからの遷移時のみ表示） ========== -->
-		<div th:if="${showReturnButton == true}" class="text-center mb-5">
+		<div th:if="${showButton == true}" class="text-center mb-5">
         	<!-- 貸出中の場合は返却ボタン -->
 			<div th:if="${book.status == '貸出中'}">
 			  <form id="return-form-main" method="post" class="d-inline">
-			    <input type="hidden" name="bookId" th:value="${book.bookId}" />
+			    <input type="hidden" name="bookId" th:value="${book.bookId}"/>
 			    <button id="rc" type="button" class="btn btn-danger btn-lg w-25">
 			      返す
 			    </button>
@@ -166,7 +155,7 @@
 			<!-- 貸出可能の場合は借りるボタン -->
 			<div th:if="${book.status != '貸出中'}">
 			  <form method="post" th:action="@{/遷移先書いてください}" class="d-inline">
-			    <input type="hidden" name="bookId" th:value="${book.bookId}" />
+			    <input type="hidden" name="bookId" th:value="${book.bookId}"/>
 			    <button id="bc" type="button" class="btn btn-primary btn-lg w-25">
 			      借りる
 			    </button>
