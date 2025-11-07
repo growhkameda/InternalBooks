@@ -27,12 +27,14 @@ public class TBookService {
     private final TBookRepository tBookRepository;
     private final TLendingHistoryRepository lendingHistoryRepository;
     private final TUserService tUserService;
+    private final ImageStorageService imageStorageService;
 
 	//コンストラクタインジェクション
-    public TBookService(TBookRepository tBookRepository, TLendingHistoryRepository lendingHistoryRepository, TUserService tUserService) {
+    public TBookService(TBookRepository tBookRepository, TLendingHistoryRepository lendingHistoryRepository, TUserService tUserService, ImageStorageService imageStorageService) {
         this.tBookRepository = tBookRepository;
         this.lendingHistoryRepository = lendingHistoryRepository;
         this.tUserService = tUserService;
+        this.imageStorageService = imageStorageService;
     }
 
 
@@ -305,6 +307,7 @@ public class TBookService {
 	/** 11/03 木俣
 	 * 指定されたbook_idの書籍を削除する
 	 * DBでカスケード処理していないためBEでカスケード処理を行う
+	 * 画像ファイルも同時に削除する
 	 */
 	public boolean deleteBookById(Integer bookId) {
 		
@@ -322,8 +325,16 @@ public class TBookService {
 				throw new IllegalStateException("書籍は貸出中のため削除できません");
 			}
 
+			// 画像ファイルを削除（DB削除の前に実行）
+			// 画像削除に失敗してもDB削除は継続する
+			try {
+				imageStorageService.deleteImage(bookId);
+			} catch (Exception e) {
+				// 画像削除エラーはログに記録するが、処理は継続
+				System.err.println("画像削除処理でエラーが発生しました（書籍削除は継続します）: bookId=" + bookId + ", error=" + e.getMessage());
+			}
+
 			// 貸出履歴をカスケード削除
-			
 			lendingHistoryRepository.deleteByBookId(bookId);
 			// 書籍を削除
 			tBookRepository.deleteById(bookId);
