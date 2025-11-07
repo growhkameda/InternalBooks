@@ -2,8 +2,6 @@ package com.example.internalbooks.dto;
 
 import java.util.List;
 import lombok.Data;
-import java.util.Arrays;
-import java.util.ArrayList;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
