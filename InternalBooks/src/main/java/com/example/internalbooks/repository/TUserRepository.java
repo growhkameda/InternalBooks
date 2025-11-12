@@ -27,4 +27,6 @@ public interface TUserRepository extends JpaRepository<TUserEntity, Integer> {
 	 */
 	Optional<TUserEntity> findById(Integer id);
 	
+	Optional<TUserEntity> findByName(String name);
+	
 }

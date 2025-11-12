@@ -20,4 +20,8 @@ public interface TBookRepository extends JpaRepository<TBookEntity, Integer> {
 	
 	// カテゴリーに一致する本情報を取得する
 	List<TBookEntity> findByCategories(String category);
+	
+	// カテゴリ名よりIDを取得　大文字小文字関係なし
+	@Query("SELECT MAX(b.id) FROM TBookEntity b WHERE LOWER(b.categories) = LOWER(:categories)")
+	Integer findMaxIdByName(@Param("categories")String categories);	
 }

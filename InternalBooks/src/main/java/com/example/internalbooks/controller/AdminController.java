@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import jakarta.validation.Valid;
 
@@ -22,8 +21,6 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Base64;
-
 import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoUserRegistration;
@@ -102,6 +99,11 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("imageFiles", imageFiles);
             
             model.addAttribute("bookdto", new DtoBookInfo()); //空のDTOを返す
+            //カテゴリ入力フォーム選択用
+            model.addAttribute("example", List.of("Java,プログラミング",
+            		                              "C言語,プログラミング",
+            		                              "Python,プログラミング",
+            		                              "試験参考書"));
             
             return "page/bookediting";
         }
@@ -531,8 +533,7 @@ public class AdminController extends InternalBooksController {
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
-            
-            
+                               
             model.addAttribute("isAdmin", isAdmin);
             
             model.addAttribute("bookdto",bookDto);
@@ -560,20 +561,18 @@ public class AdminController extends InternalBooksController {
             }
             
             model.addAttribute("isAdmin", isAdmin);
-                        
+            
             // DBへ(tilte,catgory,providerId,providercommnet)を保存
             TBookEntity savedBook = tBookService.bookEditing(bookDto);
             // DBに保存した値をDTOWO経由して再度取得           
             DtoBookInfo dbook = new DtoBookInfo();
             dbook.setTitle(savedBook.getTitle());
+            dbook.setProviderId(savedBook.getProviderName());
             dbook.setCategory(savedBook.getCategories());
-            dbook.setProviderId(savedBook.getProviderId());
             dbook.setProviderComment(savedBook.getProviderComment());
                         
             // 取得した情報を表示
-            model.addAttribute("dbook",dbook);
-            
-            
+            model.addAttribute("dbook",dbook);          
             // セッション破棄（フォームを消す）
             status.setComplete();
 
@@ -585,6 +584,7 @@ public class AdminController extends InternalBooksController {
         
     }
 
+    
     /**
      * 削除対象カテゴリーリストを表示
      */

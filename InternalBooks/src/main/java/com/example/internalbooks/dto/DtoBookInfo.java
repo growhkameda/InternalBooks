@@ -13,7 +13,7 @@ import jakarta.validation.constraints.NotNull;
 public class DtoBookInfo {
     
     // 書籍ID
-    private Integer bookId= 1;
+    private Integer bookId;
     
     // 書籍タイトル
     @NotBlank(message = "書籍名は必須です")
@@ -38,7 +38,12 @@ public class DtoBookInfo {
     
     // 書籍提供者
     @NotNull(message = "書籍提供者は必須です")
-    private Integer providerId;
+    private String providerId;
+    
+    //書籍提供者名変換用ID
+    private Integer Id;
+    
+    private String providerName;
     
     // 書籍提供者のコメント
     @NotBlank(message = "コメントは必須です")
@@ -71,5 +76,5 @@ public class DtoBookInfo {
 
     public void setCategories(List<String> categories) {
         this.categories = categories;
-    }
+    }    
 }

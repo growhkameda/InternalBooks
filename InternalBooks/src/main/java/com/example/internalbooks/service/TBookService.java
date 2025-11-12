@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
+import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TBookRepository;
 import com.example.internalbooks.repository.TLendingHistoryRepository;
+import com.example.internalbooks.repository.TUserRepository;
 
 @Service
 @Transactional
@@ -25,11 +27,14 @@ public class TBookService {
 	//DI用フィールド
     private final TBookRepository tBookRepository;
     private final TLendingHistoryRepository lendingHistoryRepository;
+    private final TUserRepository tUserRepository;
+    
 
 	//コンストラクタインジェクション
-    public TBookService(TBookRepository tBookRepository, TLendingHistoryRepository lendingHistoryRepository) {
+    public TBookService(TBookRepository tBookRepository, TLendingHistoryRepository lendingHistoryRepository,TUserRepository tUserRepository) {
         this.tBookRepository = tBookRepository;
         this.lendingHistoryRepository = lendingHistoryRepository;
+        this.tUserRepository = tUserRepository;
     }
 
 
@@ -286,16 +291,37 @@ public class TBookService {
 	}
 	
 	public TBookEntity bookEditing(DtoBookInfo dtbook) {
+        //書籍提供者とユーザーIDの紐付け
+		TUserEntity user = tUserRepository.findByName(dtbook.getProviderId())
+                              .orElseThrow(() -> new RuntimeException("名前が見つかりません"));
+        //紐付けたユーザーIDをDTOにセット
+		dtbook.setId(user.getUserId());
+		
+        //t_bookへ登録
 		TBookEntity tbook = new TBookEntity();
 		tbook.setTitle(dtbook.getTitle());
 		tbook.setCategories(dtbook.getCategory());
-		tbook.setProviderId(dtbook.getProviderId());
+		tbook.setProviderId(dtbook.getId());
 		tbook.setProviderComment(dtbook.getProviderComment());
-		tbook.setBookId(dtbook.getBookId());
 		
-		tBookRepository.save(tbook);
+        //その他の時は書籍ID9999へセット	
+		switch(dtbook.getCategory()) {
+		  case "その他":
+			  tbook.setBookId(9999);
+			  break;
+	    //上記以外はカテゴリ名よりIDを取得し最大値に＋１
+	    default:
+		      Integer maxId = tBookRepository.findMaxIdByName(dtbook.getCategory());
+              if(maxId != null) {
+			     tbook.setBookId(maxId + 1);
+		}
+	}	
+		TBookEntity saved= tBookRepository.save(tbook);
+		//ユーザー名をTbookEntityの提供者名にセット
+		saved.setProviderName(user.getName());
 		
-		return tbook;
+		
+		return saved;
 	}
 
 }
