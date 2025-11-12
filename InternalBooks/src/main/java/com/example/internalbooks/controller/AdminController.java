@@ -221,83 +221,71 @@ public class AdminController extends InternalBooksController {
      */
     @GetMapping("/useredit")
     public String userEdit(
-    		Integer userId,
-    		HttpSession session, 
-    		Model model, 
-    		RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
+     Integer userId,
+     HttpSession session,
+     Model model,
+     RedirectAttributes redirectAttributes) {
+
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
-            //ユーザーIDがnullかどうかを確かめる
-            if (userId == null) {
-                redirectAttributes.addFlashAttribute("error", "ユーザーIDが指定されていません");
-                return "redirect:/usersearch";
-            }
-            // "userIdからユーザー情報を取得
-            TUserEntity putUser = tUserService.getUserById(userId);
 
-            model.addAttribute("putUser", putUser);
-            model.addAttribute("isAdmin", isAdmin);
-            //空のDTOを返す
-            model.addAttribute("userDto", new DtoUserRegistration());
-            return "page/useredit";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
+
+        TUserEntity putUser = tUserService.getUserById(userId);
+
+        DtoUserRegistration dto = new DtoUserRegistration();
+        dto.setUserId(putUser.getUserIdAsString());   // ✅ これが最重要
+        dto.setName(putUser.getName());
+        dto.setDepartmentId(putUser.getDepartmentIdAsString());
+
+        model.addAttribute("putUser", putUser);
+        model.addAttribute("isAdmin", isAdmin);
+        model.addAttribute("userDto", dto); // ✅ 空じゃなく値入り DTO を返す
+
+        return "page/userEdit";
+    } catch (Exception e) {
+        return error(redirectAttributes);
     }
-    
+}
     /**
      * フォームからのPostリクエストを受け取る
      */
  
     @PostMapping("/usereditconfirmation")
     public String userEditComfirmation(
-    		@Valid 
-    		@ModelAttribute("userDto")DtoUserRegistration userDto, 
-            Integer userId,
-            BindingResult bindingResult, 
-            HttpSession session, 
+            @Valid @ModelAttribute("userDto") DtoUserRegistration userDto,
+            BindingResult bindingResult,
+            HttpSession session,
             RedirectAttributes redirectAttributes,
             Model model) {
-    	
-     //入力値のバリデーションチェック
-    	if (bindingResult.hasErrors()) {
-    		for (FieldError error : bindingResult.getFieldErrors()) {
-    			
-    			if("Pattern".equals(error.getCode())){
-    				
-    				// コンソールにも表示
-    			}
-    			System.out.println(error.getField() + ":" + error.getDefaultMessage());
-    			
-    			return "page/userEdit"; 
-    		}
-    		
-    	}
-        // トークンと管理者権限の検証
-    	try {
+
+        // バリデーションチェック
+        if (bindingResult.hasErrors()) {
+            return "page/userEdit";
+        }
+
+        try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
-          
-            // "userIdからユーザー情報を取得
-            TUserEntity putUser = tUserService.getUserById(userId);
-            
-            // ユーザーが所属している部署IDを取得
+
+            // userId は DTO から取得
+            TUserEntity putUser = tUserService.getUserById(userDto.getUserIdAsIntger());
+
+            // 確認画面に表示する内容
             model.addAttribute("putUser", putUser);
             model.addAttribute("userDto", userDto);
-            
+
             return "page/userEditConfirmation";
-        }
-        catch (Exception e) {
+
+        } catch (Exception e) {
             return error(redirectAttributes);
         }
     }
+
     /**
      * ユーザー削除完了ページに遷移
      */
