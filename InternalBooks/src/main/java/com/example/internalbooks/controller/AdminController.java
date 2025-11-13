@@ -540,35 +540,4 @@ public class AdminController extends InternalBooksController {
 
     }
     
-	/**
-	 *[古川さん練習用ページ]に遷移
-	 */
-	@GetMapping("/newpage")
-	public String showNewPage(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-
-		try {
-			// トークンと管理者権限の検証
-			boolean isAdmin = validateTokenAndCheckAdmin(session);
-			if (!isAdmin) {
-				return adminPermissionError(redirectAttributes);
-			}
-			
-			// 取得した情報を表示
-			model.addAttribute("message", "新規ページへ遷移しました！");
-
-			//ログ出力
-			logger.info("新規ページに遷移します");
-
-			// 遷移先:newPage.htmlを指定
-			return "page/newPage";
-			
-		} catch (Exception e) {
-
-			//ログ出力
-			logger.error("新規ページに遷移できませんでした", e);
-			
-			// 認証失敗時はログインページにリダイレクト
-			return error(redirectAttributes);
-		}
-	}
 }
