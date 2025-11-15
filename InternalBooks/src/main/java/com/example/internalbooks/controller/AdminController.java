@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.internalbooks.dto.DtoBookInfo;
+import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TUserEntity;
@@ -231,18 +232,10 @@ public class AdminController extends InternalBooksController {
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
+        DtoUserEdit dtouseredit = new DtoUserEdit();
 
+        model.addAttribute("dtouseredit", dtouseredit);
 
-        TUserEntity putUser = tUserService.getUserById(userId);
-
-        DtoUserRegistration dto = new DtoUserRegistration();
-        dto.setUserId(putUser.getUserIdAsString());   // ✅ これが最重要
-        dto.setName(putUser.getName());
-        dto.setDepartmentId(putUser.getDepartmentIdAsString());
-
-        model.addAttribute("putUser", putUser);
-        model.addAttribute("isAdmin", isAdmin);
-        model.addAttribute("userDto", dto); // ✅ 空じゃなく値入り DTO を返す
 
         return "page/userEdit";
     } catch (Exception e) {
