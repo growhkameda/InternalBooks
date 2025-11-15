@@ -31,10 +31,10 @@ public class TLendingHistoryService {
     private TBookRepository bookRepository;
     
     //コンストラクタインジェクション
-//    public TLendingHistoryService(TLendingHistoryRepository lendingHistoryRepository, TUserRepository userRepository) {
-//        this.lendingHistoryRepository = lendingHistoryRepository;
-//        this.userRepository = userRepository;
-//    }
+    public TLendingHistoryService(TLendingHistoryRepository lendingHistoryRepository, TUserRepository userRepository) {
+        this.lendingHistoryRepository = lendingHistoryRepository;
+        this.userRepository = userRepository;
+    }
 
     // 書籍IDから履歴を取得
     

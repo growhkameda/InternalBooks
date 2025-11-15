@@ -261,7 +261,6 @@ public class InternalBooksController {
             
             model.addAttribute("bookHistoryList", dtoBookHistory);
             
-            
             // セッションから遷移フラグを削除
             session.removeAttribute("fromQrSearch");
             session.removeAttribute("fromCheckedOut");
