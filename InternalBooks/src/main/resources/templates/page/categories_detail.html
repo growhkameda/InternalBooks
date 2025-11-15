@@ -3,7 +3,7 @@
       th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-  <title>松永テストページ</title>
+  <title>カテゴリー詳細画面</title>
 </head>
 
 <body>
@@ -50,10 +50,10 @@
     <div class="container fixed-page-width">
 		<div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
 			<!--コントローラーからbookIdListを受け取り、bookIdに格納
-				「page」内の「book_detail.html」に飛ぶボタン
-				「book_detail.html」飛ぶ際に、クリックした本のbookIdを渡す-->
+				「page」内の「searchresult.html」に飛ぶボタン
+				「searchresult.html」飛ぶ際に、クリックした本のbookIdを渡す-->
 			<a th:each="bookId : ${bookIdList}"
-			th:href="@{'/page/book_detail?bookid=' + ${bookId}}"
+			th:href="@{'/page/SearchResult?bookid=' + ${bookId}}"
 			class="col-md-6 mb-6 btn"
 			style="text-decoration: none;">
 				<img th:src="@{'/images/' + ${bookId} + '.png'}"

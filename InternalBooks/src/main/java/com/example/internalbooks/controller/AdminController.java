@@ -310,9 +310,14 @@ public class AdminController extends InternalBooksController {
      * 書籍削除確認ページに遷移
      */
     @GetMapping("/bookdeletingconfirmation")
-    public String bookdeletingconfirmation(@RequestParam("bookid") Integer bookid, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
+    public String bookdeletingconfirmation(
+            @RequestParam("bookId") Integer bookId,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        
         try {
+            // トークンと管理者権限の検証
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
@@ -320,9 +325,13 @@ public class AdminController extends InternalBooksController {
             
             model.addAttribute("isAdmin", isAdmin);
             
-            // bookidに基づいて書籍情報を取得
-            DtoBookInfo bookInfo = tBookService.getBookById(bookid);
+            // bookIdに基づいて書籍情報を取得
+            DtoBookInfo bookInfo = tBookService.getBookById(bookId);
             model.addAttribute("bookInfo", bookInfo);
+
+            // セッションからカテゴリーを取得
+            String category = (String) session.getAttribute("currentCategory");
+            model.addAttribute("category", category);
 
             return "page/bookdeletingconfirmation";
         }
@@ -362,7 +371,7 @@ public class AdminController extends InternalBooksController {
             // ログを出力
             logger.info("UserSearchにアクセスされました");
             
-            return "page/UserSearch";
+            return "page/usersearch";
         }
         catch (Exception e) {
             logger.error("UserSearchでエラーが発生しました", e);
@@ -613,35 +622,108 @@ public class AdminController extends InternalBooksController {
         
     }
 
-    /**
+    /** 11/03 木俣
      * 書籍削除画面を表示
+     * 現在は松永さんが作成したコントローラーを持ってきているので
+     * 今後修正があった場合は反映させること(ページ数のロジックのところとかリファクタリング対象)
+     * 貸出中の書籍はグレーマスクして選択できないようにしている
      */
     @GetMapping("/bookdeleting")
-    public String BookDeleting(@RequestParam("category") String category, HttpSession session, Model model,
-                               RedirectAttributes redirectAttributes) {
+    public String bookDeleting(
+        @RequestParam("category") String category,
+        @RequestParam(value = "page", defaultValue = "0") int page,
+        HttpSession session,
+        Model model,
+        RedirectAttributes redirectAttributes) {
+
+        //1ページに表示する本の数
+        final int ITEMS_PER_PAGE = 6;
 
         try {
             // トークンと管理者権限の検証
-    		boolean isAdmin = validateTokenAndCheckAdmin(session);
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
             
             model.addAttribute("isAdmin", isAdmin);
 
-            // 対象カテゴリーのbookIdを取得してbookIdListに格納
-            List<Integer> bookIdList = tBookService.getCategoriesdetail(category);
+            // カテゴリーに属するすべての書籍情報を取得（松永さんのメソッドと似てるけど違うやつ）
+            List<DtoBookInfo> allBooks = tBookService.getBooksByCategoryWithDetails(category);
+            
+            //取得した本の要素数を取得
+            int totalItems = allBooks.size();
+            
+            //指定した表示画像数と、取得した要素数で必要なページ数を計算
+            int totalPages = (int) Math.ceil((double) totalItems / ITEMS_PER_PAGE);
 
+            // ページ範囲を計算
+            int fromIndex = page * ITEMS_PER_PAGE;
+            int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, totalItems);
+
+            // 表示対象の書籍リストを抽出
+            List<DtoBookInfo> pagedBooks = allBooks.subList(fromIndex, toIndex);
+
+            // Viewに渡すモデル属性を設定
+            model.addAttribute("bookList", pagedBooks);
             model.addAttribute("category", category);
-            model.addAttribute("bookIdList", bookIdList);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", totalPages);
+
+            // セッションにカテゴリーを保存（削除処理で使用）
+            session.setAttribute("currentCategory", category);
 
             return "page/bookdeleting";
     	}
     	catch (Exception e) {
     		// 認証失敗時はログインページにリダイレクト
             return error(redirectAttributes);
-    	}
-
+        }
     }
 
+    /** 11/03 木俣
+     * 書籍削除処理（貸出履歴もカスケード削除）
+     */
+    @PostMapping("/bookdeleting")
+    public String bookDeletingPost(
+        @RequestParam("bookId") Integer bookId,
+        HttpSession session,
+        RedirectAttributes redirectAttributes,
+        Model model) {
+
+        try {
+            // トークンと管理者権限の検証
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+
+            model.addAttribute("isAdmin", isAdmin);
+            
+            // セッションからカテゴリーを取得
+            String category = (String) session.getAttribute("currentCategory");
+            
+            // 書籍削除処理
+            boolean isDeleted = tBookService.deleteBookById(bookId);
+
+            if (isDeleted) {
+                redirectAttributes.addFlashAttribute("message", "書籍の削除が完了しました");
+            } else {
+                redirectAttributes.addFlashAttribute("message", "書籍の削除に失敗しました");
+            }
+            
+            // 元のカテゴリーページにリダイレクトさせる
+            redirectAttributes.addAttribute("category", category);
+            return "redirect:/admin/bookdeleting";
+            
+        } catch (IllegalStateException e) {
+            // 貸出中の書籍削除エラー
+            redirectAttributes.addFlashAttribute("message", "エラー: " + e.getMessage());
+            return "redirect:/admin/bookdeletingcategories";
+
+        } catch (Exception e) {
+            return error(redirectAttributes);
+        }
+
+    }
 }
