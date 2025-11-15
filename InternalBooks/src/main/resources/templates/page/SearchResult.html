@@ -345,7 +345,7 @@
           <i class="bi bi-book display-2"></i>
         </div>
       `;
-    }
+    };
 	
 	document.querySelector('#return-form-modal').addEventListener('submit', function() {
 	  // textareaの値をhiddenにコピー
@@ -356,25 +356,26 @@
 	const comDisplay = document.getElementById("comDisplay");
 	const comment = document.getElementById("comment_text");
 	const returnCol = document.getElementById("returnCol");
-	if (!comment || !returnCol) {
-		return;
-	};
 	
 	function adjustHeight(){
 		const textLength = comment.textContent.trim().length;
 		
-		let height = 50;
+		// 1行に表示する文字数
+		let lineTextLength = 50;
 		const screenWidth = window.innerWidth;
 		if (screenWidth < 576) {
-			height = 35;
+			lineTextLength = 35;
 		} else if (screenWidth < 768) {
-			height = 40;
+			lineTextLength = 40;
 		} else if (screenWidth < 1024) {
-			height = 45;
+			lineTextLength = 45;
 		}
 		
-		const lineCount = Math.ceil(textLength / column);
+		// 表示する行数
+		const lineCount = Math.ceil(textLength / lineTextLength);
+		// コメントの背景の高さ
 		const comDisplayHeight = lineCount * 30 + 50;
+		// コメント高さ
 		const commentHeight = lineCount * 30;
 		
 		comDisplay.style.height = comDisplayHeight + "px";
@@ -382,16 +383,16 @@
 	};
 	
 	returnCol.addEventListener("mouseenter", adjustHeight);
-	returnCol.addEventListener("mouseleave", function(){
-		comDisplay.style.height = "0px";
-		comment.style.height = "0px";
+	returnCol.addEventListener("mouseleave", function() {
+	    comDisplay.style.height = "0px";
+	    comment.style.height = "0px";
 	});
 	
 	comment.addEventListener("mouseenter", adjustHeight);
-    comment.addEventListener("mouseleave", function() {
-		comDisplay.style.height = "0px";
-        comment.style.height = "0px";
-    });
+	comment.addEventListener("mouseleave", function() {
+	    comDisplay.style.height = "0px";
+	    comment.style.height = "0px";
+	});
 	
   </script>
   </section>
