@@ -68,30 +68,41 @@
 	  <div class = "col-auto mt-1 pt-2 ms-3">
 			<label for = "id">書籍画像</label>
 	  </div>
-	  <div th:if="${imagePreview}" class = "col-7 col-md-8 text-start">
-			 <img th:src="'data:image/jpeg;base64,' + ${imagePreview}" alt="アップロード画像" class="img-fluid mt-4 " style="height:200px">
+	  <div class = "col-7 col-md-8 text-start">
+			 <img th:src="@{${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4 " style="height:200px">
       </div>
   </div>
 </div>	
   
 <!-- 登録画面へ戻る -->
+<form th:action="@{/admin/dbback}"  method="post" th:object="${bookdto}" enctype="multipart/form-data"> 
+		      
+		      <!-- hiddenで値を保持 -->
+          <input type="hidden" th:field="*{title}">
+          <input type="hidden" th:field="*{category}">
+          <input type="hidden" th:field="*{providerId}">
+          <input type="hidden" th:field="*{providerComment}">
+          <input type="hidden" th:field="*{imageUrl}">          
+	
 <div class="container mt-5">
   <div class="row">
     <div class="col-12 text-start ms-lg-5 ">
-      <a href="/admin/bookediting" class="btn fs-6">
+      <button type="submit" class="btn fs-6">
         編集画面へ戻る
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
              class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">
           <path fill-rule="evenodd"
                 d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
         </svg>
-      </a>
+      </button>
     </div>
   </div>
 </div>
+</form>
 
 <!-- 登録 -->
-<form th:action="@{/admin/bookingregistrationcomplete}" th:object= "${bookdto}" method="post" enctype="multipart/form-data"> 
+<form th:action="@{/admin/bookingregistrationcomplete}"  method="post" th:object="${bookdto}" enctype="multipart/form-data"> 
+
  <div class ="container text-center mt-4">
 	  <div class = "col-auto">
 	 <button type="submit" class="btn btn-success">登録</button>
@@ -101,11 +112,9 @@
           <input type="hidden" th:field="*{category}">
           <input type="hidden" th:field="*{providerId}">
           <input type="hidden" th:field="*{providerComment}">
-          <input type="hidden" name="imagePreview" th:value="${imagePreview}">
-          
+          <input type="hidden" th:field="*{imageUrl}">          
 	  </div>
 </div>
-
 </form>
 </section>
 </body>

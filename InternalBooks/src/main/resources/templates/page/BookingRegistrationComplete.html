@@ -26,13 +26,11 @@
   </div>
 </div>
 
-*form th:object="${BookingRegistration}">
-	
 <!-- 画像 -->
 <div class="text-center">
-   <div th:if="${imagePreview}">
-    <img th:src="'data:image/jpeg;base64,' + ${imagePreview}" class="img-fluid mt-4" style="height:400px" alt="image"/>
-   </div>
+   	  <div class = "text-start">
+			 <img th:src="@{${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4" style="height:400px">
+      </div>
 </div>
 
 <!-- 書籍名・カテゴリー -->
@@ -77,8 +75,6 @@
     </svg>
   </div>
 </div>
-
-*/form>
 </section>
 </body>
 </html>
