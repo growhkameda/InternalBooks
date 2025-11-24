@@ -177,6 +177,7 @@ public class TUserService implements UserDetailsService {
     /*
      *　検索画面の情報をuserIdに紐づけて次のページに渡す
      */
+    
     public TUserEntity userConfirmationDto(Integer userId, DtoUserConfirmationScreen dtuser) {
     	try {
 			// 書籍IDで書籍を検索
@@ -195,7 +196,6 @@ public class TUserService implements UserDetailsService {
 		catch (Exception e) {
 			throw e;
 		}
-		
     }
     
       

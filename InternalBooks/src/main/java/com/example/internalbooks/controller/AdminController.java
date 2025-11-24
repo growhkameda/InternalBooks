@@ -148,10 +148,10 @@ public class AdminController extends InternalBooksController {
      */
     @GetMapping("/userconfirmationscreen")
     public String userConfirmationScreen(
-    		@ModelAttribute("userConfirmDto") DtoUserConfirmationScreen userConfirmDto,
     		Integer userId,
     		HttpSession session, 
-            Model model, RedirectAttributes redirectAttributes) {
+            Model model, 
+            RedirectAttributes redirectAttributes) {
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
@@ -162,9 +162,10 @@ public class AdminController extends InternalBooksController {
                 redirectAttributes.addFlashAttribute("error", "ユーザーIDが指定されていません");
                 return "redirect:/usersearch";
             }
-            
+            //dtoで扱うためにローカル変数をインポート
+            DtoUserConfirmationScreen dtoUserConfirmationScreen = new DtoUserConfirmationScreen();
             // ★ userId からユーザー情報を取得（あなたのサービスに合わせて変更）
-            TUserEntity dto =TUserService.userConfirmationDto(userId, dto);
+            TUserEntity dto =tUserService.userConfirmationDto(userId ,dtoUserConfirmationScreen);
 
             // ★ モデルにセット
             model.addAttribute("userConfirmDto", dto);
