@@ -1,25 +1,21 @@
 package com.example.internalbooks.dto;
 
+import lombok.Data;
+
+@Data
 public class DtoUserConfirmationScreen {
 	private String userId;
 	private String name;
-	private String departmantId;
-	public String getDepartmantId() {
-		return departmantId;
+	private String departmentId;{
 	}
-	public void setDepartmantId(String departmantId) {
-		this.departmantId = departmantId;
+//	StringをIntegerへ変換するメソッド
+	public Integer getUserIdAsIntger() {
+		return Integer.valueOf(userId);
 	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getUserId() {
-		return userId;
-	}
-	public void setUserId(String userId) {
-		this.userId = userId;
+
+	
+//	StringをIntegerへ変換するメソッド
+	public Integer getDepartmentIdAsInteger() {
+		return Integer.valueOf(departmentId);
 	}
 }

@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.internalbooks.dto.DtoBookInfo;
+import com.example.internalbooks.dto.DtoUserConfirmationScreen;
 import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TBookEntity;
@@ -147,6 +148,7 @@ public class AdminController extends InternalBooksController {
      */
     @GetMapping("/userconfirmationscreen")
     public String userConfirmationScreen(
+    		@ModelAttribute("userConfirmDto") DtoUserConfirmationScreen userConfirmDto,
     		Integer userId,
     		HttpSession session, 
             Model model, RedirectAttributes redirectAttributes) {
@@ -160,17 +162,12 @@ public class AdminController extends InternalBooksController {
                 redirectAttributes.addFlashAttribute("error", "ユーザーIDが指定されていません");
                 return "redirect:/usersearch";
             }
+            
+            // ★ userId からユーザー情報を取得（あなたのサービスに合わせて変更）
+            TUserEntity dto =TUserService.userConfirmationDto(userId, dto);
 
-            // "userIdからユーザー情報を取得
-            TUserEntity putUser = tUserService.getUserById(userId);
-            //ユーザーが所属している部署IDを取得
-            Integer departmentId = putUser.getDepartmentId(); 
-            //departmentIdから所属課を取得
-            String departmentNames = tUserService.getDepartmentNameById(departmentId);
-
-            model.addAttribute("putUser", putUser);
-            model.addAttribute("departmentNames", departmentNames);
- 
+            // ★ モデルにセット
+            model.addAttribute("userConfirmDto", dto);
                      
             logger.info("UserConfirmationScreenにアクセスされました, userId={}", userId);
 

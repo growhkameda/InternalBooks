@@ -3,9 +3,12 @@ package com.example.internalbooks.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
+import lombok.Data;
+
+@Data
 public class DtoUserEdit {
 	
-	private String userId;
+	private Integer userId;
 	
 	@NotBlank(message = "名前は必須です")
 	private String name;	

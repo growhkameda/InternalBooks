@@ -8,11 +8,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.internalbooks.dto.DtoUserConfirmationScreen;
+import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.MDepartmentRepository;
 import com.example.internalbooks.repository.TUserRepository;
-import com.example.internalbooks.repository.MDepartmentRepository;
 
 @Service
 @Transactional
@@ -148,5 +149,54 @@ public class TUserService implements UserDetailsService {
     	return tuser;
     	  
     }
+    
+    /*
+     *　編集されたユーザー情報をuserIdに紐づけて次のページに渡す
+     */
+    public TUserEntity userEdit(Integer userId, DtoUserEdit dtuser) {
+    	try {
+			// 書籍IDで書籍を検索
+			TUserEntity user = tUserRepository.findById(userId).orElse(null);
+			
+			if (user == null) {
+				return null;
+			}
+		
+	    	TUserEntity tuser = new TUserEntity();
+	    	tuser.setUserId(dtuser.getUserIdAsIntger());
+	    	tuser.setName(dtuser.getName());
+	    	tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
+	    	return tuser;
+		}
+		catch (Exception e) {
+			throw e;
+		}
+		
+    }
+    
+    /*
+     *　検索画面の情報をuserIdに紐づけて次のページに渡す
+     */
+    public TUserEntity userConfirmationDto(Integer userId, DtoUserConfirmationScreen dtuser) {
+    	try {
+			// 書籍IDで書籍を検索
+			TUserEntity user = tUserRepository.findById(userId).orElse(null);
+			
+			if (user == null) {
+				return null;
+			}
+		
+	    	TUserEntity tuser = new TUserEntity();
+	    	tuser.setUserId(dtuser.getUserIdAsIntger());
+	    	tuser.setName(dtuser.getName());
+	    	tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
+	    	return tuser;
+		}
+		catch (Exception e) {
+			throw e;
+		}
+		
+    }
+    
       
 }
