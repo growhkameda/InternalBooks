@@ -165,7 +165,7 @@ public class AdminController extends InternalBooksController {
             //dtoで扱うためにローカル変数をインポート
             DtoUserConfirmationScreen dtoUserConfirmationScreen = new DtoUserConfirmationScreen();
             // ★ userId からユーザー情報を取得（あなたのサービスに合わせて変更）
-            TUserEntity dto =tUserService.userConfirmationDto(userId ,dtoUserConfirmationScreen);
+            DtoUserConfirmationScreen dto =tUserService.userConfirmationDto(userId);
 
             // ★ モデルにセット
             model.addAttribute("userConfirmDto", dto);

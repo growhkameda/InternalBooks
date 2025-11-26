@@ -4,18 +4,9 @@ import lombok.Data;
 
 @Data
 public class DtoUserConfirmationScreen {
-	private String userId;
+	private Integer userId;
 	private String name;
-	private String departmentId;{
-	}
-//	StringをIntegerへ変換するメソッド
-	public Integer getUserIdAsIntger() {
-		return Integer.valueOf(userId);
-	}
-
+	private Integer departmentId;
 	
-//	StringをIntegerへ変換するメソッド
-	public Integer getDepartmentIdAsInteger() {
-		return Integer.valueOf(departmentId);
-	}
+
 }

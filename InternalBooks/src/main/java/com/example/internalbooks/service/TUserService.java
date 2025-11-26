@@ -178,24 +178,15 @@ public class TUserService implements UserDetailsService {
      *　検索画面の情報をuserIdに紐づけて次のページに渡す
      */
     
-    public TUserEntity userConfirmationDto(Integer userId, DtoUserConfirmationScreen dtuser) {
-    	try {
-			// 書籍IDで書籍を検索
-			TUserEntity user = tUserRepository.findById(userId).orElse(null);
-			
-			if (user == null) {
-				return null;
-			}
-		
-	    	TUserEntity tuser = new TUserEntity();
-	    	tuser.setUserId(dtuser.getUserIdAsIntger());
-	    	tuser.setName(dtuser.getName());
-	    	tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
-	    	return tuser;
-		}
-		catch (Exception e) {
-			throw e;
-		}
+    public DtoUserConfirmationScreen userConfirmationDto(Integer userId) {
+        TUserEntity entity = tUserRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("ユーザーが存在しません: userId=" + userId));
+
+        DtoUserConfirmationScreen dto = new DtoUserConfirmationScreen();
+        dto.setUserId(entity.getUserId());
+        dto.setName(entity.getName());
+        dto.setDepartmentId(entity.getDepartmentId()); // または departmentName
+        return dto;
     }
     
       

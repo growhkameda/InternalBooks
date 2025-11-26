@@ -66,10 +66,10 @@
    <div class ="container text-center mt-4">
      <div class ="row">
        <p class = "col-1"></p>
-	   <a th:href="@{/admin/useredit(userId=${putUser.userId})}"
+	   <a th:href="@{/admin/useredit(userId=${userConfirmDto.userId})}"
 	      class="btn btn-success col-4">編集</a>
 	   <p class = "col-2"></p>
-	   <a th:href="@{/admin/userdeleteconfirmation(userId=${putUser.userId})}"
+	   <a th:href="@{/admin/userdeleteconfirmation(userId=${userConfirmDto.userId})}"
 		  class="btn btn-danger col-4">削除</a>
 	   <p class = "col-1"></p>
 	  </div>
