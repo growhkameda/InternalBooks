@@ -148,7 +148,7 @@
 		<!-- ========== 返却/借りるボタン（QRサーチまたは貸出中書籍ページからの遷移時のみ表示） ========== -->
 		<div th:if="${showButton == true}" class="text-center mb-5">
         	<!-- 貸出中の場合は返却ボタン -->
-			<div th:if="${book.status == '貸出中'}">
+			<div th:if="${book.status == '貸出中' && screenFlag != 2}">
 			  <form id="return-form-main" method="post" class="d-inline">
 			    <input type="hidden" name="bookId" th:value="${book.bookId}"/>
 			    <button id="rc" type="button" class="btn btn-danger btn-lg w-25">
@@ -202,10 +202,7 @@
 	 			  <tr id="comDisplay" class="comment" th:if="${history.review != null}">
 	 				<td colspan="3" class="p-0" style="background-color: #15B2EE;">
 	 					<p class="col-8 text-white mb-0 mx-1">感想・コメント</p>
-<!--	 					<p th:text="${history.review}" class="ps-1 mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;"></p>-->
-						<p id="comment_text" class="mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;">
-							この文章はダミーです。文字の大きさ、量、字間、行間等を確認するために入れています。
-							この文章はダミーです。文字の大きさ、量、字間、行間等を確認するために入れています。
+	 					<p id="commentText" th:text="${history.review}" class="mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;">
 							この文章はダミーです。文字の大きさ、量、字間、行間等を確認するために入れています。
 						</p>
 	 				</td>
@@ -289,7 +286,6 @@
       </div>
     </div>
 
-  
 
 
   <!-- 画像エラー処理用JavaScript -->
@@ -354,7 +350,7 @@
 	
 	
 	const comDisplay = document.getElementById("comDisplay");
-	const comment = document.getElementById("comment_text");
+	const comment = document.getElementById("commentText");
 	const returnCol = document.getElementById("returnCol");
 	
 	function adjustHeight(){
@@ -384,6 +380,12 @@
 	
 	returnCol.addEventListener("mouseenter", adjustHeight);
 	returnCol.addEventListener("mouseleave", function() {
+	    comDisplay.style.height = "0px";
+	    comment.style.height = "0px";
+	});
+	
+	comDisplay.addEventListener("mouseenter", adjustHeight);
+	comDisplay.addEventListener("mouseleave", function() {
 	    comDisplay.style.height = "0px";
 	    comment.style.height = "0px";
 	});
