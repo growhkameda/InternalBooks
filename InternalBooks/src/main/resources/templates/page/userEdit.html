@@ -15,27 +15,27 @@
 	<h2 class= "text-center mt-4">ユーザー編集画面</h2>
   </div>	
   
-  <!-- ================== フォーム開始 ================== -->
-  <form th:action="@{/admin/usereditconfirmation}" th:object="${userDto}" method="post">
+<!-- ================== フォーム開始 ================== -->
+  <form th:action="@{/admin/usereditconfirmation}" th:object="${userEditDto}" method="post">
 
-	<!-- ================== 社員ID表示 ================== -->
+<!-- ================== 社員ID表示 ================== -->
 
    <div class ="container">
 	 <div class = "row justify-content-center">
 	   <div class = "col-8 pt-2">
 	     <label for = "id" class="form-label text-start">社員ID</label>
-	     <!--UserIdを表示-->
+<!--UserIdを表示-->
 	     <div class="rounded-2 h-75 border border-black">
-	       <span class="mt-3 ms-2 fw-normal h6" th:text="${putUser.userId}"></span>
+	       <span class="mt-3 ms-2 fw-normal h6" th:text="${userEditDto.userId}"></span>
 	     </div>
 	   </div>
-	   <!-- hiddenで送信 -->
+<!-- hiddenで送信 -->
 	   <input type="hidden" th:field="*{userId}">
 	 </div>
    </div>
-　　<!-- ================== 名前入力欄 ================== -->
+<!-- ================== 名前入力欄 ================== -->
 
-   <div class ="container">
+   <div class ="container mt-4">
      <div class = "row justify-content-center">
 	   <div class = "col-8 pt-2">
 	     <label for = "id" class="form-label text-start">名前</label>
@@ -63,7 +63,7 @@
      </div>
    </div>
   
-  <!-- ================== 完了ボタン ================== -->
+<!-- ================== 完了ボタン ================== -->
     <div class="container text-center mt-5">
       <div class="row justify-content-center gap-3">
         <!-- 送信ボタン -->
@@ -72,11 +72,11 @@
     </div>
   </form>
  
- <!-- ================== 戻るボタン ================== -->
+<!-- ================== 戻るボタン ================== -->
  <div class ="input-group mt-5 gap-1">
    <div class ="row justify-content-start"> 
      <div class = "col-12 ms-lg-5 ps-lg-5">
- 	   <a th:href="@{/admin/userconfirmationscreen(userId=${putUser.userId})}" class="btn fs-6">戻る</a>
+ 	   <a th:href="@{/admin/userconfirmationscreen(userId=${userEditDto.userId})}" class="btn fs-6">戻る</a>
  	   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
          <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"/>
        </svg>

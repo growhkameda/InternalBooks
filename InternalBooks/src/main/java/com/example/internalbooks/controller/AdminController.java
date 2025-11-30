@@ -162,8 +162,7 @@ public class AdminController extends InternalBooksController {
                 redirectAttributes.addFlashAttribute("error", "ユーザーIDが指定されていません");
                 return "redirect:/usersearch";
             }
-            //dtoで扱うためにローカル変数をインポート
-            DtoUserConfirmationScreen dtoUserConfirmationScreen = new DtoUserConfirmationScreen();
+
             // ★ userId からユーザー情報を取得（あなたのサービスに合わせて変更）
             DtoUserConfirmationScreen dto =tUserService.userConfirmationDto(userId);
 
@@ -230,10 +229,20 @@ public class AdminController extends InternalBooksController {
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
-        DtoUserEdit dtouseredit = new DtoUserEdit();
+            //ユーザーIDがnullかどうかを確かめる
+            if (userId == null) {
+                redirectAttributes.addFlashAttribute("error", "ユーザーIDが指定されていません");
+                return "redirect:/usersearch";
+            }
+        
+        // ★ userId からユーザー情報を取得（あなたのサービスに合わせて変更）
+        DtoUserEdit dto =tUserService.userEditDto(userId);
 
-        model.addAttribute("dtouseredit", dtouseredit);
-
+        // ★ モデルにセット
+        model.addAttribute("userEditDto", dto);
+        model.addAttribute("userEdit", new DtoUserEdit());
+                 
+        logger.info("usereditにアクセスされました, userId={}", userId);
 
         return "page/userEdit";
     } catch (Exception e) {
