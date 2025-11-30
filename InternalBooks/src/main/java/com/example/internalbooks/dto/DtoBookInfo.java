@@ -38,7 +38,7 @@ public class DtoBookInfo {
     private String imageUrl;
     
     // 書籍提供者ID
-    @NotNull(message = "書籍提供者は必須です")
+    @NotBlank(message = "書籍提供者は必須です")
     private String providerId;
     
     //書籍提供者名変換用ID

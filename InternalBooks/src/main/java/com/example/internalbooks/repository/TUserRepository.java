@@ -27,6 +27,7 @@ public interface TUserRepository extends JpaRepository<TUserEntity, Integer> {
 	 */
 	Optional<TUserEntity> findById(Integer id);
 	
+	/**書籍提供者から名前を取得するメソッド*/
 	Optional<TUserEntity> findByName(String name);
 	
 }
