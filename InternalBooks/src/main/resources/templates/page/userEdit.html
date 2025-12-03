@@ -18,21 +18,21 @@
 <!-- ================== フォーム開始 ================== -->
   <form th:action="@{/admin/usereditconfirmation}" th:object="${userEditDto}" method="post">
 
-<!-- ================== 社員ID表示 ================== -->
-
-   <div class ="container">
-	 <div class = "row justify-content-center">
-	   <div class = "col-8 pt-2">
-	     <label for = "id" class="form-label text-start">社員ID</label>
+<!-- ================== hiddenで送信 ================== -->
+  <input type="hidden" name="userId" th:value="${userEditDto.userId}">
+  
+ <!-- ================== 社員ID表示 ================== -->
+    <div class ="container">
+	  <div class = "row justify-content-center">
+	    <div class = "col-8 pt-2">
+	      <label for = "id" class="form-label text-start">社員ID</label>
 <!--UserIdを表示-->
-	     <div class="rounded-2 h-75 border border-black">
-	       <span class="mt-3 ms-2 fw-normal h6" th:text="${userEditDto.userId}"></span>
-	     </div>
-	   </div>
-<!-- hiddenで送信 -->
-	   <input type="hidden" th:field="*{userId}">
-	 </div>
-   </div>
+	      <div class="rounded-2 h-75 border border-black">
+	        <span class="mt-3 ms-2 fw-normal h6" th:text="${userEditDto.userId}"></span>
+	      </div>
+	    </div>
+	  </div>
+    </div>
 <!-- ================== 名前入力欄 ================== -->
 
    <div class ="container mt-4">

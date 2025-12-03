@@ -240,7 +240,6 @@ public class AdminController extends InternalBooksController {
 
         // ★ モデルにセット
         model.addAttribute("userEditDto", dto);
-        model.addAttribute("userEdit", new DtoUserEdit());
                  
         logger.info("usereditにアクセスされました, userId={}", userId);
 
@@ -255,12 +254,12 @@ public class AdminController extends InternalBooksController {
  
     @PostMapping("/usereditconfirmation")
     public String userEditComfirmation(
-            @Valid @ModelAttribute("userDto") DtoUserRegistration userDto,
-            BindingResult bindingResult,
+            @Valid @ModelAttribute("userEditDto") DtoUserEdit userEditDto,
+            BindingResult bindingResult,            // ← ModelAttribute の直後！
+            Integer userId,                         // ← 他の引数は後ろ
             HttpSession session,
             RedirectAttributes redirectAttributes,
             Model model) {
-
         // バリデーションチェック
         if (bindingResult.hasErrors()) {
             return "page/userEdit";
@@ -272,13 +271,11 @@ public class AdminController extends InternalBooksController {
                 return adminPermissionError(redirectAttributes);
             }
 
-            // userId は DTO から取得
-            TUserEntity putUser = tUserService.getUserById(userDto.getUserIdAsIntger());
+            // DTO から取り出すのが正しい
+            Integer resolvedUserId = userEditDto.getUserId();
+            logger.info("usereditconfirmationにアクセスされました, userId={}", resolvedUserId);
 
-            // 確認画面に表示する内容
-            model.addAttribute("putUser", putUser);
-            model.addAttribute("userDto", userDto);
-
+            model.addAttribute("userEditDto", userEditDto);
             return "page/userEditConfirmation";
 
         } catch (Exception e) {
