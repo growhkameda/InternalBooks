@@ -8,10 +8,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.internalbooks.dto.DtoUserDelete;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
-import com.example.internalbooks.repository.TUserRepository;
 import com.example.internalbooks.repository.MDepartmentRepository;
+import com.example.internalbooks.repository.TUserRepository;
 
 @Service
 @Transactional
@@ -107,6 +108,20 @@ public class TUserService implements UserDetailsService {
         return users;
     }
         
+	/**
+	 * ユーザーの所属課を取得する(単体取得)
+	 */
+	public TUserEntity getUserWithDepartmentNameById(Integer userId) {
+		// ユーザー情報を取得
+		TUserEntity user = getUserById(userId);
+    
+		// 各ユーザーの所属課を取得
+		if (user != null) {
+			String departmentName = getDepartmentNameById(user.getDepartmentId());
+			user.setDepartmentName(departmentName);
+		}
+		return user;
+	}
     
     /**
      * ユーザー情報をDBへ保存するメソッド
@@ -126,5 +141,28 @@ public class TUserService implements UserDetailsService {
     	return tuser;
     	  
     }
+      
+    /**
+     * ユーザー削除
+     */
+    public TUserEntity deleteUser(DtoUserDelete userId) {
+    	
+    	TUserEntity tuser = new TUserEntity();
+    	tuser.setUserId(userId.getUserIdAsIntger());
+    	tuser.setName(userId.getName());
+    	tuser.setMailAddress(userId.getMailAddress());
+    	tuser.setPassword(userId.getPassword());
+    	tuser.setDepartmentId(userId.getDepartmentIdAsInteger());
+    	tuser.setRole(userId.getRole());
+    	tuser.setDeleteFlg(userId.getDeleteFlg());
+
+    	tUserRepository.DeleteUser(userId);
+    	  
+    	return tuser;
+    	
+    }
+
+    
+    
       
 }

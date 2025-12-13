@@ -1,6 +1,9 @@
 package com.example.internalbooks.controller;
 
-import org.slf4j.Logger;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.List;
+
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,22 +18,18 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import jakarta.validation.Valid;
 
-import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import java.util.Base64;
-
-import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TUserEntity;
-import java.util.List;
-import com.example.internalbooks.utils.JwtUtil;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
+import com.example.internalbooks.service.TUserService;
+import com.example.internalbooks.utils.JwtUtil;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 /**
  * 管理者専用機能のコントローラー
@@ -122,42 +121,78 @@ public class AdminController extends InternalBooksController {
         }
     }
     
-    /**
-     * ユーザー確認画面に遷移
-     */
-    @GetMapping("/userconfirmationscreen")
-    public String userConfirmationScreen(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            
-            return "page/UserConfirmationScreen";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
+	/**
+	 * ユーザー確認画面に遷移
+	 */
+	@GetMapping("/userconfirmationscreen")
+	public String userConfirmationScreen(@RequestParam("userId") Integer userId,HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+		// トークンと管理者権限の検証
+		try {
+			// 管理者権限の検証
+			boolean isAdmin = validateTokenAndCheckAdmin(session);
+			
+    		// tokenの検証とユーザーIDの取得
+			if (!isAdmin) {
+				return adminPermissionError(redirectAttributes);
+			}
+
+			// 各ユーザーの所属課を取得してモデルに追加する
+			TUserEntity userWithDepartmentName = tUserService.getUserWithDepartmentNameById(userId);
+			// 各ユーザーの情報を取得してモデルに追加する
+			TUserEntity user = tUserService.getUserById(userId);
+			
+			// 所属課
+			model.addAttribute("userdepart", userWithDepartmentName);
+			// ユーザー情報
+			model.addAttribute("users", user);
+			// ログインユーザー情報を取得してモデルに追加する
+			model.addAttribute("isAdmin", isAdmin);
+
+			// ログを出力
+			logger.info("userconfirmationscreenにアクセスされました");
+
+			return "page/userconfirmationscreen";
+		} catch (Exception e) {
+			logger.error("userconfirmationscreenでエラーが発生しました", e);
+			return error(redirectAttributes);
+		}
+	}
     
-    /**
+	 /**
      * ユーザー削除確認ページに遷移
      */
     @GetMapping("/userdeleteconfirmation")
-    public String userDeleteConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String userDeleteConfirmation(@RequestParam("userId")Integer userId, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         // トークンと管理者権限の検証
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
+            
+    		// tokenの検証とユーザーIDの取得          
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
             
+			// 各ユーザーの所属課を取得してモデルに追加する
+			TUserEntity userWithDepartmentName = tUserService.getUserWithDepartmentNameById(userId);
+			// 各ユーザーの情報を取得してモデルに追加する
+			TUserEntity user = tUserService.getUserById(userId);
+			// 所属課
+			model.addAttribute("userdepart", userWithDepartmentName);
+			// ユーザー情報
+            model.addAttribute("users", userWithDepartmentName);
+			// ログインユーザー情報を取得してモデルに追加する
             model.addAttribute("isAdmin", isAdmin);
+
+
+			// ユーザー情報
+			model.addAttribute("users", user);
+			// ログインユーザー情報を取得してモデルに追加する
+			model.addAttribute("isAdmin", isAdmin);
+
+			// ログを出力
+			logger.info("userconfirmationscreenにアクセスされました");
             
-            return "page/userDeleteConfirmation";
+            return "page/userdeleteconfirmation";
         }
         catch (Exception e) {
             return error(redirectAttributes);
@@ -185,26 +220,50 @@ public class AdminController extends InternalBooksController {
         }
     }
     
-    /**
-     * ユーザー削除完了ページに遷移
-     */
-    @GetMapping("/userdeletecomplete")
-    public String userDeleteComplete(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            model.addAttribute("isAdmin", isAdmin);
-            
-            return "page/userdeletecomplete";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
+	/**
+	 * ユーザー削除完了ページに遷移
+	 */
+	@GetMapping("/userdeletecomplete")
+	public String userDeleteComplete(@RequestParam("userId") Integer userId, HttpSession session, Model model,
+			RedirectAttributes redirectAttributes) {
+		// トークンと管理者権限の検証
+		try {
+			// 管理者権限の検証
+			boolean isAdmin = validateTokenAndCheckAdmin(session);
+			
+    		// tokenの検証とユーザーIDの取得
+			if (!isAdmin) {
+				return adminPermissionError(redirectAttributes);
+			}
+
+			// 各ユーザーの所属課を取得してモデルに追加する
+			TUserEntity userWithDepartmentName = tUserService.getUserWithDepartmentNameById(userId);
+			// 各ユーザーの情報を取得してモデルに追加する
+			TUserEntity user = tUserService.getUserById(userId);
+
+			// 所属課
+			model.addAttribute("userdepart", userWithDepartmentName);
+			// ユーザー情報
+			model.addAttribute("users", user);
+			// ログインユーザー情報を取得してモデルに追加する
+			model.addAttribute("isAdmin", isAdmin);
+			
+			// ユーザー情報
+			model.addAttribute("users", user);
+			// ログインユーザー情報を取得してモデルに追加する
+			model.addAttribute("isAdmin", isAdmin);
+
+
+			// ログを出力
+			logger.info("userdeletecompleteにアクセスされました");
+
+			return "page/userdeletecomplete";
+		} catch (Exception e) {
+			logger.error("userdeletecompleteでエラーが発生しました", e);
+			return error(redirectAttributes);
+		}
+	}
+    
     
     /**
      * 書籍削除確認ページに遷移

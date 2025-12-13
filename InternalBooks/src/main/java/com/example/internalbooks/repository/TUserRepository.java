@@ -2,8 +2,13 @@ package com.example.internalbooks.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.jdbc.repository.query.Modifying;
+import org.springframework.data.jdbc.repository.query.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.internalbooks.dto.DtoUserDelete;
 import com.example.internalbooks.entity.TUserEntity;
 
 
@@ -26,5 +31,13 @@ public interface TUserRepository extends JpaRepository<TUserEntity, Integer> {
 	 * @return Tユーザ情報
 	 */
 	Optional<TUserEntity> findById(Integer id);
+
+
+	@Modifying
+	@Transactional
+	@Query("UPDATE TUserEntity u SET u.deleteFlg = 1 WHERE u.userId = :userId")
+	void DeleteUser(@Param("userId") DtoUserDelete userId);
+
+	
 	
 }
