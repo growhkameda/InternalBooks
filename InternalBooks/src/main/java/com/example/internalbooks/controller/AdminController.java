@@ -110,36 +110,39 @@ public class AdminController extends InternalBooksController {
      */
     @GetMapping("/finishuseredit")
     public String finishUserEdit(
-            Integer userId,
-            String name,
-            Integer departmentId,
-    		HttpSession session, 
-    		Model model, 
-    		RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
-            
-            // "userIdからユーザー情報を取得
-            TUserEntity putUser = tUserService.getUserById(userId);
-            //ユーザーが所属している部署IDを取得
-            Integer putdepartmentId = putUser.getDepartmentId(); 
-            //departmentIdから所属課を取得
-            String departmentNames = tUserService.getDepartmentNameById(putdepartmentId);
-      
-            model.addAttribute("putUser", putUser);
-            model.addAttribute("departmentNames", departmentNames);
-            
-            return "page/finishuseredit";
-        }
-        catch (Exception e) {
-            return error(redirectAttributes);
-        }
-    }
-    
+    	            @Valid @ModelAttribute("userEditDto") DtoUserEdit userEditDto,
+    	            BindingResult bindingResult,
+    	            Integer userId,            
+    	            HttpSession session,
+    	            RedirectAttributes redirectAttributes,
+    	            Model model) {
+    	        // バリデーションチェック
+    	        if (bindingResult.hasErrors()) {
+    	            return "page/userEdit";
+    	        }
+               //トークン検証および管理者認証
+    	        try {
+    	            boolean isAdmin = validateTokenAndCheckAdmin(session);
+    	            if (!isAdmin) {
+    	                return adminPermissionError(redirectAttributes);
+    	            }
+    	            // DBへ(userId,name,mailAddress,password,departmentId)を保存
+    	            TUserEntity savedUser = tUserService.finishUserEdit(userEditDto);
+    	            // DBに保存した値をDTOを経由して再度取得           
+    	            DtoUserRegistration tuser = new DtoUserRegistration();
+    	            tuser.setUserId(savedUser.getUserIdAsString());
+    	            tuser.setName(savedUser.getName());
+    	            tuser.setDepartmentId(savedUser.getDepartmentIdAsString());
+    	            
+    	            logger.info("usereditconfirmationにアクセスされました, userId={}", savedUser);
+
+    	            model.addAttribute("userEditDto", userEditDto);
+    	            return "page/finishUserEdit";
+
+    	        } catch (Exception e) {
+    	            return error(redirectAttributes);
+    	        }
+    	    }
  
 
     
@@ -255,8 +258,8 @@ public class AdminController extends InternalBooksController {
     @PostMapping("/usereditconfirmation")
     public String userEditComfirmation(
             @Valid @ModelAttribute("userEditDto") DtoUserEdit userEditDto,
-            BindingResult bindingResult,            // ← ModelAttribute の直後！
-            Integer userId,                         // ← 他の引数は後ろ
+            BindingResult bindingResult,
+            Integer userId,            
             HttpSession session,
             RedirectAttributes redirectAttributes,
             Model model) {
@@ -271,7 +274,7 @@ public class AdminController extends InternalBooksController {
                 return adminPermissionError(redirectAttributes);
             }
 
-            // DTO から取り出すのが正しい
+            // DTO から取り出す
             Integer resolvedUserId = userEditDto.getUserId();
             logger.info("usereditconfirmationにアクセスされました, userId={}", resolvedUserId);
 

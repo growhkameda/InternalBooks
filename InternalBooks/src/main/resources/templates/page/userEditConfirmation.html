@@ -66,10 +66,21 @@
    <input type="hidden" name="userId" th:value="${userEditDto.name}" />   
   <!-- ================== 完了ボタン ================== -->
    <div class ="container text-center mt-5">
-	<div class = "row justify-content-center">
-	  <a th:href="@{/admin/finishuseredit(userId=${userEditDto.userId})}"
-	    class="btn btn-success text-align-center col-4">編集</a>
-	</div>
+	<div>> class = "row justify-content-center">
+      <form th:action="@{/admin/userregistrationcomplete}" method="post" th:object= "${userDto}" enctype="application/x-www-form-urlencoded">	
+		<div class ="container text-center mt-4">
+		  <div class = "col-auto">
+		    <button type="submit" class="btn btn-success">完了</button>
+			      
+			  <!-- hiddenで値を保持 -->
+		      <input type="hidden" th:field="*{userId}">
+		      <input type="hidden" th:field="*{name}">
+		      <input type="hidden" th:field="*{departmentId}">
+
+		   </div>
+		 </div>
+	   </form>
+	 </div>
    </div>
 </section>
 </body>

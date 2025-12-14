@@ -166,7 +166,7 @@ public class TUserService implements UserDetailsService {
     }
     
     /*
-     *　検索画面の情報をuserIdに紐づけて次のページに渡す
+     *　編集されたユーザー情報をDBへ渡す
      */
     
     public DtoUserEdit userEditDto(Integer userId) {
@@ -180,5 +180,20 @@ public class TUserService implements UserDetailsService {
         return dto;
     }
     
+    
+    /*
+     *　検索画面の情報をuserIdに紐づけて次のページに渡す
+     */
+    public TUserEntity finishUserEdit(DtoUserEdit dtuser) {
+    	TUserEntity editedUserInfo = new TUserEntity();
+    	editedUserInfo.setUserId(dtuser.getUserIdAsIntger());
+    	editedUserInfo.setName(dtuser.getName());
+    	editedUserInfo.setDepartmentId(dtuser.getDepartmentIdAsInteger());
+    	  
+    	tUserRepository.save(editedUserInfo);
+    	  
+    	return editedUserInfo;
+    	  
+    }
       
 }
