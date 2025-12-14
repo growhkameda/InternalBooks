@@ -13,14 +13,14 @@
 
                 <!-- ================== ページメインタイトル ================== -->
                 <h1 class="fw-bold mt-5 display-3 mb-5 text-center">書籍削除確認</h1>
-             
+
                 <!-- ================== 書籍画像(現在は画像表示するだけ) ================== -->
                 <div class="text-center p-4">
                     <img th:src="${bookInfo.imageUrl}"
                         class="img-fluid rounded shadow w-75"
                         alt="書籍画像"/>
                 </div>
-            
+
                  <!-- 書籍情報エリア -->
                 <div class="d-flex justify-content-center">
                     <div class="card-body p-4 pt-1 text-start w-100" style="max-width: 700px;">
@@ -30,7 +30,7 @@
                             <h5 class="card-title fw-bold mb-2 text-dark">書籍名</h5>
                             <p class="text-black ms-1" th:text="${bookInfo.title}"></p>
                         </div>
-                        
+
                         <!-- カテゴリー -->
                         <div class="mb-4 mt-4">
                             <h5 class="card-title fw-bold mb-2 text-dark">カテゴリー</h5>
@@ -51,9 +51,9 @@
                         <div class="mb-0">
                             <div class="bg-light text-dark fs-6 text-start p-3 mb-3 rounded-3 w-100 min-vh-12">
                                 <span class="text-start" th:text="${bookInfo.providerComment}"></span>
-                            </div> 
+                            </div>
                         </div>
-                        
+
                         <!-- ================== 戻るボタン ================== -->
                         <div class="border-0 mb-1 text-start">
                             <a href="/page/ここに削除ページへのリンクを記述" class="text-black ms-1">
