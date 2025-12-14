@@ -10,8 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
-import com.example.internalbooks.repository.TUserRepository;
 import com.example.internalbooks.repository.MDepartmentRepository;
+import com.example.internalbooks.repository.TUserRepository;
 
 @Service
 @Transactional
@@ -67,6 +67,14 @@ public class TUserService implements UserDetailsService {
     }
 
     /**
+     * アクティブ（論理削除されていない）ユーザー情報を取得するメソッド
+     * @return アクティブユーザーリスト
+     */
+    public List<TUserEntity> getActiveUsers() {
+        return tUserRepository.findByDeleteFlg(0);  // 削除フラグOFFのみ
+    }
+    
+    /**
      * 部門IDから部門名を取得する
      */
     public String getDepartmentNameById(Integer departmentId) {
@@ -96,7 +104,7 @@ public class TUserService implements UserDetailsService {
      */
     public List<TUserEntity> getUserDepartmentName() {
         // 全ユーザー情報を取得
-        List<TUserEntity> users = getAllUsers();
+        List<TUserEntity> users = getActiveUsers();
 
         // 各ユーザーの所属課を取得
         for (TUserEntity user : users) {
