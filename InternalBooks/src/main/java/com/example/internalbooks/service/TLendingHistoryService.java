@@ -37,7 +37,6 @@ public class TLendingHistoryService {
     }
 
     // 書籍IDから履歴を取得
-    
     public List<DtoBookHistory> getHistoryByBookId(Integer bookId) {
         List<TLendingHistoryEntity> entities = lendingHistoryRepository.findByBookId(bookId);
 
