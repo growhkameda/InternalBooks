@@ -39,7 +39,7 @@
         <!-- 書籍画像エリア -->
 		<div class="text-center p-4">
 <!--		  <img th:src="@{|/images/${book.bookId}.png|}" -->
-		  <img th:src="@{'/images/' + '100' + ${book.bookId} + '.png'}"
+			<img th:src="@{'/images/' + ${book.bookId} + '.png'}"
                class="img-fluid rounded shadow w-25 h-auto" 
                alt="書籍画像"
                onerror="handleImageError(this)" />
@@ -108,19 +108,21 @@
 				 
 				 <!-- 履歴がある場合 -->
 				 <!-- 返却履歴 -->
-				 <tr class="text-center return" th:if="${history.returnDate != null}">
+				 <tr id="returnCol" class="text-center return" th:if="${history.returnDate != null}">
 	 				<td th:text="${history.returnDate}" class="text-white" style="background-color: #15B2EE;">5月29日</td>
 	 				<td th:text="${history.userName}" class="text-white" style="background-color: #15B2EE;">武藤</td>
 	 				<td class="text-white" style="background-color: #15B2EE;">返却</td>
 	             </tr>
-	  			  
-	 			  <tr class="comment" th:if="${history.review != null}">
+			  
+	 			  <tr id="comDisplay" class="comment" th:if="${history.review != null}">
 	 				<td colspan="3" class="p-0" style="background-color: #15B2EE;">
 	 					<p class="col-8 text-white mb-0 mx-1">感想・コメント</p>
-	 					<p th:text="${history.review}" class="ps-1 mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;"></p>
+	 					<p id="commentText" th:text="${history.review}" class="mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;">
+							この文章はダミーです。文字の大きさ、量、字間、行間等を確認するために入れています。
+						</p>
 	 				</td>
 	 			  </tr>
-	  			  
+			  
 	 			  <tr class="text-center lending" th:if="${history.lendingDate != null}">
 	   				<td th:text="${history.lendingDate}" style="background-color: #99B9C5; color: #fff;">5月20日</td>
 	   				<td th:text="${history.userName}" style="background-color: #99B9C5; color: #fff;">武藤</td>
@@ -129,18 +131,34 @@
             </tbody>
           </table>
 		  <style>
+  			  #b-confirmation,
+  	  		  #r-confirmation {
+  	  			  display: flex;
+  	  			  flex-flow: column;
+  	  			  justify-content: space-between;
+  	  			  left: 25%;
+  	  			  border-radius: 10px;
+  	  			  height: 180px;
+  	  		  }
+  	  		
+  	  		  #b-confirmation {
+  	  			  background-color: #E8E8EC;
+  	  		  }
+  	  		
+  	  		  #r-confirmation{
+  	  			  background-color: #ECE8E8;
+  	  		  }
+  						
   		      .comment {
   		          height: 0px;
   		          overflow: hidden;           /* はみ出しを隠す */
   		          opacity: 0;                 /* 透明 */
-  		          /* transform: translateY(-10px); */
-  		          /* transition: all 0.6s ease; */
   		          pointer-events: none;
   		          border: 1px white;
   		          transition: none; /* ← 通常時はアニメーションなし */
   		          margin: 0px;
   		      }
-
+  	
   		      .comment p {
   		          height: 0px;
   		          opacity: 0;
@@ -148,29 +166,28 @@
   		      
   		      .return:hover + .comment,
   		      .comment:hover {
-  		          height: 100px;
-  		          max-height: 100px;          /* アニメーションで高さを展開 */
+  		          max-height: 500px;          /* アニメーションで高さを展開 */
   		          opacity: 1;                 /* フェードイン */
   		          transform: translateY(0);   /* 元の位置に移動 */
   		          pointer-events: auto;
   		          transition: all 0.6s ease; /* ← hover時だけアニメーション */
   		      }
-
+  	
   		      .return:hover + .comment p,
   		      .comment:hover p {
   		          opacity: 1;
-  		          height: 30px;
+  				  height: 25px;
+  		          max-height: 500px;
   		          transition: all 0.6s ease; /* ← hover時だけアニメーション */
   		      }
-
+  	
   		      .return:hover + .comment p:nth-child(2),
   		      .comment:hover p:nth-child(2) {
   		          opacity: 1;                 /* フェードイン */
-  		          height: 50px;
+  				  height: 100px;
   		      }
   		      
   		      .lending {
-  		          /* transform: translateY(-1px); */
   		          transition: all 0.6s ease;  /* アニメーション */
   		          border: 1px white;
   		      }
@@ -189,7 +206,7 @@
 
 
   <!-- 画像エラー処理用JavaScript -->
-  <script>
+  <script>	
     function handleImageError(img) {
       // 無限ループを防ぐため、既にエラー処理済みの場合は何もしない
       if (img.dataset.errorHandled === 'true') {
@@ -207,6 +224,60 @@
         </div>
       `;
     }
+	
+	document.querySelector('#return-form-modal').addEventListener('submit', function() {
+	  // textareaの値をhiddenにコピー
+	  document.querySelector('#review-hidden').value = document.querySelector('#comment').value;
+	});
+	
+	
+	const comDisplay = document.getElementById("comDisplay");
+	const comment = document.getElementById("commentText");
+	const returnCol = document.getElementById("returnCol");
+	
+	function adjustHeight(){
+		const textLength = comment.textContent.trim().length;
+		
+		// 1行に表示する文字数
+		let lineTextLength = 50;
+		const screenWidth = window.innerWidth;
+		if (screenWidth < 576) {
+			lineTextLength = 35;
+		} else if (screenWidth < 768) {
+			lineTextLength = 40;
+		} else if (screenWidth < 1024) {
+			lineTextLength = 45;
+		}
+		
+		// 表示する行数
+		const lineCount = Math.ceil(textLength / lineTextLength);
+		// コメントの背景の高さ
+		const comDisplayHeight = lineCount * 30 + 50;
+		// コメント高さ
+		const commentHeight = lineCount * 30;
+		
+		comDisplay.style.height = comDisplayHeight + "px";
+		comment.style.height = commentHeight + "px";
+	};
+	
+	returnCol.addEventListener("mouseenter", adjustHeight);
+	returnCol.addEventListener("mouseleave", function() {
+	    comDisplay.style.height = "0px";
+	    comment.style.height = "0px";
+	});
+	
+	comDisplay.addEventListener("mouseenter", adjustHeight);
+	comDisplay.addEventListener("mouseleave", function() {
+	    comDisplay.style.height = "0px";
+	    comment.style.height = "0px";
+	});
+	
+	comment.addEventListener("mouseenter", adjustHeight);
+	comment.addEventListener("mouseleave", function() {
+	    comDisplay.style.height = "0px";
+	    comment.style.height = "0px";
+	});
+	
   </script>
 </body>
 </html>

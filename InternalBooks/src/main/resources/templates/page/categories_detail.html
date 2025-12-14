@@ -53,7 +53,7 @@
 				「page」内の「searchresult.html」に飛ぶボタン
 				「searchresult.html」飛ぶ際に、クリックした本のbookIdを渡す-->
 			<a th:each="bookId : ${bookIdList}"
-			th:href="@{'/page/SearchResult?bookid=' + ${bookId}}"
+			th:href="@{'/page/searchresult?bookId=' + ${bookId}}"
 			class="col-md-6 mb-6 btn"
 			style="text-decoration: none;">
 				<img th:src="@{'/images/' + ${bookId} + '.png'}"
