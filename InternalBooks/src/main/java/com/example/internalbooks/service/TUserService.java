@@ -1,5 +1,6 @@
 package com.example.internalbooks.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +24,9 @@ public class TUserService implements UserDetailsService {
     //DI用フィールド
     private final TUserRepository tUserRepository;
     private final MDepartmentRepository mDepartmentRepository;
+    
+    //0:有効ユーザー
+    private final int DELETE_FLAG_OFF = 0;
 
     //コンストラクタインジェクション
     public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository) {
@@ -71,9 +75,25 @@ public class TUserService implements UserDetailsService {
      * @return アクティブユーザーリスト
      */
     public List<TUserEntity> getActiveUsers() {
-        return tUserRepository.findByDeleteFlg(0);  // 削除フラグOFFのみ
+        return tUserRepository.findByDeleteFlg(DELETE_FLAG_OFF);
     }
     
+    /**
+     * ログインユーザを除いたアクティブユーザリストを取得する
+     * @param ログインユーザid
+     * @return アクティブユーザーリスト
+     */
+	public List<TUserEntity> getUsersExceptCurrent(Integer currentUserId) {
+		List<TUserEntity> activeUsers = getActiveUsers();
+		List<TUserEntity> UsersExceptCurrent = new ArrayList<>();
+		for (TUserEntity user : activeUsers) {
+			if (!currentUserId.equals(user.getUserId())) {
+				UsersExceptCurrent.add(user);
+			}
+		}
+		return UsersExceptCurrent;
+	}
+
     /**
      * 部門IDから部門名を取得する
      */
@@ -102,9 +122,9 @@ public class TUserService implements UserDetailsService {
      * ユーザーの所属課を取得する
      * DBへのアクセス回数が多いためパフォーマンス上げるならJOINクエリとかRepositoryに追加するといい！
      */
-    public List<TUserEntity> getUserDepartmentName() {
-        // 全ユーザー情報を取得
-        List<TUserEntity> users = getActiveUsers();
+    public List<TUserEntity> getUserDepartmentName(Integer currentUserId) {
+        // アクティブユーザー情報を取得
+        List<TUserEntity> users = getUsersExceptCurrent(currentUserId);
 
         // 各ユーザーの所属課を取得
         for (TUserEntity user : users) {

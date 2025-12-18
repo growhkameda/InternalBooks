@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -28,9 +31,6 @@ import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.utils.JwtUtil;
-
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 
 
 /**
@@ -255,8 +255,9 @@ public class AdminController extends InternalBooksController {
                 return adminPermissionError(redirectAttributes);
             }
 
-            // 各ユーザーの所属課を取得してモデルに追加する
-            List<TUserEntity> userWithDepartmentName = tUserService.getUserDepartmentName();
+			// 各ユーザーの所属課を取得してモデルに追加する
+			List<TUserEntity> userWithDepartmentName = tUserService
+					.getUserDepartmentName((Integer) session.getAttribute("currentUserId"));
 
             model.addAttribute("users", userWithDepartmentName);
             model.addAttribute("isAdmin", isAdmin);
