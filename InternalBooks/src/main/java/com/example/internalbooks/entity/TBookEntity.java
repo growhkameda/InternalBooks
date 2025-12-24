@@ -19,19 +19,19 @@ public class TBookEntity {
     @Id
     @Column(name = Const.BOOK_ID)
     private Integer bookId;
-    
+
     @Column(name = Const.TITLE)
     private String title;
-    
+
     @Column(name = Const.CATEGORIES)
     private String categories;
-    
+
     @Column(name = Const.BORROWER_ID)
     private Integer borrowerId;
-    
+
     @Column(name = Const.PROVIDER_ID)
     private Integer providerId;
-    
+
     @Column(name = Const.PROVIDER_COMMENT)
     private String providerComment;
 

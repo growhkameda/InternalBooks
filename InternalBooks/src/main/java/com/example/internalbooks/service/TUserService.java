@@ -20,7 +20,7 @@ import com.example.internalbooks.repository.TUserRepository;
  * MUserテーブルに対してどんな操作をしていくかをMUserリポジトリを介して制御していくサービス
  */
 public class TUserService implements UserDetailsService {
- 
+
     //DI用フィールド
     private final TUserRepository tUserRepository;
     private final MDepartmentRepository mDepartmentRepository;
@@ -30,7 +30,7 @@ public class TUserService implements UserDetailsService {
         this.tUserRepository = tUserRepository;
         this.mDepartmentRepository = mDepartmentRepository;
     }
-    
+
 
     @Override
     /**
@@ -45,7 +45,7 @@ public class TUserService implements UserDetailsService {
         }
         return user;  // LoginUser を返す
     }
-    
+
     /**
      * ユーザIDからTUser情報を取得するメソッド
      * @param userId ユーザID
@@ -74,13 +74,13 @@ public class TUserService implements UserDetailsService {
         if (departmentId == null) {
             return "未設定";
         }
-        
+
         try {
             // リポジトリを使用してデータベースから部門名を取得
             Optional<String> departmentName = mDepartmentRepository.findNameById(departmentId);
-            
+
             return departmentName.orElse("不明");
-            
+
         } catch (NumberFormatException e) {
             // 数値に変換できない場合
             return "不明";
@@ -88,7 +88,7 @@ public class TUserService implements UserDetailsService {
             // その他のエラーの場合
             return "Error";
         }
-        
+
     }
 
     /**
@@ -135,11 +135,11 @@ public class TUserService implements UserDetailsService {
     	tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
     	tuser.setRole(dtuser.getRole());
     	tuser.setDeleteFlg(dtuser.getDeleteFlg());
-    	  
+
     	tUserRepository.save(tuser);
-    	  
+
     	return tuser;
-    	  
+
     }
       
     /**

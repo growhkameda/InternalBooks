@@ -9,7 +9,7 @@
 
 <body>
 <section class = "container justify-content-center mt-5">
-	
+
     <h1 class= "text-center">図書館システム</h1>
     <br>
     <h3 class= "text-center mt-4">ユーザー登録</h3>
@@ -20,13 +20,13 @@
 <!-- 社員ID -->
 <div class ="container mt-4">
   <div class = "row justify-content-center">
-	 
+
   	  <div class = "col-8 pt-2">
 	      	<label for = "id" class="form-label text-start">社員ID</label>
 	        <!-- バリデーションエラーを表示 -->
 	      	<span th:errors="*{userId}" class="text-danger ms-3"></span>
 	      	<input type="text" th:field="*{userId}" class="form-control bg-light">
-	  </div> 
+	  </div>
   </div>
 </div>
 
@@ -53,7 +53,7 @@
 	  </div>
   </div>
 </div>
- 
+
  <!-- 名前 -->
 <div class ="container mt-3">
   <div class = "row justify-content-center">
