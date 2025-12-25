@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.internalbooks.common.Const;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.MDepartmentRepository;
@@ -24,9 +25,6 @@ public class TUserService implements UserDetailsService {
     //DI用フィールド
     private final TUserRepository tUserRepository;
     private final MDepartmentRepository mDepartmentRepository;
-    
-    //0:有効ユーザー
-    private final int DELETE_FLAG_OFF = 0;
 
     //コンストラクタインジェクション
     public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository) {
@@ -75,7 +73,7 @@ public class TUserService implements UserDetailsService {
      * @return アクティブユーザーリスト
      */
     public List<TUserEntity> getActiveUsers() {
-        return tUserRepository.findByDeleteFlg(DELETE_FLAG_OFF);
+        return tUserRepository.findByDeleteFlg(Const.DELETE_FLAG_OFF);
     }
     
     /**
