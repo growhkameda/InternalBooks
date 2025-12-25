@@ -29,4 +29,12 @@ public class Const {
 	public final static String SCHEDULED_RETURN_DATE = "scheduled_return_date";
 	public final static String REVIEW = "review";
 
+	/**
+	 * ユーザー削除フラグ
+	 * 0: 有効ユーザー
+	 * 1: 削除ユーザー
+	 */
+	public static final int DELETE_FLAG_OFF = 0;
+	public static final int DELETE_FLAG_ON  = 1;
+
 }
