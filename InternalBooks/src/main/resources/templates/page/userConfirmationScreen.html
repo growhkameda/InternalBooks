@@ -7,25 +7,25 @@
 </head>
 
 <body>
-<section class = "container justify-content-center mt-5">
-  <div class="row">
-    <h1 class= "text-center">図書館システム</h1>
-  </div>
-  <div class="row">
-    <h2 class= "text-center mt-4">ユーザー確認画面</h2>
-  </div>
-<form>    
-  <div class ="container mt-4">
-    <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
-	    <p for = "id" class="form-label text-start">社員ID</p>
-	    <!--UserIdを表示-->
-	    <div class="rounded-2 h-75 border border-black">
-          <span class="mt-3 ms-2 fw-normal h6" th:text="${userConfirmDto.userId}">0000</span>
+  <section class = "container justify-content-center mt-5">
+    <div class="row">
+      <h1 class= "text-center">図書館システム</h1>
+    </div>
+    <div class="row">
+      <h2 class= "text-center mt-4">ユーザー確認画面</h2>
+    </div>
+  <form>    
+    <div class ="container mt-4">
+      <div class = "row justify-content-center">
+	    <div class = "col-8 pt-2">
+	      <p for = "id" class="form-label text-start">社員ID</p>
+	      <!--UserIdを表示-->
+	      <div class="rounded-2 h-75 border border-black">
+            <span class="mt-3 ms-2 fw-normal h6" th:text="${userConfirmDto.userId}">0000</span>
+	      </div>
 	    </div>
 	  </div>
-	</div>
-  </div>
+    </div>
 
 <div class ="container mt-4">
   <div class = "row justify-content-center">
@@ -61,7 +61,7 @@
 	  </div>
     </div>
   </div>
-   
+  
    <!--同じ行に編集ボタンと削除ボタンを配置し、左右と真ん中にそれぞれスペースを置く-->
    <div class ="container text-center mt-4">
      <div class ="row">

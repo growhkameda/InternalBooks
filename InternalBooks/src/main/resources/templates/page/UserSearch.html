@@ -16,7 +16,7 @@
 
         <!-- ================== 検索窓と検索ボタン ================== -->
         <div class="mb-3 d-flex flex-column align-items-center">
-            <input type="text" 
+            <input type="text"
                 class="text-center form-control bg-secondary-subtle shadow-sm"
                 style="width: 80%;"
                 id="search"
@@ -46,7 +46,7 @@
 
               <!-- ================== ユーザーデータの表示 ================== -->
               <tbody id="userTableBody">
-                <tr th:each="user : ${users}" th:if="${users != null and !#lists.isEmpty(users)}" 
+                <tr th:each="user : ${users}" th:if="${users != null and !#lists.isEmpty(users)}"
                     class="user-row">
                   <td colspan="2" class="text-center p-0">
                     <a th:href="@{/admin/userconfirmationscreen(userId=${user.userId})}"
@@ -54,7 +54,7 @@
                       <div class="card border-0 rounded-0 overflow-hidden bg-transparent">
                         <div class="card-body p-2 text-center">
                           <div class="row">
-                            
+
                             <!--データ表示領域-->
                             <div class="col-6">
                               <span class="fw-bold text-dark department-name" th:text="${user.departmentName}">所属課</span>
@@ -62,7 +62,7 @@
                             <div class="col-6">
                               <span class="fw-bold text-dark user-name" th:text="${user.name}">名前</span>
                             </div>
-                            
+
                           </div>
                         </div>
                       </div>
@@ -81,7 +81,7 @@
       </div>
     </div>
 
-    
+
     <!--================= 検索機能用JavaScript =================-->
     <script th:inline="javascript">
       // ページ読み込み時の初期化
@@ -89,15 +89,15 @@
         // 初期状態の設定
         const userRows = document.querySelectorAll('.user-row');
         const noUsersMessage = document.querySelector('.no-users-message');
-        
+
         // 初期表示時にユーザーが存在しない場合はメッセージを表示
         if (userRows.length === 0 && noUsersMessage) {
           noUsersMessage.style.display = '';
         }
-        
+
         // 検索ボタンクリックイベント
         document.getElementById('searchButton').addEventListener('click', performSearch);
-        
+
         // 検索入力欄のエンターキーイベント
         document.getElementById('search').addEventListener('keypress', (e) => {
           if (e.key === 'Enter') {
@@ -105,13 +105,13 @@
           }
         });
       });
-      
+
       // 検索実行関数(main処理)
       const performSearch = () => {
         const searchTerm = document.getElementById('search').value.trim().toLowerCase();
         const userRows = document.querySelectorAll('.user-row');
         const noUsersMessage = document.querySelector('.no-users-message');
-        
+
         // ユーザーのHIT数をカウント
         let visibleCount = 0;
 
@@ -119,10 +119,10 @@
         userRows.forEach(row => {
           const departmentName = row.querySelector('.department-name').textContent.toLowerCase();
           const userName = row.querySelector('.user-name').textContent.toLowerCase();
-          
+
           // 所属課または名前で検索
           const isMatch = departmentName.includes(searchTerm) || userName.includes(searchTerm);
-          
+
           if (searchTerm === '' || isMatch) {
             row.style.display = '';
             if (searchTerm !== '') visibleCount++;
@@ -130,7 +130,7 @@
             row.style.display = 'none';
           }
         });
-        
+
         // エラーメッセージの表示制御
         if (searchTerm !== '' && visibleCount === 0) {
           // 検索結果が0件の場合、メッセージを表示

@@ -8,13 +8,15 @@
 
 <body>
 <section class = "container justify-content-center mt-5">
+
   <div class="row">
 	<h1 class= "text-center">図書館システム</h1>
   </div>
   <div class="row">
 	<h2 class= "text-center mt-4">ユーザー編集画面</h2>
-  </div>	
-  
+  </div>
+
+
 <!-- ================== フォーム開始 ================== -->
   <form th:action="@{/admin/usereditconfirmation}" th:object="${userEditDto}" method="post">
 
@@ -70,7 +72,6 @@
       </div>
     </div>
   </form>
- 
 <!-- ================== 戻るボタン ================== -->
  <div class ="input-group mt-5 gap-1">
    <div class ="row justify-content-start"> 

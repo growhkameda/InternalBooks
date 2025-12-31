@@ -28,25 +28,25 @@ public class TUserEntity implements UserDetails {
 
     @Column(name = Const.NAME)
     private String name;
-    
+
 //    @Column(name = Const.NAME)
 //    private String name;
-    
+
     @Column(name = Const.MAILADDRESS)
     private String mailAddress;
-    
+
     @Column(name = Const.PASSWORD)
     private String password;
-    
+
     @Column(name = Const.ROLE)
     private Integer role;
-    
+
     @Column(name = Const.DEPARTMENT_ID)
     private Integer departmentId;
-    
+
     @Column(name = Const.DELETE_FLG)
     private Integer deleteFlg;
-    
+
     //TUserServiceで所属課を取得するためのフィールド
     @Transient
     private String departmentName;
@@ -100,12 +100,12 @@ public class TUserEntity implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-    
+
     // IntegerをStringへ変換するメソッド
     public String getUserIdAsString() {
         return String.valueOf(userId);
     }
-    
+
     // IntegerをStringへ変換するメソッド
     public String getDepartmentIdAsString() {
         return String.valueOf(departmentId);

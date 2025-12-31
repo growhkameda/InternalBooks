@@ -26,13 +26,13 @@ import com.example.internalbooks.filter.JwtAuthenticationFilter;
  * 認証系のセキュリティ設定のためのクラス
  */
 public class SecurityConfig {
-	
+
     @Autowired
     private UserDetailsService userDetailsService;  // UserDetailsService を Autowire
-    
+
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
+
     @Bean
     /**
      * URLによって認証をチェックするかなどのフィルタを設定するためのメソッド
@@ -53,10 +53,10 @@ public class SecurityConfig {
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // フィルターを追加;
 
         	http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
-        
+
         return http.build();
     }
-    
+
     @Bean
     /**
      * 認証情報を管理するためのメソッド
@@ -64,14 +64,14 @@ public class SecurityConfig {
     protected AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = 
             http.getSharedObject(AuthenticationManagerBuilder.class);
-        
+
         authenticationManagerBuilder
         .userDetailsService(userDetailsService)
         .passwordEncoder(passwordEncoder);  // PasswordEncoder を設定
 
         return authenticationManagerBuilder.build();
     }
-        
+
     @Bean
     /**
      * JWT認証情報のフィルタを返却するためのメソッド
@@ -79,14 +79,14 @@ public class SecurityConfig {
     protected JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(); // JWTフィルターを定義
     }
-    
+
     @Bean
     /**
      * CORSアクセスのための設定をするメソッド
      */
     protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
+
         // ========== ngrok用CORS設定 START ==========
         // 本番環境では以下をコメントアウトして "list.of(*)" に戻すこと
         // テスト環境で動かすときはngrokのURLを設定する
@@ -95,18 +95,18 @@ public class SecurityConfig {
             "https://a476e2ff19fa.ngrok-free.app",    // 新ngrok用URL（本番時削除）
             "https://*.ngrok-free.app"                // ngrok用ワイルドカード（本番時削除）
         )); // 許可するオリジン
-        
+
         // 本番環境用設定（現在はコメントアウト）
         // configuration.setAllowedOrigins(List.of("*")); // 本番環境用
         // ========== ngrok用CORS設定 END ==========
-        
+
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 許可するメソッド
-        
+
         // ========== ngrok用ヘッダー設定 START ==========
         // 本番環境では "X-Requested-With" を削除可能
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With")); // 許可するヘッダー
         // ========== ngrok用ヘッダー設定 END ==========
-        
+
         configuration.setAllowCredentials(true); // 認証情報を含むリクエストを許可
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

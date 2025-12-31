@@ -3,18 +3,13 @@
       th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-  <title>松永テストページ</title>
+  <title>カテゴリー詳細画面</title>
 </head>
 
 <body>
   <section th:fragment="section">
 
     <style>
-      .fixed-size-img {
-        width: 280px;
-        height: 350px;
-        object-fit: cover;
-      }
 
       .fixed-page-width {
         max-width: 600px;
@@ -45,6 +40,7 @@
 
     <div class="container fixed-page-width">
       <div class="row">
+		<!--「page」内の「categories.html」に飛ぶボタン-->
         <a th:href="@{/page/categories}" class="col-auto btn" style="margin-bottom: 10px; font-size: 16px; text-align: left;">
           カテゴリー選択へ戻る↵
         </a>
@@ -53,23 +49,50 @@
 
     <div class="container fixed-page-width">
 		<div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
-		  <a th:each="bookId : ${bookId}"
-		     th:href="@{'/page/book_detail?bookid=' + ${bookId}}"
-		     class="col-md-6 mb-6 btn"
-		     style="text-decoration: none;">
-		    <img th:src="@{'/images/' + ${bookId} + '.png'}"
-		         alt="Book Image"
-		         class="img-fluid fixed-size-img" />
-		  </a>
+			<!--コントローラーからbookIdListを受け取り、bookIdに格納
+				「page」内の「searchresult.html」に飛ぶボタン
+				「searchresult.html」飛ぶ際に、クリックした本のbookIdを渡す-->
+			<a th:each="bookId : ${bookIdList}"
+			th:href="@{'/page/searchresult?bookId=' + ${bookId}}"
+			class="col-md-6 mb-6 btn"
+			style="text-decoration: none;">
+				<img th:src="@{'/images/' + ${bookId} + '.png'}"
+				alt="Book Image"
+				class="img-fluid fixed-size-img" />
+			</a>
 		</div>
-	  <div th:if="${#lists.isEmpty(bookId)}">
-	    <p>該当する本が見つかりませんでした。</p>
-	  </div>
 
-      <div class="pagination-buttons fixed-page-width">
-        <button id="prev-button" class="btn btn-outline-primary">← 前のページ</button>
-        <button id="next-button" class="btn btn-outline-primary">次のページ →</button>
-      </div>
+		<div th:if="${#lists.isEmpty(bookIdList)}">
+		  <p>該当する本が見つかりませんでした。</p>
+		</div>
+
+		<div class="pagination-buttons fixed-page-width">
+
+			<!--左側に「← 前のページ」ボタンを表示-->
+				<!--左側に表示するように指定-->
+				<div class="text-start">
+					<div th:if="${currentPage > 0}">
+					<a th:href="@{/page/categories_detail(category=${category}, page=${currentPage - 1})}"
+					class="btn btn-outline-primary">
+					← 前のページ
+					</a>
+					</div>
+				</div>
+
+			<!--右側に「次のページ →」ボタンを表示-->
+			<div th:if="${currentPage + 1 < totalPages}">
+				<!--右側に表示するように指定-->
+				<div class="text-end">
+					<a th:href="@{/page/categories_detail(category=${category}, page=${currentPage + 1})}"
+					class="btn btn-outline-primary">
+					次のページ →
+					</a>
+				</div>
+			</div>
+
+		</div>
+
+
     </div>
   </section>
 </body>

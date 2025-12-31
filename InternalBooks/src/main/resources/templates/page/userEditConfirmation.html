@@ -61,13 +61,11 @@
        </div>
   　 </div>
    </div>
-   <!-- hiddenで値を保持 -->
-   <input type="hidden" name="userId" th:value="${userEditDto.userId}" />
-   <input type="hidden" name="userId" th:value="${userEditDto.name}" />   
+  
   <!-- ================== 完了ボタン ================== -->
    <div class ="container text-center mt-5">
-	<div>> class = "row justify-content-center">
-      <form th:action="@{/admin/userregistrationcomplete}" method="post" th:object= "${userDto}" enctype="application/x-www-form-urlencoded">	
+	<div class = "row justify-content-center">
+      <form th:action="@{/admin/finishuseredit}" method="post" th:object= "${userEditDto}" enctype="application/x-www-form-urlencoded">	
 		<div class ="container text-center mt-4">
 		  <div class = "col-auto">
 		    <button type="submit" class="btn btn-success">完了</button>

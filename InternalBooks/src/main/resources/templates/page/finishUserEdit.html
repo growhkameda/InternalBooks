@@ -8,6 +8,7 @@
 
 <body>
 <section class = "container justify-content-center mt-5">
+
   <div class="row">
     <h1 class= "text-center">図書館システム</h1>
   </div>
@@ -23,7 +24,7 @@
 		<div class = "col-8 pt-2">
 	      <p for = "id" class="form-label text-start">社員ID</p>
 		  <div class="rounded-2 h-75 border border-black">
-            <span class = "mt-3 ms-2 fw-normal h6" th:text="${tuser.userId}"></span>
+            <span class = "mt-3 ms-2 fw-normal h6" th:text="${userEditDto.userId}"></span>
 		  </div>
 		</div>
 	  </div>
@@ -36,7 +37,7 @@
 		  <p for = "id" class = "id form-label text-start">名前</p>
 		  <!--UserIdから名前を表示-->
 		  <div class="rounded-2 h-75 border border-black">
-		    <span class="mt-3 ms-2 fw-normal h6" th:text="${tuser.name}"></span>
+		    <span class="mt-3 ms-2 fw-normal h6" th:text="${userEditDto.name}"></span>
 		  </div>
 		</div>
       </div>
@@ -48,12 +49,11 @@
 		  <p for = "id" class = "id form-label text-start">所属課</p>
 		  <!--UserIdから所属課を表示-->
 		   <div class="rounded-2 h-75 border border-black">
-		     <span class="mt-3 ms-2 fw-normal h6" th:text="${tuser.departmentId}"></span>
+		     <span class="mt-3 ms-2 fw-normal h6" th:text="${userEditDto.departmentId}"></span>
 		   </div>
 		 </div>
 	   </div>
 	 </div>	
-
 	  
 	 <div class ="input-group mt-5 gap-1">
 	   <div class ="row justify-content-start"> 
@@ -66,7 +66,6 @@
 	      </div>
 	    </div>
 	  </div>
-	</form>
 
 </section>
 </body>
