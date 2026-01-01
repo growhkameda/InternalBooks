@@ -363,12 +363,41 @@ public class InternalBooksController {
     		}
             Integer userId = jwtUtil.extractUserId(token);
 
+<<<<<<< HEAD
             dtlend.setBookId(bookId);
             dtlend.setUserId(userId);
 
+=======
+            return "page/book_detail";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+    
+    /**
+     * ユーザー編集完了画面へ遷移
+     */
+    @GetMapping("/page/finishUserEdit")
+    public String finishUserEdit(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// tokenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            //管理者かどうかの検証
+>>>>>>> origin
             boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            
+            //・管理者権限がない場合はログインページにリダイレクト
+            if(!isAdmin){
+            	return adminPermissionError(redirectAttributes);
+            }
+            
             model.addAttribute("isAdmin", isAdmin);
 
+<<<<<<< HEAD
 //            TLendingHistoryEntity savedLend =
     		lendingHistoryService.rentalCompleted(dtlend);
 //            DtoBookHistoryRegistration tlend = new DtoBookHistoryRegistration();
@@ -376,6 +405,118 @@ public class InternalBooksController {
     		if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
                 return "redirect:/page/top";
+=======
+            return "page/finishUserEdit";
+    	}
+    	catch (Exception e) {
+    		return error(redirectAttributes);
+    	}
+        
+    }
+
+    
+    /**
+     * ユーザー確認画面に遷移
+     */
+@GetMapping("/page/userConfirmationScreen")
+public String userConfirmationScreen(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+	try {
+		// torkenの検証
+		String token = (String) session.getAttribute("token");
+        jwtUtil.extractUserId(token);
+        
+        boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "page/userConfirmationScreen";
+	}
+	catch (Exception e) {
+		return error(redirectAttributes);
+	}
+    
+}
+    
+/**
+ * ユーザー削除確認ページに遷移
+ */
+@GetMapping("/page/userDeleteConfirmation")
+public String userDeleteConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+	try {
+		// torkenの検証
+		String token = (String) session.getAttribute("token");
+        jwtUtil.extractUserId(token);
+        
+        boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "page/userDeleteConfirmation";
+	}
+	catch (Exception e) {
+		return error(redirectAttributes);
+	}
+    
+}
+
+/**
+ * ユーザー編集ページに遷移
+ */
+@GetMapping("/page/userEdit")
+public String userEdit(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+	try {
+		// torkenの検証
+		String token = (String) session.getAttribute("token");
+        jwtUtil.extractUserId(token);
+        
+        boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "page/userEdit";
+	}
+	catch (Exception e) {
+		return error(redirectAttributes);
+	}
+    
+}
+
+/**
+ * ユーザー削除完了ページに遷移
+ */
+@GetMapping("/page/userDeleteComplete")
+public String userDeleteComplete(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+	try {
+		// torkenの検証
+		String token = (String) session.getAttribute("token");
+        jwtUtil.extractUserId(token);
+        
+        boolean isAdmin = jwtUtil.extractIsAdmin(token);
+        model.addAttribute("isAdmin", isAdmin);
+
+        return "page/userDeleteComplete";
+	}
+	catch (Exception e) {
+		return error(redirectAttributes);
+	}
+    
+}
+
+
+    /**
+     * 書籍削除確認ページに遷移
+     */
+    @GetMapping("/page/BookDeletingConfirmation")
+    public String BookDeletingConfirmation(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    	try {
+    		// torkenの検証
+    		String token = (String) session.getAttribute("token");
+            jwtUtil.extractUserId(token);
+            
+            // 管理者権限の検証
+            boolean isAdmin = jwtUtil.extractIsAdmin(token);
+            
+            // 管理者権限がない場合はログインページにリダイレクト
+            if (!isAdmin) {
+            	return adminPermissionError(redirectAttributes);
+>>>>>>> origin
             }
 
     		redirectAttributes.addAttribute("bookId", bookId);
