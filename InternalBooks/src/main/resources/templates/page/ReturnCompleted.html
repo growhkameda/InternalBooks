@@ -39,7 +39,7 @@
         <!-- 書籍画像エリア -->
 		<div class="text-center p-4">
 <!--		  <img th:src="@{|/images/${book.bookId}.png|}" -->
-		  <img th:src="@{'/images/' + '100' + ${book.bookId} + '.png'}"
+			<img th:src="@{'/images/' + ${book.bookId} + '.png'}"
                class="img-fluid rounded shadow w-25 h-auto"
                alt="書籍画像"
                onerror="handleImageError(this)" />
