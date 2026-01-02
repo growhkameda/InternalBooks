@@ -30,26 +30,26 @@
     </div>
 
     <!-- ================== 書籍情報がある場合の表示 ================== -->
-    <div th:if="${book != null}" 
+    <div th:if="${book != null}"
          class="container-sm">
-      
+
       <!-- ========== 書籍カード表示 ========== -->
       <div class="text-center mb-1">
         <!-- 書籍画像エリア -->
         <div class="text-center p-4">
 <!--		  <img th:src="@{|/images/${book.bookId}.png|}" -->
 		  <img th:src="@{'/images/' + ${book.bookId} + '.png'}"
-               class="img-fluid rounded shadow w-25 h-auto" 
+               class="img-fluid rounded shadow w-25 h-auto"
                alt="書籍画像"
                onerror="handleImageError(this)" />
         </div>
-		
-        
+
+
         <!-- 書籍情報エリア -->
         <div class="card-body p-4 pt-1">
           <!-- 書籍名 -->
           <h5 class="card-title fw-bold mb-3 text-dark" th:text="${book.title}">書籍名</h5>
-          
+
           <!-- カテゴリー -->
           <div class="mb-3">
 			<span th:each="category : ${categories}"
@@ -58,7 +58,7 @@
   				カテゴリー
 	    	</span>
           </div>
-          
+
           <!-- 貸出状況 -->
           <div class="mb-0">
 <!--			<p>貸出状況</p>-->
@@ -67,36 +67,36 @@
           </div>
         </div>
       </div>
-	  
+
 	  <!--借りる際のウィンドウ-->
 	  	<div id="b-confirmation" class="col-6 pt-3 position-fixed top-50" style="display: none; z-index: 999;">
 	  		<p class="text-center mt-5" style="font-size: 20px;">この書籍を借りますか？</p>
 	  		 <div class="d-flex h-25">
-				
-				<form id="lending-form-modal" method="post" th:action="@{/page/LendingCompleted}" 
-				th:object= "${tlend}" class="d-flex w-50 border-0 align-items-center justify-content-center" 
+
+				<form id="lending-form-modal" method="post" th:action="@{/page/LendingCompleted}"
+				th:object= "${tlend}" class="d-flex w-50 border-0 align-items-center justify-content-center"
 				style="background-color: #494CD8; border-bottom-left-radius: 10px;">
 					<input type="hidden" th:field="*{bookId}">
 					<input type="hidden" th:if="${param.qrData != null}" name="qrData" th:value="${param.qrData}">
-				    <button type="submit" class="w-50 border border-0 text-white" 
+				    <button type="submit" class="w-50 border border-0 text-white"
 					style="background-color: #494CD8; border-bottom-left-radius: 10px;">
 						借りる
 					</button>
 				</form>
-				
+
 	  			<button id="cancelB" class="w-50 border border-0" style="background-color: #ADACBD; border-bottom-right-radius: 10px;">
 	  				<p class="m-0 text-white">キャンセル</p>
 	  			</button>
 	  		 </div>
 	  	</div>
-	  	
-	  	
+
+
 	  	<!--返す際のウィンドウ-->
 	  	<div id="r-confirmation" class="col-6 pt-3 position-fixed top-50" style="display: none; z-index: 999;">
 	  		<p class="text-center mt-5 mb-5" style="font-size: 20px;">この書籍を返却しますか？</p>
 	  		<div class="d-flex h-25">
-				<form id="return-form-modal" method="post" th:action="@{/page/ReturnCompleted}" 
-				th:object= "${tlend}" class="d-flex w-50 border-0 align-items-center justify-content-center" 
+				<form id="return-form-modal" method="post" th:action="@{/page/ReturnCompleted}"
+				th:object= "${tlend}" class="d-flex w-50 border-0 align-items-center justify-content-center"
 				style="background-color: #E83838; border-bottom-left-radius: 10px;">
 					<input type="hidden" th:field="*{bookId}">
 					<input type="hidden" th:if="${param.qrData != null}" name="qrData" th:value="${param.qrData}">
@@ -105,18 +105,18 @@
 				    <input type="hidden" th:field="*{returnDate}">
 					<input type="hidden" th:field="*{userId}">
 					<input type="hidden" id="review-hidden" name="review">
-				    <button type="submit" class="w-50 border border-0 text-white" 
+				    <button type="submit" class="w-50 border border-0 text-white"
 					style="background-color: #E83838; border-bottom-left-radius: 10px;">
 						返す
 					</button>
 				</form>
-					
+
 	  			<button id="cancelR" class="w-50 border border-0 text-center text-white" style="background-color: #BDACAC; border-bottom-right-radius: 10px;">
 	  				キャンセル
 	  			</button>
 	  		 </div>
 	  	</div>
-		
+
 	 <div class="row d-flex justify-content-center" th:if="${book.status != '貸出中'}">
 	 	<p th:text="書籍提供者： + ${book.providerName}" class="col-8 mb-1">書籍提供者：武藤</p>
 	 	<p th:text="${book.providerComment}" class="col-8 p-3" style="background-color: #E8ECE8; border-radius: 10px;">
@@ -128,7 +128,7 @@
 			この文章はダミーです。文字の大きさ、量、字間、行間等を確認するために入れています。
 		</p>
 	</div>
-	
+
 	<form th:action="@{/page/ReturnCompleted}" th:if="${showComment == true}" th:object="${tlend}" method="post">
 		<div th:if="${book.status == '貸出中'}" class="row d-flex justify-content-center mb-4">
 			<label class="col-8" for="comment">感想・コメント</label>
@@ -156,7 +156,7 @@
 			    </button>
 			  </form>
 			</div>
-        
+
 			<!-- 貸出可能の場合は借りるボタン -->
 			<div th:if="${book.status != '貸出中'}">
 			  <form method="post" th:action="@{/遷移先書いてください}" class="d-inline">
@@ -167,7 +167,7 @@
 			  </form>
 			</div>
 		</div>
-		
+
 
       <!-- ========== 書籍履歴テーブル ========== -->
       <div class="row d-flex justify-content-center mb-4">
@@ -188,9 +188,9 @@
 				 <tr class="text-center return" th:if="${#lists.isEmpty(bookHistoryList)}">
 	                <td colspan="3" class="text-center text-muted">履歴がありません</td>
 				 </tr>
-			 
+
 			 	<th:block th:each="history : ${bookHistoryList}">
-			 
+
 	 			 <!-- 履歴がある場合 -->
 	 			 <!-- 返却履歴 -->
 	 			 <tr id="returnCol" class="text-center return" th:if="${history.returnDate != null}">
@@ -198,7 +198,7 @@
 	 				<td th:text="${history.userName}" class="text-white" style="background-color: #15B2EE;">武藤</td>
 	 				<td class="text-white" style="background-color: #15B2EE;">返却</td>
 	             </tr>
- 			  
+
 	 			  <tr id="comDisplay" class="comment" th:if="${history.review != null}">
 	 				<td colspan="3" class="p-0" style="background-color: #15B2EE;">
 	 					<p class="col-8 text-white mb-0 mx-1">感想・コメント</p>
@@ -207,7 +207,7 @@
 						</p>
 	 				</td>
 	 			  </tr>
- 			  
+
 	 			  <tr class="text-center lending" th:if="${history.lendingDate != null}">
 	   				<td th:text="${history.lendingDate}" style="background-color: #99B9C5; color: #fff;">5月20日</td>
 	   				<td th:text="${history.userName}" style="background-color: #99B9C5; color: #fff;">武藤</td>
@@ -225,15 +225,15 @@
 	  			  border-radius: 10px;
 	  			  height: 180px;
 	  		  }
-	  		
+
 	  		  #b-confirmation {
 	  			  background-color: #E8E8EC;
 	  		  }
-	  		
+
 	  		  #r-confirmation{
 	  			  background-color: #ECE8E8;
 	  		  }
-						
+
 		      .comment {
 		          height: 0px;
 		          overflow: hidden;           /* はみ出しを隠す */
@@ -243,12 +243,12 @@
 		          transition: none; /* ← 通常時はアニメーションなし */
 		          margin: 0px;
 		      }
-	
+
 		      .comment p {
 		          height: 0px;
 		          opacity: 0;
 		      }
-		      
+
 		      .return:hover + .comment,
 		      .comment:hover {
 		          max-height: 500px;          /* アニメーションで高さを展開 */
@@ -257,7 +257,7 @@
 		          pointer-events: auto;
 		          transition: all 0.6s ease; /* ← hover時だけアニメーション */
 		      }
-	
+
 		      .return:hover + .comment p,
 		      .comment:hover p {
 		          opacity: 1;
@@ -265,18 +265,18 @@
 		          max-height: 500px;
 		          transition: all 0.6s ease; /* ← hover時だけアニメーション */
 		      }
-	
+
 		      .return:hover + .comment p:nth-child(2),
 		      .comment:hover p:nth-child(2) {
 		          opacity: 1;                 /* フェードイン */
 				  height: 100px;
 		      }
-		      
+
 		      .lending {
 		          transition: all 0.6s ease;  /* アニメーション */
 		          border: 1px white;
 		      }
-		      
+
 		      .return:hover ~ .lending,
 		      .comment:hover ~ .lending {
 		          transform: translateY(0);
@@ -294,11 +294,11 @@
 	const rc = document.getElementById('rc');
 	const cancelB = document.getElementById('cancelB');
     const cancelR = document.getElementById('cancelR');
-	
+
 	function bcShowConfirmation() {
 	    document.getElementById("b-confirmation").style.display = "flex";
 	}
-	
+
 	function rcShowConfirmation() {
 		document.getElementById("r-confirmation").style.display = "flex";
 	}
@@ -306,11 +306,11 @@
 	function bcHideConfirmation() {
 	    document.getElementById("b-confirmation").style.display = "none";
 	}
-	
+
 	function rcHideConfirmation() {
 		document.getElementById("r-confirmation").style.display = "none";
 	}
-	
+
 	if (bc) {
 	  bc.addEventListener('click', bcShowConfirmation);
 	}
@@ -323,17 +323,17 @@
 	if (cancelR) {
 	  cancelR.addEventListener('click', rcHideConfirmation);
 	}
-	
-	
+
+
     function handleImageError(img) {
       // 無限ループを防ぐため、既にエラー処理済みの場合は何もしない
       if (img.dataset.errorHandled === 'true') {
         return;
       }
-      
+
       // エラー処理済みフラグを設定
       img.dataset.errorHandled = 'true';
-      
+
       // 画像の代わりにBootstrapアイコンを表示するため、親要素を変更
       const parent = img.parentElement;
       parent.innerHTML = `
@@ -342,20 +342,20 @@
         </div>
       `;
     };
-	
+
 	document.querySelector('#return-form-modal').addEventListener('submit', function() {
 	  // textareaの値をhiddenにコピー
 	  document.querySelector('#review-hidden').value = document.querySelector('#comment').value;
 	});
-	
-	
+
+
 	const comDisplay = document.getElementById("comDisplay");
 	const comment = document.getElementById("commentText");
 	const returnCol = document.getElementById("returnCol");
-	
+
 	function adjustHeight(){
 		const textLength = comment.textContent.trim().length;
-		
+
 		// 1行に表示する文字数
 		let lineTextLength = 50;
 		const screenWidth = window.innerWidth;
@@ -366,36 +366,36 @@
 		} else if (screenWidth < 1024) {
 			lineTextLength = 45;
 		}
-		
+
 		// 表示する行数
 		const lineCount = Math.ceil(textLength / lineTextLength);
 		// コメントの背景の高さ
 		const comDisplayHeight = lineCount * 30 + 50;
 		// コメント高さ
 		const commentHeight = lineCount * 30;
-		
+
 		comDisplay.style.height = comDisplayHeight + "px";
 		comment.style.height = commentHeight + "px";
 	};
-	
+
 	returnCol.addEventListener("mouseenter", adjustHeight);
 	returnCol.addEventListener("mouseleave", function() {
 	    comDisplay.style.height = "0px";
 	    comment.style.height = "0px";
 	});
-	
+
 	comDisplay.addEventListener("mouseenter", adjustHeight);
 	comDisplay.addEventListener("mouseleave", function() {
 	    comDisplay.style.height = "0px";
 	    comment.style.height = "0px";
 	});
-	
+
 	comment.addEventListener("mouseenter", adjustHeight);
 	comment.addEventListener("mouseleave", function() {
 	    comDisplay.style.height = "0px";
 	    comment.style.height = "0px";
 	});
-	
+
   </script>
   </section>
 </body>

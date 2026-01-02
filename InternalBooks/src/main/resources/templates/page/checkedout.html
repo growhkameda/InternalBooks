@@ -10,13 +10,13 @@
   <section th:fragment="section" class="d-flex justify-content-center align-items-start py-5">
     <div class="container d-flex justify-content-center align-items-start">
       <div class="w-100" style="max-width: 330px;">
-        
+
         <!-- ================== ページメインタイトル ================== -->
         <h1 class="fw-bold mt-5 display-3 mb-5 text-center">貸出中書籍</h1>
         <p class="text-muted mt-5 mb-3 fs-6 text-center">書籍の画像を選択すると書籍返却画面に移ります</p>
 
         <!-- ================== 貸出中書籍なしの場合の表示 ================== -->
-        <div th:if="${checkedOutBooks == null or #lists.isEmpty(checkedOutBooks)}" 
+        <div th:if="${checkedOutBooks == null or #lists.isEmpty(checkedOutBooks)}"
              class="text-center text-muted mt-5 pt-5">
           <!-- 本のアイコン表示 -->
           <i class="bi bi-book display-1 text-secondary"></i>
@@ -30,24 +30,24 @@
             </a>
           </div>
         </div>
- 
+
         <!-- ================== 貸出中書籍ありの場合の表示 ================== -->
         <div th:if="${checkedOutBooks != null and not #lists.isEmpty(checkedOutBooks)}">
-          
+
           <!-- ========== 書籍一覧表示エリア ========== -->
           <div th:each="book : ${checkedOutBooks}" class="text-center mb-4">
             <!-- 書籍カード（検索結果詳細ページにリンク） -->
-            <a th:href="@{/page/searchresult(bookId=${book.bookId})}" 
+            <a th:href="@{/page/searchresult(bookId=${book.bookId})}"
                class="btn btn-light w-100 p-0 border-0 shadow-sm rounded-4 text-start text-decoration-none">
               <div class="card border-0 rounded-4 overflow-hidden bg-transparent">
                 <!-- 書籍画像エリア -->
                 <div class="text-center p-4">
-                  <img th:src="@{${book.imageUrl}}" 
+                  <img th:src="@{${book.imageUrl}}"
                        class="img-fluid rounded shadow w-75 h-auto"
                        alt="書籍画像"
                        onerror="handleImageError(this)" />
                 </div>
-                
+
                 <!-- 書籍情報エリア -->
                 <div class="card-body p-4 pt-1 text-center">
                   <!-- 書籍名 -->
@@ -70,7 +70,7 @@
             </a>
           </div>
         </div>
-        
+
       </div>
     </div>
   </section>

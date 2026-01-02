@@ -31,26 +31,26 @@
     </div>
 
     <!-- ================== 書籍情報がある場合の表示 ================== -->
-    <div th:if="${book != null}" 
+    <div th:if="${book != null}"
          class="container-sm">
-      
+
       <!-- ========== 書籍カード表示 ========== -->
       <div class="text-center mb-1">
         <!-- 書籍画像エリア -->
 		<div class="text-center p-4">
 <!--		  <img th:src="@{|/images/${book.bookId}.png|}" -->
-		  <img th:src="@{'/images/' + '100' + ${book.bookId} + '.png'}"
-               class="img-fluid rounded shadow w-25 h-auto" 
+			<img th:src="@{'/images/' + ${book.bookId} + '.png'}"
+               class="img-fluid rounded shadow w-25 h-auto"
                alt="書籍画像"
                onerror="handleImageError(this)" />
         </div>
-		
-        
+
+
         <!-- 書籍情報エリア -->
         <div class="card-body p-4 pt-1">
           <!-- 書籍名 -->
           <h5 class="card-title fw-bold mb-3 text-dark" th:text="${book.title}">書籍名</h5>
-          
+
           <!-- カテゴリー -->
           <div class="mb-3">
 			<span th:each="category : ${categories}"
@@ -61,7 +61,7 @@
           </div>
         </div>
       </div>
-	
+
 	<div class="row d-flex justify-content-center mb-4">
 		<label class="col-8" for="comment">感想・コメント</label>
 		<p th:text="${tlend.review}" class="col-8 ps-2" style="background-color: #E8ECE8; height: 50px; border-radius: 10px;"></p>
@@ -94,9 +94,9 @@
 			 <tr class="text-center return" th:if="${#lists.isEmpty(bookHistoryList)}">
                 <td colspan="3" class="text-center text-muted">履歴がありません</td>
 			 </tr>
-			 
+
 			 <th:block th:each="history : ${bookHistoryList}">
-			 
+
 			 <!-- 履歴がある場合 -->
 			 <!-- 返却履歴 -->
 			 <tr class="text-center return" th:if="${history.returnDate != null}">
@@ -104,14 +104,14 @@
  				<td th:text="${history.userName}" class="text-white" style="background-color: #15B2EE;">武藤</td>
  				<td class="text-white" style="background-color: #15B2EE;">返却</td>
              </tr>
-  			  
+
  			  <tr class="comment" th:if="${tlend.review != null}">
  				<td colspan="3" class="p-0" style="background-color: #15B2EE;">
  					<p class="col-8 text-white mb-0 mx-1">感想・コメント</p>
  					<p th:text="${tlend.review}" class="ps-1 mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;"></p>
  				</td>
  			  </tr>
-  			  
+
  			  <tr class="text-center lending" th:if="${history.lendingDate != null}">
    				<td th:text="${history.lendingDate}" style="background-color: #99B9C5; color: #fff;">5月20日</td>
    				<td th:text="${history.userName}" style="background-color: #99B9C5; color: #fff;">武藤</td>
@@ -136,7 +136,7 @@
   		          height: 0px;
   		          opacity: 0;
   		      }
-  		      
+
   		      .return:hover + .comment,
   		      .comment:hover {
   		          height: 100px;
@@ -159,13 +159,13 @@
   		          opacity: 1;                 /* フェードイン */
   		          height: 50px;
   		      }
-  		      
+
   		      .lending {
   		          /* transform: translateY(-1px); */
   		          transition: all 0.6s ease;  /* アニメーション */
   		          border: 1px white;
   		      }
-  		      
+
   		      .return:hover ~ .lending,
   		      .comment:hover ~ .lending {
   		          transform: translateY(0);
