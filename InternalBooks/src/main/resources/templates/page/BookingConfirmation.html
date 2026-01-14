@@ -69,7 +69,7 @@
 			<label for = "id">書籍画像</label>
 	  </div>
 	  <div class = "col-7 col-md-8 text-start">
-			 <img th:src="@{${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4 " style="height:200px">
+			 <img th:src="@{'/images/' + ${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4 " style="height:200px">
       </div>
   </div>
 </div>	

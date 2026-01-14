@@ -22,9 +22,10 @@ public class DtoUserRegistration {
 	private String mailAddress;
 	
 	@NotBlank(message = "所属課は必須です")
-//	regexp = "\\d+"で１文字以上の数字を表す
-	@Pattern(regexp = "\\d+", message = "所属課は数字で入力してください")
 	private String departmentId;
+	
+    //DB用(数字）
+	private Integer departmentNumber;
 	
 	@NotBlank(message = "パスワードは必須です")
 	private String password;

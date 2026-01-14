@@ -5,9 +5,11 @@ import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.internalbooks.config.EmailHashUtil;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TUserRepository;
@@ -23,14 +25,19 @@ public class TUserService implements UserDetailsService {
     //DI用フィールド
     private final TUserRepository tUserRepository;
     private final MDepartmentRepository mDepartmentRepository;
-
+    private final PasswordEncoder passwordEncoder;
+    private final EmailHashUtil emailHashUtil;
+    
     //コンストラクタインジェクション
-    public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository) {
+    public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository,PasswordEncoder passwordEncoder,EmailHashUtil emailHashUtil) {
         this.tUserRepository = tUserRepository;
         this.mDepartmentRepository = mDepartmentRepository;
+        this.passwordEncoder= passwordEncoder;
+        this.emailHashUtil= emailHashUtil;
     }
     
-
+    
+    
     @Override
     /**
      * ユーザ名(メールアドレス)からTUser情報を取得するメソッド
@@ -115,9 +122,11 @@ public class TUserService implements UserDetailsService {
     	TUserEntity tuser = new TUserEntity();
     	tuser.setUserId(dtuser.getUserIdAsIntger());
     	tuser.setName(dtuser.getName());
-    	tuser.setMailAddress(dtuser.getMailAddress());
-    	tuser.setPassword(dtuser.getPassword());
-    	tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
+    	String emailHash = emailHashUtil.hash(dtuser.getMailAddress());
+    	tuser.setMailAddress(emailHash);
+    	String hash = passwordEncoder.encode(dtuser.getPassword());
+    	tuser.setPassword(hash);
+    	tuser.setDepartmentId(dtuser.getDepartmentNumber());
     	tuser.setRole(dtuser.getRole());
     	tuser.setDeleteFlg(dtuser.getDeleteFlg());
     	  

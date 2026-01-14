@@ -29,7 +29,7 @@
 <!-- 画像 -->
 <div class="text-center">
    	  <div class = "text-center">
-			 <img th:src="@{${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4" style="height:400px">
+			 <img th:src="@{'/images/' + ${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4" style="height:400px">
       </div>
 </div>
 

@@ -1,9 +1,11 @@
 package com.example.internalbooks.dto;
 
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 /**
  * 書籍情報を格納するDTO
@@ -33,10 +35,11 @@ public class DtoBookInfo {
     private String memo;
     
     // 書籍画像URL
-    // カテゴリー
-    @NotBlank(message = "書籍画像は必須です。")
     private String imageUrl;
-    
+     
+    // 書籍画像
+    private MultipartFile imageFile;
+        
     // 書籍提供者ID
     @NotBlank(message = "書籍提供者は必須です")
     private String providerId;
@@ -80,5 +83,10 @@ public class DtoBookInfo {
 
     public void setCategories(List<String> categories) {
         this.categories = categories;
-    }    
+    }
+
+	public boolean isEmpty() {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
+	}
 }

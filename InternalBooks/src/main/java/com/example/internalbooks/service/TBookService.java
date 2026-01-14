@@ -1,5 +1,6 @@
 package com.example.internalbooks.service;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +10,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TBookEntity;
@@ -17,6 +19,7 @@ import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TBookRepository;
 import com.example.internalbooks.repository.TLendingHistoryRepository;
 import com.example.internalbooks.repository.TUserRepository;
+
 
 @Service
 @Transactional
@@ -296,6 +299,31 @@ public class TBookService {
 		return borrowerId != null ? "貸出中" : "貸出可能";
 	}
 	
+    /**
+     * 書籍画像を処理するメソッド
+     */
+	public void tbookconfirm(DtoBookInfo dtbook) throws IOException{
+		
+		MultipartFile file =dtbook.getImageFile();
+		//デバック
+//		System.out.println("=== DEBUG START ===");
+//		System.out.println("file = " + file);
+//		System.out.println("file is null? " + (file == null));
+//		System.out.println("file isEmpty? " + (file != null && file.isEmpty()));
+//		System.out.println("imageService = " + imageStorageService);
+//		System.out.println("=== DEBUG END ===");
+//		System.out.println("file = " + file);
+		
+		//書籍画像の処理後dtoにセット
+		if (file != null && !file.isEmpty()) {
+			String imageUrl = imageStorageService.savetbook(file);
+			dtbook.setImageUrl(imageUrl);
+		}
+	}
+	
+	/**
+	 * 書籍登録するメソッド
+	 */
 	public TBookEntity bookEditing(DtoBookInfo dtbook) {
         //書籍提供者とユーザーIDの紐付け
 		TUserEntity user = tUserRepository.findByName(dtbook.getProviderId())
@@ -320,13 +348,13 @@ public class TBookService {
 		      Integer maxId = tBookRepository.findMaxIdByName(dtbook.getCategory());
               if(maxId != null) {
 			     tbook.setBookId(maxId + 1);
-		}
-	}	
+		    }
+	    }
+		
 		TBookEntity saved= tBookRepository.save(tbook);
 		//ユーザー名をTbookEntityの提供者名にセット
 		saved.setProviderName(user.getName());
-		
-		
+				
 		return saved;
 	}
 
