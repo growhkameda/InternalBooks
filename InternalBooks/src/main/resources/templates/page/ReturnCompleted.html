@@ -64,7 +64,7 @@
 
 	<div class="row d-flex justify-content-center mb-4">
 		<label class="col-8" for="comment">感想・コメント</label>
-		<p th:text="${tlend.review}" class="col-8 ps-2" style="background-color: #E8ECE8; height: 50px; border-radius: 10px;"></p>
+		<p th:text="${bookHistory != null ? bookHistory.review : ''}" class="col-8 ps-2" style="background-color: #E8ECE8; height: 50px; border-radius: 10px;"></p>
 	</div>
 
       <!-- ========== 一覧へ戻るボタン ========== -->
@@ -105,10 +105,12 @@
  				<td class="text-white" style="background-color: #15B2EE;">返却</td>
              </tr>
 
- 			  <tr class="comment" th:if="${tlend.review != null}">
+			 <tr id="comDisplay" class="comment" th:if="${history.review != null}">
  				<td colspan="3" class="p-0" style="background-color: #15B2EE;">
  					<p class="col-8 text-white mb-0 mx-1">感想・コメント</p>
- 					<p th:text="${tlend.review}" class="ps-1 mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;"></p>
+ 					<p id="commentText" th:text="${history.review}" class="mx-1 my-0" style="background-color: #E8ECE8; border-radius: 10px;">
+						この文章はダミーです。文字の大きさ、量、字間、行間等を確認するために入れています。
+					</p>
  				</td>
  			  </tr>
 

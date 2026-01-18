@@ -77,7 +77,6 @@ public class TLendingHistoryService {
         tlend.setReturnDate(null);
         tlend.setUserId(dtlend.getUserId());
         tlend.setReview(null);
-        // tlend.setStatus("返却済み");
 
         lendingHistoryRepository.saveAndFlush(tlend);
 
@@ -113,7 +112,6 @@ public class TLendingHistoryService {
         if (dtlend.getReview() != null && !dtlend.getReview().isEmpty()) {
             tlend.setReview(dtlend.getReview());
         }
-        // tlend.setStatus("返却済み");
 
         lendingHistoryRepository.saveAndFlush(tlend);
 
