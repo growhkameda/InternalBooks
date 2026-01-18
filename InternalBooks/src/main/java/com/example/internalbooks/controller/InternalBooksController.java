@@ -365,9 +365,7 @@ public class InternalBooksController {
             boolean isAdmin = jwtUtil.extractIsAdmin(token);
             model.addAttribute("isAdmin", isAdmin);
 
-            // TLendingHistoryEntity savedLend =
             lendingHistoryService.rentalCompleted(dtlend);
-            // DtoBookHistoryRegistration tlend = new DtoBookHistoryRegistration();
 
             DtoBookInfo bookInfo = tBookService.getBookById(bookId);
             model.addAttribute("book", bookInfo);
@@ -401,7 +399,7 @@ public class InternalBooksController {
             return error(redirectAttributes);
         }
 
-        return "page/LendingCompleted";
+        return "redirect:/page/LendingCompleted";
     }
 
     @PostMapping("/page/ReturnCompleted")
@@ -445,7 +443,6 @@ public class InternalBooksController {
             DtoBookInfo bookInfo = tBookService.getBookById(bookId);
 
             // 取得した情報を表示
-            model.addAttribute("tlend", tlend);
             model.addAttribute("book", bookInfo);
 
             // 書籍履歴を取得
@@ -471,10 +468,7 @@ public class InternalBooksController {
             }
 
             redirectAttributes.addAttribute("bookId", bookId);
-            // if (qrData != null) {
-            // redirectAttributes.addAttribute("qrData", qrData);
-            // }
-            return "page/ReturnCompleted";
+            return "redirect:/page/ReturnCompleted";
         } catch (Exception e) {
             return error(redirectAttributes);
         }
@@ -501,6 +495,23 @@ public class InternalBooksController {
             DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
             model.addAttribute("book", book);
             model.addAttribute("categories", book.getCategories());
+
+            // 書籍履歴を取得
+            List<DtoBookHistory> dtoBookHistory;
+
+            if (bookId == null && qrData != null) {
+                // QRコードから遷移した場合
+                Integer qrId = Integer.parseInt(qrData);
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            } else {
+                // 一覧から遷移した場合（基本はこちら）
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            }
+
+            model.addAttribute("bookHistoryList", dtoBookHistory);
+
+            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
+            model.addAttribute("bookHistory", latestHistory);
 
             if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
