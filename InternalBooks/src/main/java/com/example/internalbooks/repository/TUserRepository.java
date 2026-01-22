@@ -5,10 +5,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.internalbooks.dto.DtoUserDelete;
 import com.example.internalbooks.entity.TUserEntity;
 
 
@@ -36,7 +35,7 @@ public interface TUserRepository extends JpaRepository<TUserEntity, Integer> {
 	@Modifying
 	@Transactional
 	@Query("UPDATE TUserEntity u SET u.deleteFlg = 1 WHERE u.userId = :userId")
-	void DeleteUser(@Param("userId") DtoUserDelete userId);
+	void DeleteUserById(@RequestParam("userId") Integer userId) ;
 
 	
 	
