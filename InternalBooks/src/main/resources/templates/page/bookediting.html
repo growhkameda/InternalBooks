@@ -9,12 +9,12 @@
 
 <body>
 <section class = "container justify-content-center mt-5">
-	
+
     <h1 class= "text-center">書籍登録編集画面</h1>
     <br>
 
 <form th:action="@{/admin/bookingconfirmation}" method="post" th:object= "${bookdto}" enctype="multipart/form-data">
-
+       
 <!-- 書籍名 -->
 <div class ="container text-center mt-4">
   <div class = "row justify-content-center gap">
@@ -40,17 +40,18 @@
 	      	<span th:errors="*{category}" class="text-danger"></span>
 			<input type ="text" list="categoryExamples" th:field="*{category}" class="form-control bg-light">
 			<!-- カテゴリ入力方法を表示 -->
-			<datalist id="categoryExamples">
-				<option th:each="ex:${example}" th:value="${ex}"></option>
-			</datalist>
-			<small class="text-muted">候補をクリックして入力してください</small>
+			<a href="https://docs.google.com/spreadsheets/d/1vcpSbcHggVGeAxsAJPZAEhULkDmf4RXZwl_4eOHNbEw/edit?pli=1&gid=1298090862#gid=1298090862"
+				target="_blank"
+				class="mt-2 btn btn-outline-secondary btn-sm">
+				カテゴリ一覧
+			</a>
 	  </div>
   </div>
 </div>
- 
+
 <!-- 書籍提供者 -->
 <div class ="container text-center mt-4">
-  <div class ="row justify-content-center"> 
+  <div class ="row justify-content-center">
 	  <div class = "col-auto pt-2">
 			<label for = "id">書籍提供者</label>
 	  </div>
@@ -59,12 +60,12 @@
 	      	<span th:errors="*{providerId}" class="text-danger"></span>
 			<input type ="text" th:field="*{providerId}" class="form-control bg-light">
 	  </div>
-  </div>	
+  </div>
 </div>
 
 <!-- 書籍提供者コメント -->
 <div class ="container text-center mt-4">
-  <div class ="row justify-content-center"> 
+  <div class ="row justify-content-center">
 	  <div class = "col-auto pull-left pt-2">
 			<label for = "id">書籍提供者</label>
 			<br>
@@ -75,40 +76,50 @@
 	      	<span th:errors="*{providerComment}" class="text-danger"></span>
 			<textarea class="form-control bg-light" style="height:150px;" th:field="*{providerComment}"></textarea>
 	  </div>
-  </div>	
+  </div>
 </div>
 
 <!-- 書籍画像 -->
 <div class ="container text-center mt-4">
-  <div class ="row justify-content-center"> 
+  <div class ="row justify-content-center">
 	  <div class = "col-auto mt-1 pt-2 ms-3">
 			<label for = "id">書籍画像</label>
 	  </div>	   
 	     <div class = "col-7 col-md-8">
 		　 　<!-- バリデーションエラーを表示 -->
-		      <span th:errors="*{imageUrl}" class="text-danger"></span>
-			   <div class="border rounded bg-light d-flex flex-column justify-content-center align-items-center" style="height: 150px;">
-			    <!-- collapse機能でアイコンを押すことでid="imageSelectが表示 -->
-                <span class="me-2 mb-1">ファイルを選択</span>
-                <button type="button" class="btn btn-outline-promary" data-bs-toggle="collapse" data-bs-target="#imageSelect">
-			     <i class="bi bi-copy icon-hover"></i>
-                </button>		
-               <!-- id="imageSelectでdata-bs-targetと繋がる -->
-			    <div id="imageSelect" class="collapse">
-                <select class="form-select w-50 mx-auto" th:field="*{imageUrl}" id="imageSelectBox">
-	             <option value="">-- 選択してください --</option>
-	             <!-- AdminControllerで渡したリストを表示 -->
-		         <option th:each="img : ${imageFiles}" 
-		                 th:value="@{'/images/' + ${img}}" 
-		                 th:text="${img}"> 
-		         </option> 
-	            </select> 
-			    </div>
-		      </div> 
-         </div> 
+		    <span th:errors="*{imageFile}" class="text-danger me-5"></span>
+		    <!-- 外枠（中央寄せ） -->
+			<div class="border rounded bg-light d-flex justify-content-center align-items-center" style="height: 150px;">
+            <!-- 中央基準の横並び -->
+            <div class="d-flex align-items-center">
+            <!-- ファイル選択 -->
+           <div class="text-center">
+            <span class="d-block mb-1">ファイルを選択</span>
+            <input type="file"
+                     id="imageInput"
+               th:field="*{imageFile}"
+                  class="d-none" 
+                  accept="image/*"
+                onchange="document.getElementById('preview').src = window.URL.createObjectURL(this.files[0]);
+                          document.getElementById('preview').style.display='block';">
+                          
+            <label for = "imageInput" class="btn">
+			<i class="bi bi-copy icon-hover"></i>
+		    </label>	
+		    
+           </div>
+            <!--プレビュー -->
+           <div class="ms-4">
+            <img id="preview"
+                 style="max-width:120px; max-height:120px; display:none;"
+                 class="mb-2">           
+           </div>			
+          </div>	 
+        </div>
+	     </div>
     </div>
-</div>
-   
+ </div>
+ 
 <!-- 戻る -->
 <div class="container mt-5">
   <div class="row">
@@ -131,7 +142,6 @@
 	 <button type="submit" class="btn btn-primary">登録確認</button>
    </div>
 </div>
-
 </form>
 </section>
 </body>

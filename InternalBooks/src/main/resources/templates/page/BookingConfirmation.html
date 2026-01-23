@@ -8,7 +8,7 @@
 
 <body>
 <section class = "container justify-content-center mt-5">
-	
+
     <h1 class= "text-center">書籍登録確認</h1>
     <br>
 
@@ -23,7 +23,7 @@
 	  </div>
   </div>
 </div>
- 
+
  <!-- カテゴリー -->
 <div class ="container mt-4">
   <div class = "row justify-content-center">
@@ -35,22 +35,22 @@
 	  </div>
   </div>
 </div>
- 
+
 <!-- 書籍提供者 -->
  <div class ="container mt-4">
-  <div class ="row justify-content-center"> 
+  <div class ="row justify-content-center">
 	  <div class = "col-auto pt-2">
 			<label for = "id">書籍提供者</label>
 	  </div>
 	  <div class = "col-7 col-sm-8">
 			<p th:text="${bookdto.providerId}" class="form-control bg-white border-dark">
 	  </div>
-  </div>	
+  </div>
 </div>
- 
+
 <!-- コメント -->
 <div class ="container mt-4">
-  <div class ="row justify-content-center"> 
+  <div class ="row justify-content-center">
 	  <div class = "col-auto pull-left pt-2">
 			<label for = "offer">書籍提供者</label>
 			<br>
@@ -59,21 +59,21 @@
 	  <div class = "col-7 col-sm-8">
 			<p th:text="${bookdto.providerComment}" class="form-control bg-white border-dark"style="height:150px; white-space: pre-wrap;">
 	  </div>
-  </div>	
+  </div>
 </div>
- 
+
  <!-- 画像 -->
 <div class ="container text-center mt-4">
-  <div class ="row justify-content-center"> 
+  <div class ="row justify-content-center">
 	  <div class = "col-auto mt-1 pt-2 ms-3">
 			<label for = "id">書籍画像</label>
 	  </div>
 	  <div class = "col-7 col-md-8 text-start">
-			 <img th:src="@{${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4 " style="height:200px">
+			 <img th:src="@{'/images/' + ${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4 " style="height:200px">
       </div>
   </div>
-</div>	
-  
+</div>
+
 <!-- 登録画面へ戻る -->
 <form th:action="@{/admin/dbback}"  method="post" th:object="${bookdto}" enctype="multipart/form-data"> 
 		      
@@ -106,7 +106,7 @@
  <div class ="container text-center mt-4">
 	  <div class = "col-auto">
 	 <button type="submit" class="btn btn-success">登録</button>
-	 
+
 	      <!-- hiddenで値を保持 -->
           <input type="hidden" th:field="*{title}">
           <input type="hidden" th:field="*{category}">

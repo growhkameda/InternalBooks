@@ -19,19 +19,20 @@ import software.amazon.awssdk.services.s3.S3Client;
  */
 @Configuration
 public class ImageStorageConfig {
-    
+
     @Value("${app.image.storage.s3.region:ap-northeast-1}")
     private String s3Region;
-    
+
     @Value("${app.image.storage.local.path:src/main/resources/static/images}")
+
     private String localImagePath;
-    
+
     @Value("${app.image.storage.s3.bucket-name:}")
     private String s3BucketName;
-    
+
     @Value("${app.image.storage.s3.prefix:}")
     private String s3Prefix;
-    
+
     /**
      * ローカル環境用のImageStorageService Bean
      * app.image.storage.type=local の場合に有効
@@ -40,9 +41,10 @@ public class ImageStorageConfig {
     @Primary
     @ConditionalOnProperty(name = "app.image.storage.type", havingValue = "local", matchIfMissing = true)
     public ImageStorageService localImageStorageService() {
+    	System.out.println("imageLocal bean created");
         return new LocalImageStorageService(localImagePath);
     }
-    
+
     /**
      * AWS S3環境用のImageStorageService Bean
      * app.image.storage.type=s3 の場合に有効
@@ -53,7 +55,7 @@ public class ImageStorageConfig {
     public ImageStorageService s3ImageStorageService(S3Client s3Client) {
         return new S3ImageStorageService(s3Client, s3BucketName, s3Prefix);
     }
-    
+
     /**
      * AWS S3クライアントのBean
      * S3ImageStorageServiceが使用される場合のみ必要

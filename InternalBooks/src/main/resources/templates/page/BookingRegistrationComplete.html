@@ -9,7 +9,7 @@
 
 <body>
 <section class = "container justify-content-center mt-5">
-	
+
     <h1 class= "text-center">図書館システム</h1>
     <br>
     <h3 class= "text-center mt-4">書籍登録完了</h3>
@@ -29,7 +29,7 @@
 <!-- 画像 -->
 <div class="text-center">
    	  <div class = "text-center">
-			 <img th:src="@{${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4" style="height:400px">
+			 <img th:src="@{'/images/' + ${bookdto.imageUrl}}" alt="アップロード画像" class="img-fluid mt-4" style="height:400px">
       </div>
 </div>
 
@@ -47,7 +47,7 @@
 
 <!-- 書籍提供者 -->
 <div class ="container mt-4">
-  <div class ="row justify-content-center"> 
+  <div class ="row justify-content-center">
 	  <div class = "col-9 d-flex align-items-center">
 			<label for = "booking" class="form-label text-start">書籍提供者:</label>
 			<p class="ms-2 form-label text-start" th:text="${dbook.providerId}"></p>
@@ -57,12 +57,12 @@
 
 <!-- コメント -->
 <div class ="container">
-  <div class ="row justify-content-center"> 
+  <div class ="row justify-content-center">
 	    <div class = "col-9 pull-left ">
             <p th:text="${dbook.providerComment}" class="form-control bg-light"style="height:150px; white-space: pre-wrap;">
 	    </div>
 	  </div>
-  </div>	
+  </div>
 
 <!-- Topへ -->
  <div class="container mt-5">
