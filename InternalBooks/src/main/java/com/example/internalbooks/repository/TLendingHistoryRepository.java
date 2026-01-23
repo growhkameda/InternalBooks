@@ -1,6 +1,7 @@
 package com.example.internalbooks.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -20,9 +21,20 @@ public interface TLendingHistoryRepository extends JpaRepository<TLendingHistory
 
     // ユーザーごとの履歴
     List<TLendingHistoryEntity> findByUserId(Integer userId);
-    
+
     // bookId と status で検索するメソッド
+//    Optional<TLendingHistoryEntity> findByBookIdAndReturnDateIsNull(Integer bookId);
+//    Optional<TLendingHistoryEntity> findByBookIdAndUserId(Integer bookId, Integer userId);
 //    Optional<TLendingHistoryEntity> findByBookIdAndStatus(Integer bookId, String status);
+
+    @Query("SELECT t FROM TLendingHistoryEntity t " +
+    	       "WHERE t.bookId = :bookId " +
+    	       "AND t.userId = :userId " +
+    	       "AND (t.returnDate IS NULL OR t.review IS NULL)")
+    	Optional<TLendingHistoryEntity> findActiveLendingHistory(
+    	        @Param("bookId") Integer bookId,
+    	        @Param("userId") Integer userId);
+
 
     // 必要なら複数件返すバージョン
 //    List<TLendingHistoryEntity> findAllByBookIdAndStatus(Integer bookId, String status);
@@ -34,5 +46,5 @@ public interface TLendingHistoryRepository extends JpaRepository<TLendingHistory
     @Modifying
     @Transactional
     void deleteByBookId(Integer bookId);
-    
+
 }

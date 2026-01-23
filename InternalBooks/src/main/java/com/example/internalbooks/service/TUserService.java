@@ -21,7 +21,7 @@ import com.example.internalbooks.repository.MDepartmentRepository;
  * MUserテーブルに対してどんな操作をしていくかをMUserリポジトリを介して制御していくサービス
  */
 public class TUserService implements UserDetailsService {
- 
+
     //DI用フィールド
     private final TUserRepository tUserRepository;
     private final MDepartmentRepository mDepartmentRepository;
@@ -35,9 +35,7 @@ public class TUserService implements UserDetailsService {
         this.passwordEncoder= passwordEncoder;
         this.emailHashUtil= emailHashUtil;
     }
-    
-    
-    
+
     @Override
     /**
      * ユーザ名(メールアドレス)からTUser情報を取得するメソッド
@@ -51,7 +49,7 @@ public class TUserService implements UserDetailsService {
         }
         return user;  // LoginUser を返す
     }
-    
+
     /**
      * ユーザIDからTUser情報を取得するメソッド
      * @param userId ユーザID
@@ -80,13 +78,13 @@ public class TUserService implements UserDetailsService {
         if (departmentId == null) {
             return "未設定";
         }
-        
+
         try {
             // リポジトリを使用してデータベースから部門名を取得
             Optional<String> departmentName = mDepartmentRepository.findNameById(departmentId);
-            
+
             return departmentName.orElse("不明");
-            
+
         } catch (NumberFormatException e) {
             // 数値に変換できない場合
             return "不明";
@@ -94,9 +92,8 @@ public class TUserService implements UserDetailsService {
             // その他のエラーの場合
             return "Error";
         }
-        
+    }
 
-    }    
 
     /**
      * ユーザーの所属課を取得する
@@ -115,7 +112,7 @@ public class TUserService implements UserDetailsService {
         return users;
     }
     
-     /**
+    /**
      * ユーザー情報をDBへ保存するメソッド
      */
     public TUserEntity userRegistration(DtoUserRegistration dtuser) {
@@ -129,11 +126,11 @@ public class TUserService implements UserDetailsService {
     	tuser.setDepartmentId(dtuser.getDepartmentNumber());
     	tuser.setRole(dtuser.getRole());
     	tuser.setDeleteFlg(dtuser.getDeleteFlg());
-    	  
+
     	tUserRepository.save(tuser);
-    	  
+
     	return tuser;
-    	  
+
     }
-      
+
 }

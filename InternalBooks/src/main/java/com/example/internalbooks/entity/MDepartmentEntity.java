@@ -14,7 +14,7 @@ import lombok.Data;
 @Table(name = "m_department")
 /**
  * MDepartmentテーブルからデータを受け取るためのEntity
- */ 
+ */
 public class MDepartmentEntity {
     @Id
     @Column(name = Const.ID)
@@ -22,7 +22,7 @@ public class MDepartmentEntity {
 
     @Column(name = Const.NAME)
     private String name;
-    
+
     @Column(name = Const.DETAIL)
     private String detail;
 
