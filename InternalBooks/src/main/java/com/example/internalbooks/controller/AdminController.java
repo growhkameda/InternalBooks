@@ -1,9 +1,11 @@
 package com.example.internalbooks.controller;
 
+
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -235,7 +237,9 @@ public class AdminController extends InternalBooksController {
 			if (!isAdmin) {
 				return adminPermissionError(redirectAttributes);
 			}
-
+			
+			tUserService.deleteUser(userId);
+			
 			// 各ユーザーの所属課を取得してモデルに追加する
 			TUserEntity userWithDepartmentName = tUserService.getUserWithDepartmentNameById(userId);
 			// 各ユーザーの情報を取得してモデルに追加する
