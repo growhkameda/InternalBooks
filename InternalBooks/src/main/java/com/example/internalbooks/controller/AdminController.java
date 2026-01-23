@@ -146,7 +146,7 @@ public class AdminController extends InternalBooksController {
     @GetMapping("/userconfirmationscreen")
     public String userConfirmationScreen(
     		Integer userId,
-    		Integer departmentId,
+    		@ModelAttribute("userDto") DtoUserConfirmationScreen dtouserconfirmation,
     		HttpSession session, 
             Model model, 
             RedirectAttributes redirectAttributes) {
@@ -162,12 +162,12 @@ public class AdminController extends InternalBooksController {
             }
 
             // ★ userId からユーザー情報を取得（あなたのサービスに合わせて変更）
-            DtoUserConfirmationScreen dto =tUserService.userConfirmationDto(userId, departmentId);
-            String departmentName = tUserService.getDepartmentNameById(departmentId);
+            TUserEntity dto =tUserService.userConfirmationDto(userId);
+            DtouserConfirmation departmentname = tUserService.getUserById(dtouserconfirmation.departmentId);
             		
             // ★ モデルにセット
             model.addAttribute("userConfirmDto", dto);
-            model.addAttribute("departmentName", departmentName);
+            model.addAttribute("departmentName", departmentname);
                      
             logger.info("UserConfirmationScreenにアクセスされました, userId={}", userId);
 

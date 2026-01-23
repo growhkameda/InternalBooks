@@ -153,17 +153,15 @@ public class TUserService implements UserDetailsService {
     /*
      *　編集されたユーザー情報をuserIdに紐づけて次のページに渡す
      */
-    public DtoUserConfirmationScreen userConfirmationDto(Integer userId, Integer departmentId) {
-    	//userId に該当するユーザーが DB にいれば取得し、いなければ即エラーにする。
-        TUserEntity entity = tUserRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("ユーザーが存在しません: userId=" + userId));
-
-        DtoUserConfirmationScreen dto = new DtoUserConfirmationScreen();
+    public TUserEntity userConfirmationDto(DtoUserConfirmationScreen dtouserconfirmation) {
+    	TUserEntity tuser = new TUserEntity();
   
-        dto.setUserId(entity.getUserId());
-        dto.setName(entity.getName());
-        dto.setDepartmentId(entity.getDepartmentId());
-        return dto;
+		// 各ユーザーの所属課を取得
+		if (tuser != null) {
+			String departmentName = getDepartmentNameById(tuser.getDepartmentId());
+			tuser.setDepartmentName(departmentName);
+		}
+        return tuser;
     }
     
     /*
