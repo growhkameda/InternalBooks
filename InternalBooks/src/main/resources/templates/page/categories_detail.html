@@ -10,7 +10,7 @@
   <section th:fragment="section">
 
     <style>
-    
+
       .fixed-page-width {
         max-width: 600px;
         margin: 0 auto;
@@ -54,7 +54,7 @@
 				「searchresult.html」飛ぶ際に、クリックした本のbookIdを渡す-->
 			<a th:each="bookId : ${bookIdList}"
 			th:href="@{'/page/SearchResult?bookid=' + ${bookId}}"
-			class="col-md-6 mb-6 btn"
+			class="col-md-4 mb-4 btn"
 			style="text-decoration: none;">
 				<img th:src="@{'/images/' + ${bookId} + '.png'}"
 				alt="Book Image"
@@ -67,10 +67,10 @@
 		</div>
 
 		<div class="pagination-buttons fixed-page-width">
-			
+
 			<!--左側に「← 前のページ」ボタンを表示-->
 				<!--左側に表示するように指定-->
-				<div class="text-start">	
+				<div class="text-start">
 					<div th:if="${currentPage > 0}">
 					<a th:href="@{/page/categories_detail(category=${category}, page=${currentPage - 1})}"
 					class="btn btn-outline-primary">
@@ -78,7 +78,7 @@
 					</a>
 					</div>
 				</div>
-		
+
 			<!--右側に「次のページ →」ボタンを表示-->
 			<div th:if="${currentPage + 1 < totalPages}">
 				<!--右側に表示するように指定-->
@@ -89,7 +89,7 @@
 					</a>
 				</div>
 			</div>
-			
+
 		</div>
 
 

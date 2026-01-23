@@ -8,45 +8,104 @@
 <body>
   <section class="d-flex justify-content-center align-items-start py-5">
     <div class="container d-flex justify-content-center align-items-start">
-      <div class="w-100" style="max-width: 400px;">
+      <div class="w-100" style="max-width: 600px;">
 
+        <style>
+          .pagination-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+          }
+
+          .pagination-buttons .btn {
+            font-size: 16px;
+          }
+        </style>
 
         <!-- ================== ページメインタイトル ================== -->
         <h1 class="fw-bold mt-5 display-3 mb-5 text-center">書籍削除</h1>
 
-
         <!-- ========== カテゴリー選択ボタン ========== -->
+        <div class="container text-center fixed-page-width"
+            style="margin-bottom: 60px; font-size: 30px;">
+          カテゴリー：<span th:text="${category}">カテゴリー名</span>
+        </div>
+
+        <!-- ========== 書籍削除成功/失敗メッセージ表示 ========== -->
+        <div th:if="${message != null}" class="h-25 border bg-body-secondary d-flex align-items-center justify-content-center">
+          <p class="mt-1 ms-3 mb-2 fw-normal h6" th:text="${message}"></p>
+        </div>
+
+        <!-- ========== カテゴリー選択へ戻るボタン ========== -->
         <div class="container fixed-page-width">
           <div class="row">
-            <a th:href="@{/page/categories}" class="col-auto btn"
-              style="margin-bottom: 10px; font-size: 16px; text-align: left;">
+            <a th:href="@{/admin/bookdeletingcategories}" class="col-auto btn" style="margin-bottom: 10px; font-size: 16px; text-align: left;">
               カテゴリー選択へ戻る↵
             </a>
           </div>
         </div>
 
-        <div class="container fixed-page-width">
-          <div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
-            <a th:each="bookId : ${bookIdList}" th:href="@{'/admin/bookdeletingconfirmation?bookid=' + ${bookId}}"
-              class="col-md-6 mb-6 btn" style="text-decoration: none;">
-              <img th:src="@{'/images/' + ${bookId} + '.png'}" alt="Book Image" class="img-fluid fixed-size-img" />
-            </a>
-          </div>
+    <div class="container fixed-page-width">
+      <div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
 
-          <div th:if="${#lists.isEmpty(bookIdList)}">
-            <p>該当する本が見つかりませんでした。</p>
-          </div>
+        <!-- 各書籍をループで表示 -->
+        <div th:each="book : ${bookList}" class="col-md-6 mb-6">
 
-          <div class="pagination-buttons fixed-page-width">
-            <button id="prev-button" class="btn btn-outline-primary">← 前のページ</button>
-            <button id="next-button" class="btn btn-outline-primary">次のページ →</button>
+          <!-- 貸出可能な書籍：クリック可能 -->
+          <a th:if="${book.status == '貸出可能'}"
+             th:href="@{/admin/bookdeletingconfirmation(bookId=${book.bookId})}"
+             class="btn d-block mb-3 p-0"
+             style="text-decoration: none;">
+            <img th:src="@{'/images/' + ${book.bookId} + '.png'}"
+                 alt="Book Image"
+                 class="img-fluid fixed-size-img" />
+          </a>
+
+          <!-- 貸出中の書籍：クリック不可、グレーマスク -->
+          <div th:if="${book.status == '貸出中'}"
+               class="mb-3 d-inline-block"
+               style="position: relative; cursor: not-allowed;">
+            <img th:src="@{'/images/' + ${book.bookId} + '.png'}"
+                 alt="Book Image (貸出中)"
+                 class="img-fluid fixed-size-img"
+                 style="opacity: 0.5; filter: grayscale(100%) brightness(0.6);" />
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                        background: rgba(0, 0, 0, 0.75); color: white; padding: 10px 20px; 
+                        border-radius: 5px; font-weight: bold; font-size: 16px; white-space: nowrap;">
+              貸出中
+            </div>
           </div>
 
         </div>
-
       </div>
+
+      <div th:if="${#lists.isEmpty(bookList)}">
+        <p>該当する本が見つかりませんでした。</p>
+      </div>
+
+      <div class="pagination-buttons fixed-page-width">
+        <!--左側に「← 前のページ」ボタンを表示-->
+        <div class="text-start">
+          <div th:if="${currentPage > 0}">
+            <a th:href="@{/admin/bookdeleting(category=${category}, page=${currentPage - 1})}"
+               class="btn btn-outline-primary">
+              ← 前のページ
+            </a>
+          </div>
+        </div>
+
+        <!--右側に「次のページ →」ボタンを表示-->
+        <div th:if="${currentPage + 1 < totalPages}">
+          <div class="text-end">
+            <a th:href="@{/admin/bookdeleting(category=${category}, page=${currentPage + 1})}"
+               class="btn btn-outline-primary">
+              次のページ →
+            </a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </section>
 </body>
-
 </html>
