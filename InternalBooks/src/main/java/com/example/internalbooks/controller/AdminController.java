@@ -31,11 +31,6 @@ import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.utils.JwtUtil;
-import com.example.internalbooks.service.TUserService;
-import com.example.internalbooks.utils.JwtUtil;
-
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 
 /**
  * 管理者専用機能のコントローラー
