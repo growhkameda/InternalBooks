@@ -50,6 +50,7 @@
 	</div>
   </div>
 </div>
+
   <div class ="input-group mt-5 gap-1">
     <div class ="row justify-content-start"> 
 	  <div class = "col-12 ms-lg-5 ps-lg-5">
@@ -62,16 +63,15 @@
     </div>
   </div>
   
+
    <!--同じ行に編集ボタンと削除ボタンを配置し、左右と真ん中にそれぞれスペースを置く-->
    <div class ="container text-center mt-4">
-     <div class ="row">
-       <p class = "col-1"></p>
-	   <a th:href="@{/admin/useredit(userId=${userConfirmDto.userId})}"
-	      class="btn btn-success col-4">編集</a>
-	   <p class = "col-2"></p>
-	   <a th:href="@{/admin/userdeleteconfirmation(userId=${userConfirmDto.userId})}"
-		  class="btn btn-danger col-4">削除</a>
-	   <p class = "col-1"></p>
+	  <div class ="row">
+		 <h2 class = "col-1"></h2>
+	 　　<a href="/page/userEdit" class="btn btn-success ms-6 col-4">編集</a>
+	     <h2 class = "col-2"></h2>
+		 <a href="/page/userDeleteConfirmation" class="btn btn-danger ms-6 col-4">削除</a>
+		 <h2 class = "col-1"></h2>
 	  </div>
     </div>
 </form>
