@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.internalbooks.dto.DtoUserConfirmationScreen;
 import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
@@ -153,8 +152,9 @@ public class TUserService implements UserDetailsService {
     /*
      *　編集されたユーザー情報をuserIdに紐づけて次のページに渡す
      */
-    public TUserEntity userConfirmationDto(DtoUserConfirmationScreen dtouserconfirmation) {
+    public TUserEntity userConfirmationDto(Integer userId) {
     	TUserEntity tuser = new TUserEntity();
+    	tuser = getUserById(userId);
   
 		// 各ユーザーの所属課を取得
 		if (tuser != null) {

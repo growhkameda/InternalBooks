@@ -163,12 +163,10 @@ public class AdminController extends InternalBooksController {
 
             // ★ userId からユーザー情報を取得（あなたのサービスに合わせて変更）
             TUserEntity dto =tUserService.userConfirmationDto(userId);
-            DtouserConfirmation departmentname = tUserService.getUserById(dtouserconfirmation.departmentId);
-            		
+           
             // ★ モデルにセット
             model.addAttribute("userConfirmDto", dto);
-            model.addAttribute("departmentName", departmentname);
-                     
+       
             logger.info("UserConfirmationScreenにアクセスされました, userId={}", userId);
 
             model.addAttribute("isAdmin", isAdmin);
