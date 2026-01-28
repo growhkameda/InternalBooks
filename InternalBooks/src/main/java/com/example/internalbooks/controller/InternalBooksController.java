@@ -25,6 +25,8 @@ import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
+// 追記
+import com.example.internalbooks.dto.DtoTestForm;
 
 import io.micrometer.common.util.StringUtils;
 
@@ -123,6 +125,25 @@ public class InternalBooksController {
     		return error(redirectAttributes);
     	}
 
+    }
+
+    /**
+     * yamawaki-test.html
+     */
+    @GetMapping("/page/yamawaki-test")
+    public String testForm(Model model) {
+        // 箱
+        DtoTestForm form = new DtoTestForm();
+
+        // 値セット
+        form.setYaName("山脇");
+        form.setYaEmail("test@example.com");
+        form.setYaAddress("愛知県");
+        form.setYaPhoneNumber("123-4567-8900");
+
+        // 画面フォームへお届け
+        model.addAttribute("dtoTestForm", form);
+        return "page/yamawaki-test";
     }
 
     /**
