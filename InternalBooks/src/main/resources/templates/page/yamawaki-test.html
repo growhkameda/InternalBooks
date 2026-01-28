@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>test-title</title>
+</head>
+<body>
+    <section class="min-vh-100 d-flex justify-content-center align-items-center">
+        <div class="card shadow-sm p-4" style="width: 800px;">
+            <div class="container">
+                <div class="row mb-4 mt-4">
+                    <h2 class="text-center">入力フォーム</h2>
+                </div>
+            </div>
+
+            <form th:object="${dtoTestForm}">
+                <div class="row justify-content-center p-4 m-0">
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label mb-3">
+                                名前
+                                <input class="form-control" type="text" name="yaName" th:field="*{yaName}">
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label mb-3">
+                                メールアドレス
+                                <input class="form-control" type="email" name="yaEmail" th:field="*{yaEmail}">
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label mb-3">
+                                住所
+                                <input class="form-control" type="text" name="yaAddress" th:field="*{yaAddress}">
+                            </label>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label mb-3">
+                                電話番号
+                                <input class="form-control" type="tel" name="yaPhoneNumber" th:field="*{yaPhoneNumber}">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button">
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary mb-4" type="submit">送信</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</body>
+</html>
