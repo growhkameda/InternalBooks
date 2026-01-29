@@ -71,7 +71,6 @@ public class AdminController extends InternalBooksController {
             return error(redirectAttributes);
         }
     }
-
     /**
      * ユーザー確認画面
      */
@@ -86,16 +85,16 @@ public class AdminController extends InternalBooksController {
                 redirectAttributes.addFlashAttribute("error", "ユーザーIDが指定されていません");
                 return "redirect:/admin/usersearch";
             }
-
-            // 所属課名込みで取得するあなたのメソッドを採用
-            TUserEntity userDto = tUserService.getUserWithDepartmentNameById(userId);
-            model.addAttribute("userConfirmDto", userDto);
+            TUserEntity user = tUserService.getUserWithDepartmentNameById(userId);
+            model.addAttribute("userDto", user); 
+            
             model.addAttribute("isAdmin", isAdmin);
 
             logger.info("ユーザー確認画面表示: userId={}", userId);
-            return "page/userconfirmationscreen";
+            return "page/userConfirmationScreen";
+            
         } catch (Exception e) {
-            logger.error("userconfirmationscreenエラー", e);
+            logger.error("userConfirmationScreenエラー", e);
             return error(redirectAttributes);
         }
     }
@@ -238,8 +237,6 @@ public class AdminController extends InternalBooksController {
             return error(redirectAttributes);
         }
     }
-
-    // --- その他、書籍関連や検索機能は既存のものを維持 ---
     
     @GetMapping("/usersearch")
     public String UserSearch(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
