@@ -18,41 +18,50 @@
 	  <div class="h-25 border bg-body-secondary d-flex align-items-center">
 		<p class="mt-1 ms-3 fw-normal h6" >以下の社員を削除していいでしょうか？</p>
 	  </div>
+    
+	  <form>    
 
-	  <form>
+        <!-- 社員ID -->
 	  	<div class ="container mt-4">
 	  	  <div class = "row justify-content-center">
 	  		  <div class = "col-8 pt-2">
-	  		      	<p for = "id" class="form-label text-start">社員ID</p>
+
+                    <p class="form-label text-start">社員ID</p>
 	  				<div class="rounded-2 h-75 border border-black">
-	  				  <p class="mt-3 ms-2 fw-normal h6">0001</p>
+                        <p class="mt-3 ms-2 fw-normal" th:text="${users.userId}"></p>
 	  			    </div>
 	  		  </div>
 	  	  </div>
 	  	</div>
 
+        <!-- 名前 -->
 	  <div class ="container mt-4">
 	    <div class = "row justify-content-center">
 	  	  <div class = "col-8 pt-2">
-	  	      	<p for = "id" class="form-label text-start">名前</p>
+
+                    <p class="form-label text-start">名前</p>
 	  			<div class="rounded-2 h-75 border border-black">
-	  			  <p class="mt-3 ms-2 fw-normal h6">武藤 秀平</p>
+                        <p class="mt-3 ms-2 fw-normal" th:text="${users.name}"></p>
 	  		    </div>
 	  	  </div>
 	    </div>
 	  </div>
 
+        <!-- 所属課 -->
 	  <div class ="container mt-4">
 	    <div class = "row justify-content-center">
 	  	  <div class = "col-8 pt-2">
-	  	      	<p for = "id" class="form-label text-start">所属課</p>
+
+                    <p class="form-label text-start">所属課</p>
 	  			<div class="rounded-2 h-75 border border-black">
-	  			  <p class="mt-3 ms-2 fw-normal h6">開発課</p>
+                        <p class="mt-3 ms-2 fw-normal"
+                           th:text="${userdepart.departmentName}"></p>
 	  		    </div>
 	  	  </div>
 	    </div>
 	  </div>
-
+	  
+        <!-- 戻るボタン -->
 	  <div class ="input-group mt-5 gap-1">
 	     <div class ="row justify-content-start">
 	     <div class = "col-12 ms-lg-5 ps-lg-5">
@@ -64,10 +73,12 @@
 	   　</div>
 	   </div>
 
+        <!-- 削除ボタン -->
  <div class ="container text-center mt-5">
 	  <div class = "col-12">
 		<p class = "col-4"></p>
-	    <a href="/admin/userdeletecomplete" class="btn btn-danger col-4">削除</a>
+				<a th:href="@{/admin/userdeletecomplete(userId=${users.userId})}" 
+				   class="btn btn-danger col-4">削除</a>
 		<p class = "col-4"></p>
 	  </div>
 </div>
