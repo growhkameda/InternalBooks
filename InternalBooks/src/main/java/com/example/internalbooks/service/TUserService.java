@@ -6,11 +6,15 @@ import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.example.internalbooks.common.Const;
+import com.example.internalbooks.config.PasswordEncoderConfig;
 import com.example.internalbooks.dto.DtoUserRegistration;
+import com.example.internalbooks.entity.MDepartmentEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.MDepartmentRepository;
 import com.example.internalbooks.repository.TUserRepository;
@@ -25,11 +29,13 @@ public class TUserService implements UserDetailsService {
 	// DI用フィールド
 	private final TUserRepository tUserRepository;
 	private final MDepartmentRepository mDepartmentRepository;
-
+	private final PasswordEncoder passwordEncoder;
+	
 	// コンストラクタインジェクション
-	public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository) {
+	public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository,PasswordEncoder passwordEncoder) {
 		this.tUserRepository = tUserRepository;
 		this.mDepartmentRepository = mDepartmentRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -171,6 +177,35 @@ public class TUserService implements UserDetailsService {
 
 	}
 
+	/*
+	 * ユーザー編集をDBへ保存するメソッド
+	 */
+	public void updateUser(TUserEntity userDto, String currentPwd, String newPwd) {
+
+		TUserEntity existingUser = getUserById(userDto.getUserId());
+
+		if (existingUser != null) {
+			// パスワードが両方に値が入っている場合のみ、パスワードの更新を行う
+			if (StringUtils.hasText(currentPwd) && StringUtils.hasText(newPwd)) {
+
+				if (passwordEncoder.matches(currentPwd, existingUser.getPassword())) {
+					String hashed = passwordEncoder.encode(newPwd);
+					existingUser.setPassword(hashed);
+				} else {
+					
+					throw new IllegalArgumentException("現在のパスワードが正しくありません");
+				}
+			}
+
+			// パスワード以外の項目は常に上書き（ここは変更なしでOK）
+			existingUser.setName(userDto.getName());
+			existingUser.setMailAddress(userDto.getMailAddress());
+			existingUser.setDepartmentId(userDto.getDepartmentId());
+
+			tUserRepository.save(existingUser);
+		}
+	}
+
 	/**
 	 * ユーザー削除
 	 */
@@ -178,6 +213,15 @@ public class TUserService implements UserDetailsService {
 
 		tUserRepository.DeleteUserById(userId);
 
+	}
+	
+	/**
+	 * 所属課の全リストを取得する
+	 * @return 課エンティティのリスト
+	 */
+	public List<MDepartmentEntity> getAllDepartments() {
+	    // repositoryのfindAll()を使うだけで、テーブルの全レコードが取れます
+	    return mDepartmentRepository.findAll();
 	}
 
 }

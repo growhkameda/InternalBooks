@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoUserRegistration;
+import com.example.internalbooks.entity.MDepartmentEntity;
 import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.service.AuthService;
@@ -37,7 +39,7 @@ import com.example.internalbooks.utils.JwtUtil;
  */
 @Controller
 @RequestMapping("/admin")
-@SessionAttributes({ "userdto, bookdto" })
+@SessionAttributes({ "userDto", "bookdto" })
 public class AdminController extends InternalBooksController {
 
     // ロガー
@@ -120,43 +122,33 @@ public class AdminController extends InternalBooksController {
         }
     }
 
-    /**
-     * ユーザー確認画面に遷移
-     */
-    @GetMapping("/userconfirmationscreen")
-    public String userConfirmationScreen(@RequestParam("userId") Integer userId, HttpSession session, Model model,
-            RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            // 管理者権限の検証
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
+	/**
+	 * ユーザー確認画面に遷移
+	 */
+	@GetMapping("/userconfirmationscreen")
+	public String userConfirmationScreen(@RequestParam("userId") Integer userId, HttpSession session, Model model,
+			RedirectAttributes redirectAttributes) {
+		try {
+			boolean isAdmin = validateTokenAndCheckAdmin(session);
+			if (!isAdmin) {
+				return adminPermissionError(redirectAttributes);
+			}
 
-            // tokenの検証とユーザーIDの取得
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
+			TUserEntity userDto = tUserService.getUserWithDepartmentNameById(userId);
 
-            // 各ユーザーの所属課を取得してモデルに追加する
-            TUserEntity userWithDepartmentName = tUserService.getUserWithDepartmentNameById(userId);
-            // 各ユーザーの情報を取得してモデルに追加する
-            TUserEntity user = tUserService.getUserById(userId);
+			model.addAttribute("userDto", userDto);
+			model.addAttribute("isAdmin", isAdmin);
 
-            // 所属課
-            model.addAttribute("userdepart", userWithDepartmentName);
-            // ユーザー情報
-            model.addAttribute("users", user);
-            // ログインユーザー情報を取得してモデルに追加する
-            model.addAttribute("isAdmin", isAdmin);
+			// ログを出力
+			logger.info("ユーザーID: {} の確認画面にアクセスされました", userId);
 
-            // ログを出力
-            logger.info("userconfirmationscreenにアクセスされました");
+			return "page/userconfirmationscreen";
 
-            return "page/userconfirmationscreen";
-        } catch (Exception e) {
-            logger.error("userconfirmationscreenでエラーが発生しました", e);
-            return error(redirectAttributes);
-        }
-    }
+		} catch (Exception e) {
+			logger.error("userconfirmationscreenでエラーが発生しました", e);
+			return error(redirectAttributes);
+		}
+	}
 
     /**
      * ユーザー削除確認ページに遷移
@@ -197,26 +189,136 @@ public class AdminController extends InternalBooksController {
             return error(redirectAttributes);
         }
     }
+    
+	/**
+	 * ユーザー編集ページに遷移
+	 */
+	@GetMapping("/useredit")
+	public String userEdit(@RequestParam("userId") Integer userId, HttpSession session, Model model,
+			RedirectAttributes redirectAttributes) {
+		try {
+			boolean isAdmin = validateTokenAndCheckAdmin(session);
+			if (!isAdmin) {
+				return adminPermissionError(redirectAttributes);
+			}
 
-    /**
-     * ユーザー編集ページに遷移
-     */
-    @GetMapping("/useredit")
-    public String userEdit(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-        // トークンと管理者権限の検証
-        try {
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) {
-                return adminPermissionError(redirectAttributes);
-            }
+			TUserEntity user = tUserService.getUserById(userId);
 
-            model.addAttribute("isAdmin", isAdmin);
+			user.setDepartmentName(tUserService.getDepartmentNameById(user.getDepartmentId()));
 
-            return "page/useredit";
-        } catch (Exception e) {
+			model.addAttribute("userDto", user);
+
+			model.addAttribute("isAdmin", isAdmin);
+			return "page/useredit";
+		} catch (Exception e) {
+            logger.error("usereditでエラーが発生しました", e);
             return error(redirectAttributes);
-        }
-    }
+		} 
+	}
+	
+	/*
+	 * departmentListを作成する
+	 */
+	@ModelAttribute("mDepartmentList")
+	public List<MDepartmentEntity> getDepartmentList() {
+	    return tUserService.getAllDepartments(); 
+	}
+
+	/**
+	 * ユーザー編集確認ページに遷移
+	 */
+	@PostMapping("/usereditconfirmation")
+	public String userEditConfirmation(@Valid @ModelAttribute("userDto") TUserEntity userDto,
+			BindingResult bindingResult, @RequestParam(name = "currentPassword", required = false) String currentPwd,
+			@RequestParam(name = "newPassword", required = false) String newPwd, HttpSession session, Model model,
+			RedirectAttributes redirectAttributes) {
+
+		try {
+			boolean isAdmin = validateTokenAndCheckAdmin(session);
+			if (!isAdmin) {
+				return adminPermissionError(redirectAttributes);
+			}
+
+			//バリデーションチェック
+			if (bindingResult.hasErrors()) {
+				for (FieldError error : bindingResult.getFieldErrors()) {
+					logger.warn("バリデーションエラー発生 - 項目: [{}], 内容: [{}]", error.getField(), error.getDefaultMessage());
+				}
+				userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentId()));
+		        model.addAttribute("errorMessage", "入力チェックエラー");
+				return "page/useredit";
+			}
+
+			// 片方だけ入力されている場合エラー
+			if ( (StringUtils.hasText(currentPwd) && !StringUtils.hasText(newPwd))
+					|| (!StringUtils.hasText(currentPwd) && StringUtils.hasText(newPwd)) ) {
+				userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentId()));
+
+		        model.addAttribute("errorMessage", "変更する場合は両方のパスワードを入力してください");
+				return "page/useredit";
+			}
+
+			// セッションに残っていた場合に備えて、削除処理を行う
+			session.removeAttribute("currentPwd");
+			session.removeAttribute("newPwd");
+			session.setAttribute("currentPwd", currentPwd);
+			session.setAttribute("newPwd", newPwd);
+
+			userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentId()));
+			model.addAttribute("userDto", userDto);
+
+			model.addAttribute("isAdmin", isAdmin);
+			return "page/usereditconfirmation";
+			
+		} catch (Exception e) {
+			logger.error("usereditconfirmationでエラーが発生しました", e);
+			return error(redirectAttributes);
+		}
+	}
+
+	/**
+	 * ユーザー編集完了処理
+	 */
+	@PostMapping("/usereditcomplete")
+	public String userEditComplete(@ModelAttribute("userDto") TUserEntity userDto, HttpSession session, Model model,
+			RedirectAttributes redirectAttributes) {
+
+		try {
+			boolean isAdmin = validateTokenAndCheckAdmin(session);
+			if (!isAdmin) {
+				return adminPermissionError(redirectAttributes);
+			}
+
+			String currentPwd = (String) session.getAttribute("currentPwd");
+			String newPwd = (String) session.getAttribute("newPwd");
+
+			tUserService.updateUser(userDto, currentPwd, newPwd);
+
+			userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentId()));
+			model.addAttribute("userDto", userDto);
+
+			return "page/usereditcomplete";
+		
+		} catch (IllegalArgumentException e) {
+	        // パスワード間違いの時はここに入る
+	        logger.warn("更新失敗: {}", e.getMessage());
+	        
+	        model.addAttribute("errorMessage", e.getMessage());
+	        
+	        // usereditに遷移する準備
+	        userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentId()));
+	        
+	        return "page/useredit";
+
+		} catch (Exception e) {
+			logger.error("userupdatecompleteでエラーが発生しました", e);
+			return error(redirectAttributes);
+			
+		} finally {
+			session.removeAttribute("currentPwd");
+			session.removeAttribute("newPwd");
+		}
+	}
 
     /**
      * ユーザー削除完了ページに遷移
