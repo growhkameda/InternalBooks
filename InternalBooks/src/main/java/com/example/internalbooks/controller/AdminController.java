@@ -362,39 +362,37 @@ public class AdminController extends InternalBooksController {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
+            }          
+             model.addAttribute("isAdmin", isAdmin);
+                //Nullチェック
+                if(userdto == null) {
+            	   throw new IllegalStateException("DTOがnullです");
+               }
+            try {
+                //所属課をIDへ変換
+                tUserService.userDepartmentId(userdto);
+                                                
+                // DBへ(userId,name,mailAddress,password,departmentId)を保存
+                TUserEntity savedUser = tUserService.userRegistration(userdto);
+                // DBに保存した値をDTOを経由して再度取得
+                DtoUserRegistration tuser = new DtoUserRegistration();
+                tuser.setUserId(savedUser.getUserIdAsString());
+                tuser.setName(savedUser.getName());
+                tuser.setMailAddress(savedUser.getMailAddress());
+                //所属課はStringで表示させるためuserdtoからそのままセットする。
+                tuser.setDepartmentId(userdto.getDepartmentId());
+                tuser.setPassword(savedUser.getPassword());
+
+                // 取得した情報を表示
+                model.addAttribute("tuser",tuser);
+               //入力フォームより削除
+               status.setComplete();
+
+             return "page/UserRegistrationComplete";
+            
+            } catch (Exception e) {
+        		return error(redirectAttributes);
             }
-
-            model.addAttribute("isAdmin", isAdmin);
-       
-            if ("開発課".equals(userdto.getDepartmentId())) {
-            	userdto.setDepartmentNumber(1);
-            } else if ("評価検証課".equals(userdto.getDepartmentId())) {
-            	userdto.setDepartmentNumber(2);
-            } else if ("ITサポート課".equals(userdto.getDepartmentId())) {
-            	userdto.setDepartmentNumber(3);
-            } else if("営業課".equals(userdto.getDepartmentId())) {
-            	userdto.setDepartmentNumber(4);
-            } else {
-            	userdto.setDepartmentNumber(5);
-            }
-                        
-         // DBへ(userId,name,mailAddress,password,departmentId)を保存
-            TUserEntity savedUser = tUserService.userRegistration(userdto);
-         // DBに保存した値をDTOを経由して再度取得
-            DtoUserRegistration tuser = new DtoUserRegistration();
-            tuser.setUserId(savedUser.getUserIdAsString());
-            tuser.setName(savedUser.getName());
-            tuser.setMailAddress(savedUser.getMailAddress());
-            tuser.setDepartmentId(userdto.getDepartmentId());
-            tuser.setPassword(savedUser.getPassword());
-
-            // 取得した情報を表示
-            model.addAttribute("tuser",tuser);
-            //入力フォームより削除
-            status.setComplete();
-
-            return "page/UserRegistrationComplete";
-
     	}
     	catch (Exception e) {
     		return error(redirectAttributes);
@@ -409,7 +407,7 @@ public class AdminController extends InternalBooksController {
     public String BookingConfirmation(@Valid @ModelAttribute("bookdto")DtoBookInfo bookDto, BindingResult bindingResult, @RequestParam("imageFile")MultipartFile file,HttpSession session, RedirectAttributes redirectAttributes,
     	     Model model) {
     	
-        //書籍画像選択されない時用エラー表示
+        //MultipartFileはBeanvalidationに向いていないため下記で選択されていない場合のエラーバリデーション作成
     	if (bookDto.getImageFile() == null || bookDto.getImageFile().isEmpty()) {
 		    bindingResult.rejectValue(
 		        "imageFile",

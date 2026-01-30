@@ -1,6 +1,7 @@
 package com.example.internalbooks.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,7 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.internalbooks.config.EmailHashUtil;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TUserRepository;
@@ -26,14 +26,12 @@ public class TUserService implements UserDetailsService {
     private final TUserRepository tUserRepository;
     private final MDepartmentRepository mDepartmentRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailHashUtil emailHashUtil;
     
     //コンストラクタインジェクション
-    public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository,PasswordEncoder passwordEncoder,EmailHashUtil emailHashUtil) {
+    public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository,PasswordEncoder passwordEncoder) {
         this.tUserRepository = tUserRepository;
         this.mDepartmentRepository = mDepartmentRepository;
         this.passwordEncoder= passwordEncoder;
-        this.emailHashUtil= emailHashUtil;
     }
 
     @Override
@@ -113,14 +111,34 @@ public class TUserService implements UserDetailsService {
     }
     
     /**
+     *所属課と所属課IDの対応表
+     */ 
+    private static final Map<String,Integer> DEPT_MAP = Map.of(
+    		"開発課", 1,
+    		"評価検証課", 2,
+    		"ITサポート課",3,
+    		"営業課", 4  		
+    		);
+    /**
+     *所属課をIntegerへ変換
+     */ 
+    public void userDepartmentId(DtoUserRegistration userdto) {
+    	Integer depmId = DEPT_MAP.getOrDefault(
+                userdto.getDepartmentId(),
+                5
+        );
+        userdto.setDepartmentNumber(depmId);
+    }
+    	
+    
+    /**
      * ユーザー情報をDBへ保存するメソッド
      */
     public TUserEntity userRegistration(DtoUserRegistration dtuser) {
     	TUserEntity tuser = new TUserEntity();
     	tuser.setUserId(dtuser.getUserIdAsIntger());
     	tuser.setName(dtuser.getName());
-    	String emailHash = emailHashUtil.hash(dtuser.getMailAddress());
-    	tuser.setMailAddress(emailHash);
+    	tuser.setMailAddress(dtuser.getMailAddress());
     	String hash = passwordEncoder.encode(dtuser.getPassword());
     	tuser.setPassword(hash);
     	tuser.setDepartmentId(dtuser.getDepartmentNumber());
