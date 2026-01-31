@@ -38,55 +38,86 @@ public class TUserService implements UserDetailsService {
 	}
 
 	@Override
+	/**
+	 * ユーザ名(メールアドレス)からTUser情報を取得するメソッド
+	 *
+	 * @param username ユーザ名(メールアドレス)
+	 * @return ユーザ情報
+	 */
 	public TUserEntity loadUserByUsername(String username) throws UsernameNotFoundException {
-		TUserEntity user = tUserRepository.findByMailAddress(username)
-				.orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-		return user;
+		TUserEntity user = tUserRepository.findByMailAddress(username).get(); // メールでユーザーを検索
+		if (user == null) {
+			throw new UsernameNotFoundException("User not found");
+		}
+		return user; // LoginUser を返す
 	}
 
 	/**
 	 * ユーザIDからTUser情報を取得するメソッド
+	 *
+	 * @param userId ユーザID
+	 * @return ユーザ情報
 	 */
-	public TUserEntity getUserById(Integer userId) {
-		return tUserRepository.findById(userId).orElse(null);
+	public TUserEntity getUserById(Integer userId) throws UsernameNotFoundException {
+		Optional<TUserEntity> user = tUserRepository.findById(userId); // メールでユーザーを検索
+		if (user.isEmpty()) {
+			return null;
+		}
+		return user.get();
 	}
 
+	/**
+	 * 全ユーザー情報を取得するメソッド
+	 *
+	 * @return 全ユーザーリスト
+	 */
 	public List<TUserEntity> getAllUsers() {
 		return tUserRepository.findAll();
 	}
 
 	/**
-	 * アクティブ（論理削除されていない）ユーザー情報を取得
+	 * アクティブ（論理削除されていない）ユーザー情報を取得するメソッド
+	 *
+	 * @return アクティブユーザーリスト
 	 */
 	public List<TUserEntity> getActiveUsers() {
 		return tUserRepository.findByDeleteFlg(Const.DELETE_FLAG_OFF);
 	}
 
 	/**
-	 * ログインユーザを除いたアクティブユーザリストを取得
+	 * ログインユーザを除いたアクティブユーザリストを取得する
+	 *
+	 * @param ログインユーザid
+	 * @return アクティブユーザーリスト
 	 */
 	public List<TUserEntity> getUsersExceptCurrent(Integer currentUserId) {
 		List<TUserEntity> activeUsers = getActiveUsers();
-		List<TUserEntity> usersExceptCurrent = new ArrayList<>();
+		List<TUserEntity> UsersExceptCurrent = new ArrayList<>();
 		for (TUserEntity user : activeUsers) {
 			if (!currentUserId.equals(user.getUserId())) {
-				usersExceptCurrent.add(user);
+				UsersExceptCurrent.add(user);
 			}
 		}
-		return usersExceptCurrent;
+		return UsersExceptCurrent;
 	}
 
 	/**
-	 * 部門IDから部門名を取得
+	 * 部門IDから部門名を取得する
 	 */
 	public String getDepartmentNameById(Integer departmentId) {
 		if (departmentId == null) {
 			return "未設定";
 		}
 		try {
+			// リポジトリを使用してデータベースから部門名を取得
 			Optional<String> departmentName = mDepartmentRepository.findNameById(departmentId);
 			return departmentName.orElse("不明");
+
+		} catch (NumberFormatException e) {
+			// 数値に変換できない場合
+			return "不明";
 		} catch (Exception e) {
+			// その他のエラーの場合
 			return "Error";
 		}
 	}
@@ -95,26 +126,34 @@ public class TUserService implements UserDetailsService {
 	 * ユーザーの所属課を取得（リスト形式）
 	 */
 	public List<TUserEntity> getUserDepartmentName(Integer currentUserId) {
+		// アクティブユーザー情報を取得
 		List<TUserEntity> users = getUsersExceptCurrent(currentUserId);
+
+		// 各ユーザーの所属課を取得
 		for (TUserEntity user : users) {
-			user.setDepartmentName(getDepartmentNameById(user.getDepartmentId()));
+			String departmentName = getDepartmentNameById(user.getDepartmentId());
+			user.setDepartmentName(departmentName);
 		}
 		return users;
 	}
 
 	/**
-	 * ユーザーの所属課を取得（単体取得）
+	 * ユーザーの所属課を取得する(単体取得)
 	 */
 	public TUserEntity getUserWithDepartmentNameById(Integer userId) {
+		// ユーザー情報を取得
 		TUserEntity user = getUserById(userId);
+
+		// 各ユーザーの所属課を取得
 		if (user != null) {
-			user.setDepartmentName(getDepartmentNameById(user.getDepartmentId()));
+			String departmentName = getDepartmentNameById(user.getDepartmentId());
+			user.setDepartmentName(departmentName);
 		}
 		return user;
 	}
 
 	/**
-	 * ユーザー登録
+	 * ユーザー情報をDBへ保存するメソッド
 	 */
 	public TUserEntity userRegistration(DtoUserRegistration dtuser) {
 		TUserEntity tuser = new TUserEntity();
@@ -125,15 +164,22 @@ public class TUserService implements UserDetailsService {
 		tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
 		tuser.setRole(dtuser.getRole());
 		tuser.setDeleteFlg(dtuser.getDeleteFlg());
-		return tUserRepository.save(tuser);
+
+		tUserRepository.save(tuser);
+
+		return tuser;
+
 	}
 
 	/**
-	 * ユーザー編集保存（あなたのパスワード更新機能を含む版）
+	 * ユーザー編集保存
 	 */
 	public void updateUser(TUserEntity userDto, String currentPwd, String newPwd) {
-		TUserEntity existingUser = tUserRepository.findById(userDto.getUserId())
-				.orElseThrow(() -> new RuntimeException("ユーザーが存在しません"));
+		
+		TUserEntity existingUser = getUserById(userDto.getUserId());
+		if( existingUser == null ) {
+			new RuntimeException("ユーザーが存在しません");
+		}
 
 		// パスワード更新ロジック
 		if (StringUtils.hasText(currentPwd) && StringUtils.hasText(newPwd)) {
@@ -142,17 +188,13 @@ public class TUserService implements UserDetailsService {
 			} else {
 				throw new IllegalArgumentException("現在のパスワードが正しくありません");
 			}
-
-			existingUser.setName(userDto.getName());
-			existingUser.setMailAddress(userDto.getMailAddress());
-			existingUser.setDepartmentId(userDto.getDepartmentId());
-
-			tUserRepository.save(existingUser);
 		}
 
+		// 基本情報の更新（パスワード有無に関わらず実行）
 		existingUser.setName(userDto.getName());
 		existingUser.setMailAddress(userDto.getMailAddress());
 		existingUser.setDepartmentId(userDto.getDepartmentId());
+
 		tUserRepository.save(existingUser);
 	}
 
@@ -164,32 +206,9 @@ public class TUserService implements UserDetailsService {
 	}
 	
 	/**
-	 * 全部門リスト取得
+	 * 課一覧リストを取得
 	 */
 	public List<MDepartmentEntity> getAllDepartments() {
 		return mDepartmentRepository.findAll();
-	}
-
-	// --- 以下、Kevinさんが追加したメソッド（共存のため残す） ---
-
-	public TUserEntity userConfirmationDto(Integer userId) {
-		return getUserWithDepartmentNameById(userId);
-	}
-
-	public DtoUserEdit userEditDto(Integer userId) {
-		TUserEntity entity = tUserRepository.findById(userId)
-				.orElseThrow(() -> new RuntimeException("ユーザーが存在しません: userId=" + userId));
-		DtoUserEdit dto = new DtoUserEdit();
-		dto.setUserId(entity.getUserId());
-		// 必要に応じて他のフィールドもセット
-		return dto;
-	}
-
-	public TUserEntity finishUserEdit(DtoUserEdit dtuser) {
-		TUserEntity editedUserInfo = tUserRepository.findById(dtuser.getUserIdAsIntger())
-				.orElseThrow(() -> new RuntimeException("ユーザーが存在しません"));
-		editedUserInfo.setName(dtuser.getName());
-		editedUserInfo.setDepartmentId(dtuser.getDepartmentIdAsInteger());
-		return tUserRepository.save(editedUserInfo);
 	}
 }
