@@ -128,8 +128,12 @@ public class AdminController extends InternalBooksController {
 	@GetMapping("/userconfirmationscreen")
 	public String userConfirmationScreen(@RequestParam("userId") Integer userId, HttpSession session, Model model,
 			RedirectAttributes redirectAttributes) {
+        // トークンと管理者権限の検証
 		try {
+            // 管理者権限の検証
 			boolean isAdmin = validateTokenAndCheckAdmin(session);
+
+            // tokenの検証とユーザーIDの取得
 			if (!isAdmin) {
 				return adminPermissionError(redirectAttributes);
 			}
@@ -201,17 +205,15 @@ public class AdminController extends InternalBooksController {
 			if (!isAdmin) {
 				return adminPermissionError(redirectAttributes);
 			}
-
 			TUserEntity user = tUserService.getUserById(userId);
-
 			user.setDepartmentName(tUserService.getDepartmentNameById(user.getDepartmentId()));
-
+			
+			model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
 			model.addAttribute("userDto", user);
-
 			model.addAttribute("isAdmin", isAdmin);
 			return "page/useredit";
 		} catch (Exception e) {
-            logger.error("usereditでエラーが発生しました", e);
+            logger.error("userEditでエラーが発生しました", e);
             return error(redirectAttributes);
 		} 
 	}

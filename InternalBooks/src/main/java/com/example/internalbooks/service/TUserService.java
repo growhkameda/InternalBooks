@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.example.internalbooks.common.Const;
-import com.example.internalbooks.config.PasswordEncoderConfig;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.MDepartmentEntity;
 import com.example.internalbooks.entity.TUserEntity;
@@ -197,7 +196,6 @@ public class TUserService implements UserDetailsService {
 				}
 			}
 
-			// パスワード以外の項目は常に上書き（ここは変更なしでOK）
 			existingUser.setName(userDto.getName());
 			existingUser.setMailAddress(userDto.getMailAddress());
 			existingUser.setDepartmentId(userDto.getDepartmentId());
