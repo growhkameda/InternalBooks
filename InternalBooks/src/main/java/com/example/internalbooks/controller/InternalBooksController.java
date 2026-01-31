@@ -377,7 +377,6 @@ public class InternalBooksController {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
                 return "redirect:/page/top";
             }
-
     		redirectAttributes.addAttribute("bookId", bookId);
 
     	} catch (Exception e) {

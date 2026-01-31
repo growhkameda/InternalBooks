@@ -1,0 +1,27 @@
+■Dockerのテーブル確認方法
+①Dockerを開く
+②Containers/dbの・・・をクリック
+③open in terminalをクリック
+④mysql -u admin -pを実行
+⑤パスワード入力「password」
+⑥use internalbooks;を実行
+⑦select * from t_book;を実行
+　（t_bookの中身を全項目取得）
+
+■Dockerで問題が発生したときに実行するコマンド
+・docker停止コマンド
+docker-compose down
+
+・docker起動コマンド
+docker-compose up -d
+
+・dockerキャッシュクリア
+docker-compose down --volumes --remove-orph
+docker builder prune --all --force
+docker image prune --all --force
+docker volume prune --force
+docker-compose build --no-cache
+
+・下記のエラーの対処法
+ERROR 2002 (HY000): Can't connect to local MySQL server through socket '/var/run/mysqld/mysqld.sock' (2)
+dockerターミナルでexit実行
