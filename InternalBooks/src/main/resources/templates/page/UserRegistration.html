@@ -25,7 +25,7 @@
 	      	<label for = "id" class="form-label text-start">社員ID</label>
 	        <!-- バリデーションエラーを表示 -->
 	      	<span th:errors="*{userId}" class="text-danger ms-3"></span>
-	      	<input type="text" th:field="*{userId}" class="form-control bg-light">
+	      	<input type="text" th:field="*{userId}" readonly class="form-control bg-secondary-subtle">
 	  </div>
   </div>
 </div>

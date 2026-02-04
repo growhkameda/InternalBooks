@@ -6,11 +6,14 @@ import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.example.internalbooks.common.Const;
 import com.example.internalbooks.dto.DtoUserRegistration;
+import com.example.internalbooks.entity.MDepartmentEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.MDepartmentRepository;
 import com.example.internalbooks.repository.TUserRepository;
@@ -25,11 +28,13 @@ public class TUserService implements UserDetailsService {
 	// DI用フィールド
 	private final TUserRepository tUserRepository;
 	private final MDepartmentRepository mDepartmentRepository;
-
+	private final PasswordEncoder passwordEncoder;
+	
 	// コンストラクタインジェクション
-	public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository) {
+	public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository, PasswordEncoder passwordEncoder) {
 		this.tUserRepository = tUserRepository;
 		this.mDepartmentRepository = mDepartmentRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Override
@@ -103,11 +108,9 @@ public class TUserService implements UserDetailsService {
 		if (departmentId == null) {
 			return "未設定";
 		}
-
 		try {
 			// リポジトリを使用してデータベースから部門名を取得
 			Optional<String> departmentName = mDepartmentRepository.findNameById(departmentId);
-
 			return departmentName.orElse("不明");
 
 		} catch (NumberFormatException e) {
@@ -117,12 +120,10 @@ public class TUserService implements UserDetailsService {
 			// その他のエラーの場合
 			return "Error";
 		}
-
 	}
 
 	/**
-	 * ユーザーの所属課を取得する
-	 * DBへのアクセス回数が多いためパフォーマンス上げるならJOINクエリとかRepositoryに追加するといい！
+	 * ユーザーの所属課を取得（リスト形式）
 	 */
 	public List<TUserEntity> getUserDepartmentName(Integer currentUserId) {
 		// アクティブユーザー情報を取得
@@ -133,7 +134,6 @@ public class TUserService implements UserDetailsService {
 			String departmentName = getDepartmentNameById(user.getDepartmentId());
 			user.setDepartmentName(departmentName);
 		}
-
 		return users;
 	}
 
@@ -172,12 +172,43 @@ public class TUserService implements UserDetailsService {
 	}
 
 	/**
+	 * ユーザー編集保存
+	 */
+	public void updateUser(TUserEntity userDto, String currentPwd, String newPwd) {
+		
+		TUserEntity existingUser = getUserById(userDto.getUserId());
+		if( existingUser == null ) {
+			new RuntimeException("ユーザーが存在しません");
+		}
+
+		// パスワード更新ロジック
+		if (StringUtils.hasText(currentPwd) && StringUtils.hasText(newPwd)) {
+			if (passwordEncoder.matches(currentPwd, existingUser.getPassword())) {
+				existingUser.setPassword(passwordEncoder.encode(newPwd));
+			} else {
+				throw new IllegalArgumentException("現在のパスワードが正しくありません");
+			}
+		}
+
+		// 基本情報の更新（パスワード有無に関わらず実行）
+		existingUser.setName(userDto.getName());
+		existingUser.setMailAddress(userDto.getMailAddress());
+		existingUser.setDepartmentId(userDto.getDepartmentId());
+
+		tUserRepository.save(existingUser);
+	}
+
+	/**
 	 * ユーザー削除
 	 */
 	public void deleteUser(Integer userId) {
-
 		tUserRepository.DeleteUserById(userId);
-
 	}
-
+	
+	/**
+	 * 課一覧リストを取得
+	 */
+	public List<MDepartmentEntity> getAllDepartments() {
+		return mDepartmentRepository.findAll();
+	}
 }

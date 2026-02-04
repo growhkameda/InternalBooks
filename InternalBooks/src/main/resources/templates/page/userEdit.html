@@ -1,72 +1,113 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+	th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-    <title>userEdit</title>
+<title>userEdit</title>
 </head>
 
 <body>
-<section class = "container justify-content-center mt-5">
+	<section class="container justify-content-center mt-5">
 
-    <h1 class= "text-center">図書館システム</h1>
-	<br>
-	<h3 class= "text-center mt-4">ユーザー編集</h3>
-	<br>
+		<h1 class="text-center">図書館システム</h1>
+		<br>
+		<h3 class="text-center mt-4">ユーザー編集</h3>
+		<br>
+		
+		<div th:if="${errorMessage}" class="container mt-3">
+    		<div class="row justify-content-center">
+        		<div class="col-8 alert alert-danger" role="alert">
+            		<span th:text="${errorMessage}"></span>
+        		</div>
+    		</div>
+		</div>
 
-<form>
-<div class ="container mt-4">
-  <div class = "row text-center">
-		    <p class="col-2"></p>
-	      	<p class="fw-normal h6 col-3 text-end">社員ID</p>
-			<p class="col-2"></p>
-			<p class="fw-normal h6 col-3 text-start">0001</p>
-			<p class="col-2"></p>
-  </div>
-</div>
+		<form th:action="@{/admin/usereditconfirmation}" method="post"
+			th:object="${userDto}" enctype="application/x-www-form-urlencoded">
 
-<div class ="container mt-4">
-  <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
-	      	<label for = "id" class="form-label text-start">名前</label>
-			<div class="rounded-2 h-75 border bg-body-secondary">
-			  <p class="mt-3 ms-2 fw-normal h6">武藤 秀平</p>
-		    </div>
-	  </div>
-  </div>
-</div>
+			<div class="container mt-4">
+				<div class="row justify-content-center">
+					<div class="col-8 pt-2">
+						<label for="userId" class="form-label text-start">社員ID</label>
+						<span th:errors="*{userId}" class="text-danger ms-3"></span>
+						<input type="text" th:field="*{userId}" readonly 
+							class="form-control bg-secondary-subtle">
+					</div>
+				</div>
+			</div>
 
-<div class ="container mt-4">
-  <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
-	      	<label for = "id" class="form-label text-start">所属課</label>
-			<div class="rounded-2 h-75 border bg-body-secondary">
-			  <p class="mt-3 ms-2 fw-normal h6">開発課</p>
-		    </div>
-	  </div>
-  </div>
-</div>
+			<div class="container mt-4">
+				<div class="row justify-content-center">
+					<div class="col-8 pt-2">
+						<label for="name" class="form-label text-start">名前</label>
+						<span th:errors="*{name}" class="text-danger ms-3"></span>
+						<input type="text" th:field="*{name}" class="form-control bg-light">
+					</div>
+				</div>
+			</div>
 
- <div class ="input-group mt-5 gap-1">
-    <div class ="row justify-content-start">
-      <div class = "col-12 ms-lg-5 ps-lg-5">
-		<a href="/admin/adminusertop" class="btn fs-6 ">管理者TOPへ戻る</a>
-		<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left" viewBox="0 0 16 16">
-           <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"/>
-         </svg>
-      </div>
-  　</div>
-  </div>
+			<div class="container mt-4">
+				<div class="row justify-content-center">
+					<div class="col-8 pt-2">
+						<label for="mailAddress" class="form-label text-start">メールアドレス</label>
+						<span th:errors="*{mailAddress}" class="text-danger ms-3"></span>
+						<input type="text" th:field="*{mailAddress}" class="form-control bg-light">
+					</div>
+				</div>
+			</div>
 
+			<div class="container mt-4">
+				<div class="row justify-content-center">
+					<div class="col-8 pt-2">						
+						<label for="currentPassword" class="form-label text-start">今のパスワード</label>
+						<span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" 
+							class="text-danger ms-3"></span>
+						<input type="password" id="currentPassword" name="currentPassword"
+							class="form-control bg-light" placeholder="変更する場合のみ入力してください">							
+						<label for="newPassword" class="form-label text-start mt-3">新しいパスワード</label>
+						<input type="password" id="newPassword" name="newPassword"
+							class="form-control bg-light" placeholder="変更する場合のみ入力してください">
+						<small class="text-muted">※パスワードを変更しない場合は両方とも空欄にしてください。</small>
+					</div>
+				</div>
+			</div>
 
- <div class ="container text-center mt-5">
-	  <div class = "col-12">
-		<p class = "col-4"></p>
-	    <a href="/admin/finishuseredit" class="btn btn-success col-4">完了</a>
-		<p class = "col-4"></p>
-	  </div>
-</div>
-</form>
-</section>
+			<div class="container mt-4">
+				<div class="row justify-content-center">
+					<div class="col-8 pt-2">
+						<label for="departmentId" class="form-label text-start">所属課</label>
+						<span th:errors="*{departmentId}" class="text-danger ms-3"></span>
+						<select th:field="*{departmentId}" class="form-select bg-light">
+							<option value="">選択してください</option>
+							<option th:each="dept : ${mDepartmentList}" th:value="${dept.id}"
+								th:text="${dept.name}"></option>
+						</select>
+					</div>
+				</div>
+			</div>
+
+			<div class="input-group mt-5 gap-1">
+				<div class="row justify-content-start">
+					<div class="col-12 ms-lg-5 ps-lg-5">
+						<a href="/admin/usersearch" class="btn fs-6 ">ユーザー検索へ戻る</a>
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+							fill="currentColor" class="bi bi-arrow-return-left"
+							viewBox="0 0 16 16">
+			           <path fill-rule="evenodd"
+								d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
+			                        </svg>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="container text-center mt-4">
+				<div class="col-12">
+					<button type="submit" class="btn btn-success col-4">登録確認</button>
+				</div>
+			</div>
+
+		</form>
+	</section>
 </body>
 </html>
