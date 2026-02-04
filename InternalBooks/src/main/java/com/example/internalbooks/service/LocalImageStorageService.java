@@ -60,24 +60,23 @@ public class LocalImageStorageService implements ImageStorageService {
             return false;
         }
     }
-    
+
     /**
      * 書籍画像を指定したディレクトリへ保存する。
      */
     @Override
     public String savetbook(MultipartFile file) throws IOException {
-    	
-    	// 画像の名前を変数を保存
-    	String fileName = file.getOriginalFilename();
-    	// 絶対パスの指定
-    	String projectDir = System.getProperty("user.dir");
-    	String path = projectDir + imageDirectory;
-    	File saveFile = new File(path, fileName);
-    	//saveFileに格納されたURLにアップロードされた画像を物理的に書き込む
-    	file.transferTo(saveFile);
-    	//URLを返す
-    	return fileName;
-    }
-    
-}
 
+        // 画像の名前を変数を保存
+        String fileName = file.getOriginalFilename();
+        // 絶対パスの指定
+        String projectDir = System.getProperty("user.dir");
+        String path = projectDir + imageDirectory;
+        File saveFile = new File(path, fileName);
+        // saveFileに格納されたURLにアップロードされた画像を物理的に書き込む
+        file.transferTo(saveFile);
+        // URLを返す
+        return fileName;
+    }
+
+}

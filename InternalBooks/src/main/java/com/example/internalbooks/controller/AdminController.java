@@ -1,7 +1,6 @@
 package com.example.internalbooks.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
@@ -13,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,7 +33,6 @@ import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
-import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.utils.JwtUtil;
 
 /**
@@ -504,6 +501,14 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
+            // Nullチェック
+            if (userdto == null) {
+                throw new IllegalStateException("DTOがnullです");
+            }
+
+            // 所属課をIDへ変換
+            tUserService.userDepartmentId(userdto);
+
             // DBへ(userId,name,mailAddress,password,departmentId)を保存
             TUserEntity savedUser = tUserService.userRegistration(userdto);
             // DBに保存した値をDTOを経由して再度取得
@@ -511,7 +516,8 @@ public class AdminController extends InternalBooksController {
             tuser.setUserId(savedUser.getUserIdAsString());
             tuser.setName(savedUser.getName());
             tuser.setMailAddress(savedUser.getMailAddress());
-            tuser.setDepartmentId(savedUser.getDepartmentIdAsString());
+            // 所属課はStringで表示させるためuserdtoからそのままセットする
+            tuser.setDepartmentId(userdto.getDepartmentId());
             tuser.setPassword(savedUser.getPassword());
 
             // 取得した情報を表示

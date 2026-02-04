@@ -15,10 +15,9 @@ public interface ImageStorageService {
      * 削除が成功した場合true、画像が存在しない場合もtrueを返す
      */
     boolean deleteImage(Integer bookId) throws Exception;
-    
+
     /**
      * 書籍画像を指定したディレクトリへ保存する。
      */
     public String savetbook(MultipartFile file) throws IOException;
 }
-

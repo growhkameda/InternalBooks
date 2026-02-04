@@ -155,6 +155,26 @@ public class TUserService implements UserDetailsService {
 	}
 
 	/**
+	 * 所属課と所属課IDの対応表
+	 */
+	private static final Map<String, Integer> DEPT_MAP = Map.of(
+			"開発課", 1,
+			"評価検証課", 2,
+			"ITサポート課", 3,
+			"営業課", 4);
+
+	/**
+	 * 所属課をIntegerへ変換
+	 */
+	public void userDepartmentId(DtoUserRegistration userdto) {
+		Integer depmId = DEPT_MAP.getOrDefault(
+				userdto.getDepartmentId(),
+				5 // 上記の対応表に一致しなければ5
+		);
+		userdto.setDepartmentNumber(depmId);
+	}
+
+	/**
 	 * ユーザー情報をDBへ保存するメソッド
 	 */
 	public TUserEntity userRegistration(DtoUserRegistration dtuser) {
@@ -162,8 +182,9 @@ public class TUserService implements UserDetailsService {
 		tuser.setUserId(dtuser.getUserIdAsIntger());
 		tuser.setName(dtuser.getName());
 		tuser.setMailAddress(dtuser.getMailAddress());
-		tuser.setPassword(dtuser.getPassword());
-		tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
+		String hash = passwordEncoder.encode(dtuser.getPassword());
+		tuser.setPassword(hash);
+		tuser.setDepartmentId(dtuser.getDepartmentNumber());
 		tuser.setRole(dtuser.getRole());
 		tuser.setDeleteFlg(dtuser.getDeleteFlg());
 

@@ -7,8 +7,8 @@ public class DtoUserConfirmationScreen {
 	private Integer userId;
 	private String name;
 	private Integer departmentId;
-	
-//	StringをIntegerへ変換するメソッド
+
+	// StringをIntegerへ変換するメソッド
 	public String getDepartmentIdAsString() {
 		return String.valueOf(departmentId);
 	}

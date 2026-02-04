@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
     <title>ユーザー編集確認</title>
@@ -8,104 +7,107 @@
 </head>
 
 <body>
-<section class="container justify-content-center mt-5">
+    <section class="container justify-content-center mt-5">
 
-    <h1 class="text-center">図書館システム</h1>
-    <br>
-    <h3 class="text-center mt-4">ユーザー編集確認</h3>
-    <br>
+        <h1 class="text-center">図書館システム</h1>
+        <br>
+        <h3 class="text-center mt-4">ユーザー編集確認</h3>
+        <br>
 
-		<div th:if="${passwordError}" class="alert alert-danger mt-2">
-			<span th:text="${errorMessage}"></span>
-		</div>
+        <div th:if="${passwordError}" class="alert alert-danger mt-2">
+            <span th:text="${errorMessage}"></span>
+        </div>
 
-		<div class="h-25 border bg-body-secondary d-flex align-items-center">
-        <p class="mt-1 ms-3 fw-normal h6">以下の編集内容を確定してよろしいですか？</p>
-    </div>
-    
-    <form th:action="@{/admin/usereditcomplete}" th:object="${userDto}" method="post">
-        
-        <input type="hidden" th:field="*{userId}">
-        <input type="hidden" th:field="*{name}">
-        <input type="hidden" th:field="*{mailAddress}">
-        <input type="hidden" th:field="*{password}"> <input type="hidden" th:field="*{departmentId}">
+        <div class="h-25 border bg-body-secondary d-flex align-items-center">
+            <p class="mt-1 ms-3 fw-normal h6">以下の編集内容を確定してよろしいですか？</p>
+        </div>
 
-        <div class="container mt-4">
-            <div class="row justify-content-center">
-                <div class="col-8 pt-2">
-                    <p class="form-label text-start">社員ID</p>
-                    <div class="rounded-2 border border-black bg-secondary-subtle">
-                        <p class="mt-3 ms-2 fw-normal" th:text="*{userId}"></p>
+        <form th:action="@{/admin/usereditcomplete}" th:object="${userDto}" method="post">
+
+            <input type="hidden" th:field="*{userId}">
+            <input type="hidden" th:field="*{name}">
+            <input type="hidden" th:field="*{mailAddress}">
+            <input type="hidden" th:field="*{password}"> <input type="hidden" th:field="*{departmentId}">
+
+            <div class="container mt-4">
+                <div class="row justify-content-center">
+                    <div class="col-8 pt-2">
+                        <p class="form-label text-start">社員ID</p>
+                        <div class="rounded-2 border border-black bg-secondary-subtle">
+                            <p class="mt-3 ms-2 fw-normal" th:text="*{userId}"></p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="container mt-3">
-            <div class="row justify-content-center">
-                <div class="col-8 pt-2">
-                    <p class="form-label text-start">メールアドレス</p>
-                    <div class="rounded-2 border border-black bg-light">
-                        <p class="mt-3 ms-2 fw-normal" th:text="*{mailAddress}"></p>
+            <div class="container mt-3">
+                <div class="row justify-content-center">
+                    <div class="col-8 pt-2">
+                        <p class="form-label text-start">メールアドレス</p>
+                        <div class="rounded-2 border border-black bg-light">
+                            <p class="mt-3 ms-2 fw-normal" th:text="*{mailAddress}"></p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="container mt-3">
-            <div class="row justify-content-center">
-                <div class="col-8 pt-2">
-                    <p class="form-label text-start">パスワード</p>
-                    <div class="rounded-2 border border-black bg-light">
-                        <p class="mt-3 ms-2 fw-normal" 
-                           th:text="${#strings.isEmpty(session.newPwd)} ? '（変更なし）' : '非表示'"></p>
+            <div class="container mt-3">
+                <div class="row justify-content-center">
+                    <div class="col-8 pt-2">
+                        <p class="form-label text-start">パスワード</p>
+                        <div class="rounded-2 border border-black bg-light">
+                            <p class="mt-3 ms-2 fw-normal"
+                                th:text="${#strings.isEmpty(session.newPwd)} ? '（変更なし）' : '非表示'"></p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="container mt-3">
-            <div class="row justify-content-center">
-                <div class="col-8 pt-2">
-                    <p class="form-label text-start">名前</p>
-                    <div class="rounded-2 border border-black bg-light">
-                        <p class="mt-3 ms-2 fw-normal" th:text="*{name}"></p>
+            <div class="container mt-3">
+                <div class="row justify-content-center">
+                    <div class="col-8 pt-2">
+                        <p class="form-label text-start">名前</p>
+                        <div class="rounded-2 border border-black bg-light">
+                            <p class="mt-3 ms-2 fw-normal" th:text="*{name}"></p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="container mt-3">
-            <div class="row justify-content-center">
-                <div class="col-8 pt-2">
-                    <p class="form-label text-start">所属課</p>
-                    <div class="rounded-2 border border-black bg-light">
-                        <p class="mt-3 ms-2 fw-normal" th:text="*{departmentName}"></p>
+            <div class="container mt-3">
+                <div class="row justify-content-center">
+                    <div class="col-8 pt-2">
+                        <p class="form-label text-start">所属課</p>
+                        <div class="rounded-2 border border-black bg-light">
+                            <p class="mt-3 ms-2 fw-normal" th:text="*{departmentName}"></p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-      
-        <div class="container mt-5">
-            <div class="row">
-                <div class="col-12 text-start ms-lg-5">
-                    <a th:href="@{/admin/useredit(userId=*{userId})}" class="btn fs-6">
-                        戻る
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5"/>
-                        </svg>
-                    </a>
+
+            <div class="container mt-5">
+                <div class="row">
+                    <div class="col-12 text-start ms-lg-5">
+                        <a th:href="@{/admin/useredit(userId=*{userId})}" class="btn fs-6">
+                            戻る
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd"
+                                    d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
+                            </svg>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="container text-center mt-4">
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary col-4">確定</button>
+            <div class="container text-center mt-4">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary col-4">確定</button>
+                </div>
             </div>
-        </div>
-        
-    </form>
-</section>
+
+        </form>
+    </section>
 </body>
+
 </html>
