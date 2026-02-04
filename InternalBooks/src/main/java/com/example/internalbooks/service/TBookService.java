@@ -16,6 +16,7 @@ import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TBookRepository;
 import com.example.internalbooks.repository.TLendingHistoryRepository;
+
 @Service
 @Transactional
 /**
@@ -23,20 +24,20 @@ import com.example.internalbooks.repository.TLendingHistoryRepository;
  */
 public class TBookService {
 
-	//DI用フィールド
-    private final TBookRepository tBookRepository;
-    private final TLendingHistoryRepository lendingHistoryRepository;
-    private final TUserService tUserService;
-    private final ImageStorageService imageStorageService;
+	// DI用フィールド
+	private final TBookRepository tBookRepository;
+	private final TLendingHistoryRepository lendingHistoryRepository;
+	private final TUserService tUserService;
+	private final ImageStorageService imageStorageService;
 
-	//コンストラクタインジェクション
-    public TBookService(TBookRepository tBookRepository, TLendingHistoryRepository lendingHistoryRepository, TUserService tUserService, ImageStorageService imageStorageService) {
-        this.tBookRepository = tBookRepository;
-        this.lendingHistoryRepository = lendingHistoryRepository;
-        this.tUserService = tUserService;
-        this.imageStorageService = imageStorageService;
-    }
-
+	// コンストラクタインジェクション
+	public TBookService(TBookRepository tBookRepository, TLendingHistoryRepository lendingHistoryRepository,
+			TUserService tUserService, ImageStorageService imageStorageService) {
+		this.tBookRepository = tBookRepository;
+		this.lendingHistoryRepository = lendingHistoryRepository;
+		this.tUserService = tUserService;
+		this.imageStorageService = imageStorageService;
+	}
 
 	public List<String> getAllCategories() {
 		List<String> categoryList = new ArrayList<>();
@@ -60,8 +61,7 @@ public class TBookService {
 		return categoryList;
 	}
 
-
-	public List<Integer> getCategoriesdetail(String category){
+	public List<Integer> getCategoriesdetail(String category) {
 		List<Integer> bookid_list = new ArrayList<>();
 		try {
 
@@ -75,10 +75,10 @@ public class TBookService {
 				String[] categoriesArray = book_categories.split(",");
 				for (String list_category : categoriesArray) {
 					// 引数のカテゴリーの値が含まれている本情報のみbookid_listに追加する
-				    if (list_category.trim().equals(category)) {
-				        bookid_list.add(book.getBookId());
-				        break;
-				    }
+					if (list_category.trim().equals(category)) {
+						bookid_list.add(book.getBookId());
+						break;
+					}
 				}
 			}
 
@@ -119,7 +119,8 @@ public class TBookService {
 		return bookList;
 	}
 
-	/** 11/02 木俣 (DTO内の責務が混ざっていたので分離)
+	/**
+	 * 11/02 木俣 (DTO内の責務が混ざっていたので分離)
 	 * TBookEntityからDtoBookInfoに変換するメソッド
 	 * 変換を責務とし、DtoBookInfoに受け渡す
 	 */
@@ -149,7 +150,7 @@ public class TBookService {
 		}
 
 		// 貸出状況を設定（borrower_idに基づいて動的に判定）
-		dto.setStatus(determineLendingStatus(book.getBorrowerId()));
+		dto.setStatus(determineLendingStatus(book.getBorrowerId(), book.getBookId()));
 
 		// 書籍IDに基づいて画像URLを設定
 		dto.setImageUrlFromBookId();
@@ -236,7 +237,6 @@ public class TBookService {
 		}
 	}
 
-
 	/**
 	 * 書籍検索リクエストを処理する
 	 */
@@ -284,12 +284,19 @@ public class TBookService {
 		return null;
 	}
 
-	/**
-	 * borrower_idに基づいて貸出状況を判定する共通メソッド
-	 * 貸出状況を取得する際にはこのメソッドを共通で使うようにしてください！
-	 */
-	private String determineLendingStatus(Integer borrowerId) {
-		return borrowerId != null ? "貸出中" : "貸出可能";
+	private String determineLendingStatus(Integer borrowerId, Integer bookId) {
+		if (borrowerId != null) {
+			return "貸出中";
+		}
+		// borrowerIdがnullでも、履歴テーブル上で未返却のレコードがあれば貸出中とみなす（データ不整合への対抗策）
+		List<TLendingHistoryEntity> histories = lendingHistoryRepository.findByBookId(bookId);
+		if (!histories.isEmpty()) {
+			TLendingHistoryEntity latest = histories.get(0);
+			if (latest.getReturnDate() == null) {
+				return "貸出中";
+			}
+		}
+		return "貸出可能";
 	}
 
 	public TBookEntity bookEditing(DtoBookInfo dtbook) {
@@ -304,7 +311,8 @@ public class TBookService {
 		return tbook;
 	}
 
-	/** 11/03 木俣
+	/**
+	 * 11/03 木俣
 	 * 指定されたbook_idの書籍を削除する
 	 * DBでカスケード処理していないためBEでカスケード処理を行う
 	 * 画像ファイルも同時に削除する

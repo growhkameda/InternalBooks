@@ -12,13 +12,13 @@ public class DtoBookHistoryRegistration {
 	// 書籍ID
 	private Integer bookId;
 
-	// 貸出予定日
+	// 貸出日
 	private LocalDateTime lendingDate;
 
-	// 返却日
+	// 返却予定日
 	private LocalDateTime scheduledReturnDate;
 
-	// 返却予定日
+	// 返却日
 	private LocalDateTime returnDate;
 
 	// ユーザーID
