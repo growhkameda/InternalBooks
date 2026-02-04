@@ -3,7 +3,9 @@ package com.example.internalbooks.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 import com.example.internalbooks.common.Const;
 
@@ -19,7 +21,10 @@ public class TBookEntity {
     @Id
     @Column(name = Const.BOOK_ID)
     private Integer bookId;
-
+    
+    @Transient
+    private String providerName;
+    
     @Column(name = Const.TITLE)
     private String title;
 
@@ -37,4 +42,5 @@ public class TBookEntity {
 
     @Column(name = Const.MEMO)
     private String memo;
+    
 }

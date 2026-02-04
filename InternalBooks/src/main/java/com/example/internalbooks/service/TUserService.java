@@ -2,6 +2,7 @@ package com.example.internalbooks.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,9 +30,10 @@ public class TUserService implements UserDetailsService {
 	private final TUserRepository tUserRepository;
 	private final MDepartmentRepository mDepartmentRepository;
 	private final PasswordEncoder passwordEncoder;
-	
+
 	// コンストラクタインジェクション
-	public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository, PasswordEncoder passwordEncoder) {
+	public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository,
+			PasswordEncoder passwordEncoder) {
 		this.tUserRepository = tUserRepository;
 		this.mDepartmentRepository = mDepartmentRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -175,9 +177,9 @@ public class TUserService implements UserDetailsService {
 	 * ユーザー編集保存
 	 */
 	public void updateUser(TUserEntity userDto, String currentPwd, String newPwd) {
-		
+
 		TUserEntity existingUser = getUserById(userDto.getUserId());
-		if( existingUser == null ) {
+		if (existingUser == null) {
 			new RuntimeException("ユーザーが存在しません");
 		}
 
@@ -204,7 +206,7 @@ public class TUserService implements UserDetailsService {
 	public void deleteUser(Integer userId) {
 		tUserRepository.DeleteUserById(userId);
 	}
-	
+
 	/**
 	 * 課一覧リストを取得
 	 */

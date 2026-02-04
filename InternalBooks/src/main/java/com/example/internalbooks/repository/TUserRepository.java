@@ -33,6 +33,11 @@ public interface TUserRepository extends JpaRepository<TUserEntity, Integer> {
      */
     Optional<TUserEntity> findById(Integer id);
 
+	
+	/**書籍提供者から名前を取得するメソッド*/
+	Optional<TUserEntity> findByName(String name);
+
+
     @Modifying
     @Transactional
     @Query("UPDATE TUserEntity u SET u.deleteFlg = 1 WHERE u.userId = :userId")
@@ -46,3 +51,4 @@ public interface TUserRepository extends JpaRepository<TUserEntity, Integer> {
      */
     List<TUserEntity> findByDeleteFlg(Integer deleteFlg);
 }
+

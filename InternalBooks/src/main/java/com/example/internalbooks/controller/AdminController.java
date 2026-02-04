@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -24,6 +25,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.example.internalbooks.service.TUserService;
 
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoUserRegistration;
@@ -569,7 +572,6 @@ public class AdminController extends InternalBooksController {
         } catch (Exception e) {
             return error(redirectAttributes);
         }
-
     }
 
     /**
@@ -591,18 +593,12 @@ public class AdminController extends InternalBooksController {
 
             // DBへ(tilte,catgory,providerId,providercommnet)を保存
             TBookEntity savedBook = tBookService.bookEditing(bookDto);
-            // DBに保存した値をDTOWO経由して再度取得
+            // DBに保存した値をDTOを経由して再度取得
             DtoBookInfo dbook = new DtoBookInfo();
             dbook.setTitle(savedBook.getTitle());
+            dbook.setProviderId(savedBook.getProviderName());
             dbook.setCategory(savedBook.getCategories());
-            dbook.setProviderId(savedBook.getProviderId());
             dbook.setProviderComment(savedBook.getProviderComment());
-
-            byte[] imageBytes = (byte[]) session.getAttribute("imageBytes");
-            if (imageBytes != null) {
-                String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-                model.addAttribute("imagePreview", base64Image);
-            }
 
             // 取得した情報を表示
             model.addAttribute("dbook", dbook);
