@@ -1,69 +1,71 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+
 <head>
-    <title>usertop</title>
-  </head>
-  <body>
-    <section class = "container justify-content-center mt-5">
+  <title>usertop</title>
+</head>
 
-    <h1 class = "text-center">図書館システム</h1>
+<body>
+  <section class="container justify-content-center mt-5">
+
+    <h1 class="text-center">図書館システム</h1>
     <br>
-    <h3 class= "text-center mt-4">管理者ユーザーTOP画面</h3>
+    <h3 class="text-center mt-4">管理者ユーザーTOP画面</h3>
     <br>
 
-<!-- 書籍登録 -->
-<div class ="container text-center mt-4">
-  <div class = "row justify-content-center">
-    <div class = "d-grid col-8">
-	 <a href="/admin/bookediting" class="btn btn-success btn-lg">書籍登録</a>
+    <!-- 書籍登録 -->
+    <div class="container text-center mt-4">
+      <div class="row justify-content-center">
+        <div class="d-grid col-8">
+          <a href="/admin/bookediting" class="btn btn-success btn-lg">書籍登録</a>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- 書籍削除 -->
-<div class ="container text-center mt-3">
-  <div class = "row justify-content-center">
-    <div class = "d-grid col-8">
-      <a href="/admin/bookdeletingcategories" class="btn btn-danger btn-lg">書籍削除</a>
+    <!-- 書籍削除 -->
+    <div class="container text-center mt-3">
+      <div class="row justify-content-center">
+        <div class="d-grid col-8">
+          <a href="/admin/bookdeletingcategories" class="btn btn-danger btn-lg">書籍削除</a>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- ユーザー登録 -->
-<div class ="container text-center mt-5">
-  <div class = "row justify-content-center">
-    <div class = "d-grid col-8">
-	 <a href="/admin/userregistration" class="btn btn-primary btn-lg">ユーザー登録</a>
+    <!-- ユーザー登録 -->
+    <div class="container text-center mt-5">
+      <div class="row justify-content-center">
+        <div class="d-grid col-8">
+          <a href="/admin/userregistration" class="btn btn-primary btn-lg">ユーザー登録</a>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-<!-- ユーザー検索 -->
-<div class ="container text-center mt-3">
-  <div class = "row justify-content-center">
-    <div class = "d-grid col-8">
-	  <a href="/admin/usersearch" class="btn btn-warning btn-lg">ユーザー検索</a>
-   </div>
-  </div>
-</div>
+    <!-- ユーザー検索 -->
+    <div class="container text-center mt-3">
+      <div class="row justify-content-center">
+        <div class="d-grid col-8">
+          <a href="/admin/usersearch" class="btn btn-warning btn-lg">ユーザー検索</a>
+        </div>
+      </div>
+    </div>
 
-<!-- 通常Topへ -->
-<div class="container mt-5">
-  <div class="row">
-    <div class="col-12 text-start ms-lg-5">
-      <a href="/admin/top" class="btn fs-6">
-        通常TOP画面へ戻る
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-             class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">
-          <path fill-rule="evenodd"
+    <!-- 通常Topへ -->
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col-12 text-start ms-lg-5">
+          <a href="/page/top" class="btn fs-6">
+            通常TOP画面へ戻る
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+              class="bi bi-arrow-return-left ms-1 mb-1" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
                 d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
-        </svg>
-      </a>
+            </svg>
+          </a>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
-</section>
+  </section>
 </body>
+
 </html>
