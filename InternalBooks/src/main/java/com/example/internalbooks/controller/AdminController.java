@@ -114,15 +114,16 @@ public class AdminController extends InternalBooksController {
             // 管理者権限の検証
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             // tokenの検証とユーザーIDの取得
-            if (!isAdmin) return adminPermissionError(redirectAttributes);
+            if (!isAdmin)
+                return adminPermissionError(redirectAttributes);
 
             if (userId == null) {
                 redirectAttributes.addFlashAttribute("error", "ユーザーIDが指定されていません");
                 return "redirect:/admin/usersearch";
             }
-            //ユーザーの部門IDから部門名を取得
+            // ユーザーの部門IDから部門名を取得
             TUserEntity user = tUserService.getUserWithDepartmentNameById(userId);
-            model.addAttribute("userDto", user); 
+            model.addAttribute("userDto", user);
             model.addAttribute("isAdmin", isAdmin);
 
             logger.info("ユーザー確認画面表示: userId={}", userId);
@@ -138,48 +139,48 @@ public class AdminController extends InternalBooksController {
      */
     @PostMapping("/usereditconfirmation")
     public String userEditConfirmation(@Valid @ModelAttribute("userDto") TUserEntity userDto,
-            BindingResult bindingResult, 
+            BindingResult bindingResult,
             @RequestParam(name = "currentPassword", required = false) String currentPwd,
-            @RequestParam(name = "newPassword", required = false) String newPwd, 
+            @RequestParam(name = "newPassword", required = false) String newPwd,
             HttpSession session, Model model,
-			RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes) {
 
-		// トークンと管理者権限の検証
-		try {
-			// 管理者権限の検証
-			boolean isAdmin = validateTokenAndCheckAdmin(session);
-			// tokenの検証とユーザーIDの取得
-			if (!isAdmin)
-				return adminPermissionError(redirectAttributes);
-			
-			// 名前のチェック
-		    if (userDto.getName() == null || userDto.getName().isBlank()) {
-		        bindingResult.rejectValue("name", "error.name", "名前を入力してください。");
-		    }
+        // トークンと管理者権限の検証
+        try {
+            // 管理者権限の検証
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            // tokenの検証とユーザーIDの取得
+            if (!isAdmin)
+                return adminPermissionError(redirectAttributes);
 
-		    // メールアドレスのチェック
-		    if (userDto.getMailAddress() == null || userDto.getMailAddress().isBlank()) {
-		        bindingResult.rejectValue("mailAddress", "error.mailAddress", "メールアドレスを入力してください。");
-		    } else if (!userDto.getMailAddress().contains("@")) {
-		    	bindingResult.rejectValue("mailAddress", "error.mailAddress", "メールアドレスの形式が正しくありません。");
-		    }
-		    
-		    //現在のパスワードと新しいパスワードに値が入っているか判定
-		    boolean hasCurrentPwd = currentPwd != null && !currentPwd.trim().isEmpty();
-		    boolean hasNewPwd = newPwd != null && !newPwd.trim().isEmpty();
-		    //現在のパスワードか新しいパスワードの片方だけ入力された場合エラーメッセージリストに追加する
-		    if ((hasCurrentPwd && !hasNewPwd) || (!hasCurrentPwd && hasNewPwd)) {
-		    	bindingResult.rejectValue("password", "error.password", "パスワードを変更する場合は両方のパスワードを入力してください");
-		    }
-		    
-		    //エラーメッセージがある場合、編集画面へ遷移する
-		    if (bindingResult.hasErrors()) {
-		    	model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
+            // 名前のチェック
+            if (userDto.getName() == null || userDto.getName().isBlank()) {
+                bindingResult.rejectValue("name", "error.name", "名前を入力してください。");
+            }
+
+            // メールアドレスのチェック
+            if (userDto.getMailAddress() == null || userDto.getMailAddress().isBlank()) {
+                bindingResult.rejectValue("mailAddress", "error.mailAddress", "メールアドレスを入力してください。");
+            } else if (!userDto.getMailAddress().contains("@")) {
+                bindingResult.rejectValue("mailAddress", "error.mailAddress", "メールアドレスの形式が正しくありません。");
+            }
+
+            // 現在のパスワードと新しいパスワードに値が入っているか判定
+            boolean hasCurrentPwd = currentPwd != null && !currentPwd.trim().isEmpty();
+            boolean hasNewPwd = newPwd != null && !newPwd.trim().isEmpty();
+            // 現在のパスワードか新しいパスワードの片方だけ入力された場合エラーメッセージリストに追加する
+            if ((hasCurrentPwd && !hasNewPwd) || (!hasCurrentPwd && hasNewPwd)) {
+                bindingResult.rejectValue("password", "error.password", "パスワードを変更する場合は両方のパスワードを入力してください");
+            }
+
+            // エラーメッセージがある場合、編集画面へ遷移する
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
                 model.addAttribute("errorMessage", "入力内容を確認してください。");
-            return "page/useredit";
-		    }
-		    
-		    //ユーザー編集確認画面へ遷移のために値をセットする
+                return "page/useredit";
+            }
+
+            // ユーザー編集確認画面へ遷移のために値をセットする
             session.removeAttribute("currentPwd");
             session.removeAttribute("newPwd");
             session.setAttribute("currentPwd", currentPwd);
@@ -204,7 +205,8 @@ public class AdminController extends InternalBooksController {
 
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) return adminPermissionError(redirectAttributes);
+            if (!isAdmin)
+                return adminPermissionError(redirectAttributes);
 
             String currentPwd = (String) session.getAttribute("currentPwd");
             String newPwd = (String) session.getAttribute("newPwd");
@@ -216,7 +218,7 @@ public class AdminController extends InternalBooksController {
 
             return "page/usereditcomplete";
         } catch (IllegalArgumentException e) {
-        	//更新に失敗した場合、ユーザー編集ページに遷移する
+            // 更新に失敗した場合、ユーザー編集ページに遷移する
             logger.warn("更新失敗: {}", e.getMessage());
             model.addAttribute("errorMessage", e.getMessage());
             userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentId()));
@@ -225,7 +227,7 @@ public class AdminController extends InternalBooksController {
             logger.error("userupdatecompleteでエラーが発生しました", e);
             return error(redirectAttributes);
         } finally {
-        	//セッションに残ったパスワードを削除する
+            // セッションに残ったパスワードを削除する
             session.removeAttribute("currentPwd");
             session.removeAttribute("newPwd");
         }
@@ -279,7 +281,8 @@ public class AdminController extends InternalBooksController {
             RedirectAttributes redirectAttributes) {
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);
-            if (!isAdmin) return adminPermissionError(redirectAttributes);
+            if (!isAdmin)
+                return adminPermissionError(redirectAttributes);
 
             if (userId == null) {
                 redirectAttributes.addFlashAttribute("error", "ユーザーIDが指定されていません");
@@ -288,11 +291,11 @@ public class AdminController extends InternalBooksController {
 
             TUserEntity user = tUserService.getUserById(userId);
             user.setDepartmentName(tUserService.getDepartmentNameById(user.getDepartmentId()));
-            
+
             model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
             model.addAttribute("userDto", user);
             model.addAttribute("isAdmin", isAdmin);
-            
+
             return "page/useredit";
         } catch (Exception e) {
             logger.error("userEditでエラーが発生しました", e);
@@ -349,7 +352,7 @@ public class AdminController extends InternalBooksController {
      * 書籍削除確認ページに遷移
      */
     @GetMapping("/bookdeletingconfirmation")
-    public String bookdeletingconfirmation(@RequestParam("bookid") Integer bookid, HttpSession session, Model model,
+    public String bookdeletingconfirmation(@RequestParam("bookId") Integer bookId, HttpSession session, Model model,
             RedirectAttributes redirectAttributes) {
         // トークンと管理者権限の検証
         try {
@@ -360,8 +363,8 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
-            // bookidに基づいて書籍情報を取得
-            DtoBookInfo bookInfo = tBookService.getBookById(bookid);
+            // bookIdに基づいて書籍情報を取得
+            DtoBookInfo bookInfo = tBookService.getBookById(bookId);
             model.addAttribute("bookInfo", bookInfo);
 
             return "page/bookdeletingconfirmation";
@@ -647,8 +650,14 @@ public class AdminController extends InternalBooksController {
      * 書籍削除画面を表示
      */
     @GetMapping("/bookdeleting")
-    public String BookDeleting(@RequestParam("category") String category, HttpSession session, Model model,
+    public String BookDeleting(
+            @RequestParam("category") String category,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            HttpSession session, Model model,
             RedirectAttributes redirectAttributes) {
+
+        // 1ページに表示する本の数
+        final int BOOKS_PER_PAGE = 6;
 
         try {
             // トークンと管理者権限の検証
@@ -659,11 +668,27 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
-            // 対象カテゴリーのbookIdを取得してbookIdListに格納
-            List<Integer> bookIdList = tBookService.getCategoriesdetail(category);
+            // カテゴリーに属するすべての本のIDを取得
+            List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
 
+            // 取得した本の要素数を取得
+            int TOTAL_BOOK_COUNT = allBookIds.size();
+
+            // 指定した表示画像数と、取得した要素数で必要なページ数を計算
+            int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / BOOKS_PER_PAGE);
+
+            // ページ範囲を計算
+            int fromIndex = page * BOOKS_PER_PAGE;
+            int toIndex = Math.min(fromIndex + BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
+
+            // 表示対象の本IDリストを抽出
+            List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
+
+            // Viewに渡すモデル属性を設定
+            model.addAttribute("bookIdList", pagedBookIds);
             model.addAttribute("category", category);
-            model.addAttribute("bookIdList", bookIdList);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", totalPages);
 
             return "page/bookdeleting";
         } catch (Exception e) {
@@ -678,7 +703,7 @@ public class AdminController extends InternalBooksController {
      */
     @ModelAttribute("mDepartmentList")
     public List<MDepartmentEntity> getDepartmentList() {
-        return tUserService.getAllDepartments(); 
+        return tUserService.getAllDepartments();
     }
-    
+
 }
