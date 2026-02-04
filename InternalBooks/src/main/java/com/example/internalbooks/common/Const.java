@@ -28,5 +28,16 @@ public class Const {
 	public final static String RETURN_DATE = "return_date";
 	public final static String SCHEDULED_RETURN_DATE = "scheduled_return_date";
 	public final static String REVIEW = "review";
+	
+	public final static Integer PLUS_KIZONBOOKID = 1;
+	public final static Integer PLUS_NEWBOOKID = 10001;
+
+	/**
+	 * ユーザー削除フラグ
+	 * 0: 有効ユーザー
+	 * 1: 削除ユーザー
+	 */
+	public static final int DELETE_FLAG_OFF = 0;
+	public static final int DELETE_FLAG_ON  = 1;
 
 }

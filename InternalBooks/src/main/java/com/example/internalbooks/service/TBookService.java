@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TBookRepository;
 import com.example.internalbooks.repository.TLendingHistoryRepository;
 import com.example.internalbooks.repository.TUserRepository;
-
+import com.example.internalbooks.common.Const;
 
 @Service
 @Transactional
@@ -304,15 +305,7 @@ public class TBookService {
      */
 	public void tbookconfirm(DtoBookInfo dtbook) throws IOException{
 		
-		MultipartFile file =dtbook.getImageFile();
-		//デバック
-//		System.out.println("=== DEBUG START ===");
-//		System.out.println("file = " + file);
-//		System.out.println("file is null? " + (file == null));
-//		System.out.println("file isEmpty? " + (file != null && file.isEmpty()));
-//		System.out.println("imageService = " + imageStorageService);
-//		System.out.println("=== DEBUG END ===");
-//		System.out.println("file = " + file);
+		MultipartFile file = dtbook.getImageFile();
 		
 		//書籍画像の処理後dtoにセット
 		if (file != null && !file.isEmpty()) {
@@ -330,32 +323,39 @@ public class TBookService {
                               .orElseThrow(() -> new RuntimeException("名前が見つかりません"));
         //紐付けたユーザーIDをDTOにセット
 		dtbook.setId(user.getUserId());
+		
+		try {
         //t_bookへ登録
-		TBookEntity tbook = new TBookEntity();
-		tbook.setTitle(dtbook.getTitle());
-		tbook.setCategories(dtbook.getCategory());
-		tbook.setProviderId(dtbook.getId());
-		tbook.setProviderComment(dtbook.getProviderComment()); 
+		    TBookEntity tbook = new TBookEntity();
+		    tbook.setTitle(dtbook.getTitle());
+		    tbook.setCategories(dtbook.getCategory());
+		    tbook.setProviderId(dtbook.getId());
+		    tbook.setProviderComment(dtbook.getProviderComment()); 
 		//既存のカテゴリ名の最大値を取得
-		Integer maxId = tBookRepository.findMaxIdByName(dtbook.getCategory());
+		    Integer maxId = tBookRepository.findMaxIdByName(dtbook.getCategory());
 		//取得した最大値+1
-		int nextId;	
-        if(maxId != null) {
+		    int nextId;	
+            if(maxId != null) {
         //既存のカテゴリ名に+1
-             nextId = maxId + 1;
-		 }else {
+             nextId = maxId + Const.PLUS_KIZONBOOKID;
+		    }else {
 		//既存のカテゴリ名がない場合
 			 Integer maxIdAll = tBookRepository.findMaxBookId();
-		//テーブルにデータがなければ1001001を使い、データがある場合はその最大値に10001をたす。
-			 nextId = (maxIdAll == null) ? 1001001 :maxIdAll + 10001; 
-		 }
+		//データがある場合はその最大値に10001をたす。
+			 nextId = maxIdAll + Const.PLUS_NEWBOOKID; 
+		    }
         //取得したIDをセット
-        tbook.setBookId(nextId);
+            tbook.setBookId(nextId);
         //DBへセットした値を保存
-		TBookEntity saved= tBookRepository.save(tbook);
+		    TBookEntity saved= tBookRepository.save(tbook);
 		//ユーザー名をTbookEntityの提供者名にセット
-		saved.setProviderName(user.getName());
-		return saved;
+		    saved.setProviderName(user.getName());
+		    return saved;
+		
+		} catch (DataIntegrityViolationException e) {
+			throw new IllegalStateException("登録に失敗しました", e);
+		}
+		
 	}
 
 	/** 11/03 木俣

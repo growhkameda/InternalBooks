@@ -66,17 +66,16 @@ public class LocalImageStorageService implements ImageStorageService {
      */
     @Override
     public String savetbook(MultipartFile file) throws IOException {
-    	System.out.println("save() called"); 
+    	
     	// 画像の名前を変数を保存
     	String fileName = file.getOriginalFilename();
     	// 絶対パスの指定
     	String projectDir = System.getProperty("user.dir");
     	String path = projectDir + imageDirectory;
     	File saveFile = new File(path, fileName);
-    	System.out.println("fileName = " + fileName);
-    	
+    	//saveFileに格納されたURLにアップロードされた画像を物理的に書き込む
     	file.transferTo(saveFile);
-    	
+    	//URLを返す
     	return fileName;
     }
     
