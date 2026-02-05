@@ -126,6 +126,14 @@ public class InternalBooksController {
     }
 
     /**
+     * 練習画面に遷移
+     */
+    @GetMapping("/page/Practice")
+    public String practice() {
+    	return "/page/Practice";
+    }
+
+    /**
      * カテゴリーリストを表示
      */
     @GetMapping("/page/categories")
