@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.example.internalbooks.common.Const;
+import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.MDepartmentEntity;
 import com.example.internalbooks.entity.TUserEntity;
@@ -174,27 +175,30 @@ public class TUserService implements UserDetailsService {
 	/**
 	 * ユーザー編集保存
 	 */
-	public void updateUser(TUserEntity userDto, String currentPwd, String newPwd) {
+	public void updateUser(DtoUserEdit userDto, String currentPwd, String newPwd) {
 		
+		// userIdがnullだった場合、エラー
 		TUserEntity existingUser = getUserById(userDto.getUserId());
 		if( existingUser == null ) {
 			new RuntimeException("ユーザーが存在しません");
+			throw new RuntimeException("ユーザーが存在しません");
 		}
 
 		// パスワード更新ロジック
-		if (StringUtils.hasText(currentPwd) && StringUtils.hasText(newPwd)) {
-			if (passwordEncoder.matches(currentPwd, existingUser.getPassword())) {
-				existingUser.setPassword(passwordEncoder.encode(newPwd));
-			} else {
-				throw new IllegalArgumentException("現在のパスワードが正しくありません");
-			}
-		}
+	    if (StringUtils.hasText(currentPwd) && StringUtils.hasText(newPwd)) {
+	        if (passwordEncoder.matches(currentPwd, existingUser.getPassword())) {
+	            existingUser.setPassword(passwordEncoder.encode(newPwd));
+	        } else {
+	            throw new IllegalArgumentException("現在のパスワードが正しくありません");
+	        }
+	    }
 
 		// 基本情報の更新（パスワード有無に関わらず実行）
-		existingUser.setName(userDto.getName());
-		existingUser.setMailAddress(userDto.getMailAddress());
-		existingUser.setDepartmentId(userDto.getDepartmentId());
+	    existingUser.setName(userDto.getName());
+	    existingUser.setMailAddress(userDto.getMailAddress());
+	    existingUser.setDepartmentId(userDto.getDepartmentIdAsInteger());
 
+	    // DBへ書き込みする
 		tUserRepository.save(existingUser);
 	}
 
