@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-<title>userEdit</title>
+	<title>userEdit</title>
 </head>
 
 <body>
@@ -13,25 +12,24 @@
 		<br>
 		<h3 class="text-center mt-4">ユーザー編集</h3>
 		<br>
-		
+
 		<div th:if="${errorMessage}" class="container mt-3">
-    		<div class="row justify-content-center">
-        		<div class="col-8 alert alert-danger" role="alert">
-            		<span th:text="${errorMessage}"></span>
-        		</div>
-    		</div>
+			<div class="row justify-content-center">
+				<div class="col-8 alert alert-danger" role="alert">
+					<span th:text="${errorMessage}"></span>
+				</div>
+			</div>
 		</div>
 
-		<form th:action="@{/admin/usereditconfirmation}" method="post"
-			th:object="${userDto}" enctype="application/x-www-form-urlencoded">
+		<form th:action="@{/admin/usereditconfirmation}" method="post" th:object="${userDto}"
+			enctype="application/x-www-form-urlencoded">
 
 			<div class="container mt-4">
 				<div class="row justify-content-center">
 					<div class="col-8 pt-2">
 						<label for="userId" class="form-label text-start">社員ID</label>
 						<span th:errors="*{userId}" class="text-danger ms-3"></span>
-						<input type="text" th:field="*{userId}" readonly 
-							class="form-control bg-secondary-subtle">
+						<input type="text" th:field="*{userId}" readonly class="form-control bg-secondary-subtle">
 					</div>
 				</div>
 			</div>
@@ -58,11 +56,11 @@
 
 			<div class="container mt-4">
 				<div class="row justify-content-center">
-					<div class="col-8 pt-2">						
+					<div class="col-8 pt-2">
 						<label for="currentPassword" class="form-label text-start">今のパスワード</label>
 						<span th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}" class="text-danger ms-3"></span>
 						<input type="password" th:field="*{currentPassword}"
-							class="form-control bg-light" placeholder="変更する場合のみ入力してください">							
+							class="form-control bg-light" placeholder="変更する場合のみ入力してください">		
 						<label for="newPassword" class="form-label text-start mt-3">新しいパスワード</label>
 						<span th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}" class="text-danger ms-3"></span>
 						<input type="password" th:field="*{newPassword}" 
@@ -79,8 +77,8 @@
 						<span th:errors="*{departmentId}" class="text-danger ms-3"></span>
 						<select th:field="*{departmentId}" class="form-select bg-light">
 							<option value="">選択してください</option>
-							<option th:each="dept : ${mDepartmentList}" th:value="${dept.id}"
-								th:text="${dept.name}"></option>
+							<option th:each="dept : ${mDepartmentList}" th:value="${dept.id}" th:text="${dept.name}">
+							</option>
 						</select>
 					</div>
 				</div>
@@ -90,12 +88,11 @@
 				<div class="row justify-content-start">
 					<div class="col-12 ms-lg-5 ps-lg-5">
 						<a href="/admin/usersearch" class="btn fs-6 ">ユーザー検索へ戻る</a>
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-							fill="currentColor" class="bi bi-arrow-return-left"
-							viewBox="0 0 16 16">
-			           <path fill-rule="evenodd"
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+							class="bi bi-arrow-return-left" viewBox="0 0 16 16">
+							<path fill-rule="evenodd"
 								d="M14.5 1.5a.5.5 0 0 1 .5.5v4.8a2.5 2.5 0 0 1-2.5 2.5H2.707l3.347 3.346a.5.5 0 0 1-.708.708l-4.2-4.2a.5.5 0 0 1 0-.708l4-4a.5.5 0 1 1 .708.708L2.707 8.3H12.5A1.5 1.5 0 0 0 14 6.8V2a.5.5 0 0 1 .5-.5" />
-			                        </svg>
+						</svg>
 						</a>
 					</div>
 				</div>
@@ -110,4 +107,5 @@
 		</form>
 	</section>
 </body>
+
 </html>

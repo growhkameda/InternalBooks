@@ -14,6 +14,7 @@ public class PasswordEncoderConfig {
     @Bean
     /**
      * パスワードをエンコード
+     *
      * @return エンコードされたパスワード
      */
     public PasswordEncoder passwordEncoder() {

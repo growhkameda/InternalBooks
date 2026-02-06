@@ -2,6 +2,7 @@ package com.example.internalbooks.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -30,9 +31,10 @@ public class TUserService implements UserDetailsService {
 	private final TUserRepository tUserRepository;
 	private final MDepartmentRepository mDepartmentRepository;
 	private final PasswordEncoder passwordEncoder;
-	
+
 	// コンストラクタインジェクション
-	public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository, PasswordEncoder passwordEncoder) {
+	public TUserService(TUserRepository tUserRepository, MDepartmentRepository mDepartmentRepository,
+			PasswordEncoder passwordEncoder) {
 		this.tUserRepository = tUserRepository;
 		this.mDepartmentRepository = mDepartmentRepository;
 		this.passwordEncoder = passwordEncoder;
@@ -154,6 +156,26 @@ public class TUserService implements UserDetailsService {
 	}
 
 	/**
+	 * 所属課と所属課IDの対応表
+	 */
+	private static final Map<String, Integer> DEPT_MAP = Map.of(
+			"開発課", 1,
+			"評価検証課", 2,
+			"ITサポート課", 3,
+			"営業課", 4);
+
+	/**
+	 * 所属課をIntegerへ変換
+	 */
+	public void userDepartmentId(DtoUserRegistration userdto) {
+		Integer depmId = DEPT_MAP.getOrDefault(
+				userdto.getDepartmentId(),
+				5 // 上記の対応表に一致しなければ5
+		);
+		userdto.setDepartmentNumber(depmId);
+	}
+
+	/**
 	 * ユーザー情報をDBへ保存するメソッド
 	 */
 	public TUserEntity userRegistration(DtoUserRegistration dtuser) {
@@ -161,8 +183,9 @@ public class TUserService implements UserDetailsService {
 		tuser.setUserId(dtuser.getUserIdAsIntger());
 		tuser.setName(dtuser.getName());
 		tuser.setMailAddress(dtuser.getMailAddress());
-		tuser.setPassword(dtuser.getPassword());
-		tuser.setDepartmentId(dtuser.getDepartmentIdAsInteger());
+		String hash = passwordEncoder.encode(dtuser.getPassword());
+		tuser.setPassword(hash);
+		tuser.setDepartmentId(dtuser.getDepartmentNumber());
 		tuser.setRole(dtuser.getRole());
 		tuser.setDeleteFlg(dtuser.getDeleteFlg());
 
@@ -179,7 +202,7 @@ public class TUserService implements UserDetailsService {
 		
 		// userIdがnullだった場合、エラー
 		TUserEntity existingUser = getUserById(userDto.getUserId());
-		if( existingUser == null ) {
+		if (existingUser == null) {
 			new RuntimeException("ユーザーが存在しません");
 			throw new RuntimeException("ユーザーが存在しません");
 		}
@@ -208,7 +231,7 @@ public class TUserService implements UserDetailsService {
 	public void deleteUser(Integer userId) {
 		tUserRepository.DeleteUserById(userId);
 	}
-	
+
 	/**
 	 * 課一覧リストを取得
 	 */
