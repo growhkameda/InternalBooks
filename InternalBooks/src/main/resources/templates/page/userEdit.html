@@ -57,22 +57,6 @@
 			<div class="container mt-4">
 				<div class="row justify-content-center">
 					<div class="col-8 pt-2">
-						<label for="currentPassword" class="form-label text-start">今のパスワード</label>
-						<span th:if="${#fields.hasErrors('currentPassword')}" th:errors="*{currentPassword}" class="text-danger ms-3"></span>
-						<input type="password" th:field="*{currentPassword}"
-							class="form-control bg-light" placeholder="変更する場合のみ入力してください">		
-						<label for="newPassword" class="form-label text-start mt-3">新しいパスワード</label>
-						<span th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}" class="text-danger ms-3"></span>
-						<input type="password" th:field="*{newPassword}" 
-							class="form-control bg-light" placeholder="変更する場合のみ入力してください">
-						<small class="text-muted">※パスワードを変更しない場合は両方とも空欄にしてください。</small>
-					</div>
-				</div>
-			</div>
-
-			<div class="container mt-4">
-				<div class="row justify-content-center">
-					<div class="col-8 pt-2">
 						<label for="departmentId" class="form-label text-start">所属課</label>
 						<span th:errors="*{departmentId}" class="text-danger ms-3"></span>
 						<select th:field="*{departmentId}" class="form-select bg-light">

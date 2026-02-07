@@ -21,10 +21,6 @@ public class DtoUserEdit {
     @Pattern(regexp = "\\d+", message = "所属課の選択が不正です。")
     private String departmentId;
 
-    // パスワードはEntityにない一時的な入力値としてDTOで受ける
-    private String currentPassword;
-    private String newPassword;
-
     private String departmentName;
 
     // StringをIntegerへ変換するメソッド

@@ -151,25 +151,12 @@ public class AdminController extends InternalBooksController {
 			if (!isAdmin)
 				return adminPermissionError(redirectAttributes);
 
-
-			// パスワードが両方入力されているか、両方とも未入力かの判定
-			boolean hasCurrent = userDto.getCurrentPassword() != null && !userDto.getCurrentPassword().trim().isEmpty();
-			boolean hasNew = userDto.getNewPassword() != null && !userDto.getNewPassword().trim().isEmpty();
-
-			if ((hasCurrent && !hasNew) || (!hasCurrent && hasNew)) {
-				bindingResult.rejectValue("currentPassword", "error.password", "パスワードを変更する場合は両方のパスワードを入力してください");
-			}
-
 			// エラーがある場合、編集画面へ遷移する
 			if (bindingResult.hasErrors()) {
 				model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
 				model.addAttribute("errorMessage", "入力内容を確認してください。");
 				return "page/useredit";
 			}
-
-			// セッションへの格納
-			session.setAttribute("currentPwd", userDto.getCurrentPassword());
-			session.setAttribute("newPwd", userDto.getNewPassword());
 
 			// 所属課名のセット
 			userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
@@ -195,12 +182,8 @@ public class AdminController extends InternalBooksController {
             if (!isAdmin)
                 return adminPermissionError(redirectAttributes);
 
-            // 現在と新しいパスワードを受け取る
-            String currentPwd = (String) session.getAttribute("currentPwd");
-            String newPwd = (String) session.getAttribute("newPwd");
-
             // 編集内容をDBへ上書きする
-            tUserService.updateUser(userDto, currentPwd, newPwd);
+            tUserService.updateUser(userDto);
 
             // 完了画面用の所属課名のセット
             userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
@@ -219,10 +202,6 @@ public class AdminController extends InternalBooksController {
             logger.error("userupdatecompleteでエラーが発生しました", e);
             return error(redirectAttributes);
             
-        } finally {
-            // セッションに残ったパスワードを削除する
-            session.removeAttribute("currentPwd");
-            session.removeAttribute("newPwd");
         }
     }
 

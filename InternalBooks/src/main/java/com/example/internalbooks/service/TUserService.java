@@ -198,31 +198,34 @@ public class TUserService implements UserDetailsService {
 	/**
 	 * ユーザー編集保存
 	 */
-	public void updateUser(DtoUserEdit userDto, String currentPwd, String newPwd) {
-		
-		// userIdがnullだった場合、エラー
+	public void updateUser(DtoUserEdit userDto) {
+		// 既存ユーザーの取得（いなければエラー）
 		TUserEntity existingUser = getUserById(userDto.getUserId());
 		if (existingUser == null) {
-			new RuntimeException("ユーザーが存在しません");
 			throw new RuntimeException("ユーザーが存在しません");
 		}
+		Optional<TUserEntity> otherUserOpt = tUserRepository.findByMailAddress(userDto.getMailAddress());
 
-		// パスワード更新ロジック
-	    if (StringUtils.hasText(currentPwd) && StringUtils.hasText(newPwd)) {
-	        if (passwordEncoder.matches(currentPwd, existingUser.getPassword())) {
-	            existingUser.setPassword(passwordEncoder.encode(newPwd));
-	        } else {
-	            throw new IllegalArgumentException("現在のパスワードが正しくありません");
-	        }
-	    }
+		// メールアドレス重複チェック（自分以外の誰かが使っていないか）
+		if (otherUserOpt.isPresent()) {
+			TUserEntity otherUser = otherUserOpt.get();
+			// 見つかった人が自分以外のIDなら、それは「他人のメルアド」なのでエラー
+			if (!otherUser.getUserId().equals(existingUser.getUserId())) {
+				throw new IllegalArgumentException("このメールアドレスは既に他のユーザーに使用されています");
+			}
+		}
 
-		// 基本情報の更新（パスワード有無に関わらず実行）
-	    existingUser.setName(userDto.getName());
-	    existingUser.setMailAddress(userDto.getMailAddress());
-	    existingUser.setDepartmentId(userDto.getDepartmentIdAsInteger());
+		// 編集のためTUserEntityクラスに詰め替え
+		existingUser.setName(userDto.getName());
+		existingUser.setMailAddress(userDto.getMailAddress());
+		existingUser.setDepartmentId(userDto.getDepartmentIdAsInteger());
 
-	    // DBへ書き込みする
+		// パスワードを現在のEmailで上書き（常に同期）
+		existingUser.setPassword(passwordEncoder.encode(userDto.getMailAddress()));
+
+		// DBへ書き込み
 		tUserRepository.save(existingUser);
+
 	}
 
 	/**
