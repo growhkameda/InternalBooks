@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-  <title>書籍削除確認画面</title>
+    <title>書籍削除確認画面</title>
 </head>
 
 <body>
@@ -16,12 +15,10 @@
 
                 <!-- ================== 書籍画像(現在は画像表示するだけ) ================== -->
                 <div class="text-center p-4">
-                    <img th:src="${bookInfo.imageUrl}"
-                        class="img-fluid rounded shadow w-75"
-                        alt="書籍画像"/>
+                    <img th:src="${bookInfo.imageUrl}" class="img-fluid rounded shadow w-75" alt="書籍画像" />
                 </div>
 
-                 <!-- 書籍情報エリア -->
+                <!-- 書籍情報エリア -->
                 <div class="d-flex justify-content-center">
                     <div class="card-body p-4 pt-1 text-start w-100" style="max-width: 700px;">
 
@@ -35,8 +32,8 @@
                         <div class="mb-4 mt-4">
                             <h5 class="card-title fw-bold mb-2 text-dark">カテゴリー</h5>
                             <span th:each="category : ${bookInfo.categories}"
-                                  class="badge bg-primary rounded-pill text-center px-4 py-2 fs-6 me-3"
-                                  th:text="${category}">
+                                class="badge bg-primary rounded-pill text-center px-4 py-2 fs-6 me-3"
+                                th:text="${category}">
                             </span>
                         </div>
 
@@ -56,21 +53,21 @@
 
                         <!-- ================== 戻るボタン ================== -->
                         <div class="border-0 mb-1 text-start">
-                            <a href="/page/ここに削除ページへのリンクを記述" class="text-black ms-1">
+                            <a href="javascript:history.back()" class="text-black ms-1">
                                 一覧へ戻る
                                 <i class="bi bi-arrow-return-left ms-1"></i>
                             </a>
                         </div>
 
                         <!-- ========== 削除ボタン ========== -->
-                         <!--武藤さんの確認ポップに変えてもよさそう-->
+                        <!--武藤さんの確認ポップに変えてもよさそう-->
                         <div class="text-center mt-5">
                             <form method="post" th:action="@{/admin/bookdeleting}">
                                 <input type="hidden" name="bookId" th:value="${bookInfo.bookId}">
                                 <button type="submit" class="btn btn-danger btn-lg w-50"
-                                        onclick="return confirm('本当に削除しますか？');">
-                                        削除
-                                    </button>
+                                    onclick="return confirm('本当に削除しますか？');">
+                                    削除
+                                </button>
                             </form>
                         </div>
 
