@@ -612,10 +612,10 @@ public class InternalBooksController {
             throw new Exception("Token not found in session");
         }
         jwtUtil.extractUserId(token); // トークンの有効性確認
-        
+
         Integer userId = jwtUtil.extractUserId(token);
         session.setAttribute("currentUserId", userId);
-        
+
         return jwtUtil.extractIsAdmin(token);
     }
 
