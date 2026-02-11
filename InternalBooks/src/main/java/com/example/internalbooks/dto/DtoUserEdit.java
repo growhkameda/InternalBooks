@@ -7,12 +7,12 @@ import lombok.Data;
 
 @Data
 public class DtoUserEdit {
-    
+
     private Integer userId;
-    
+
     @NotBlank(message = "名前を入力してください。")
-    private String name;    
-    
+    private String name;
+
     @NotBlank(message = "メールアドレスを入力してください。")
     @Email(message = "メールアドレスの形式が正しくありません。")
     private String mailAddress;

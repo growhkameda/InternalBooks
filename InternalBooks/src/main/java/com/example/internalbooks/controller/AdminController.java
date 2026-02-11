@@ -135,40 +135,38 @@ public class AdminController extends InternalBooksController {
         }
     }
 
+    /*
+     * ユーザー情報編集確認ページに遷移
+     */
+    @PostMapping("/usereditconfirmation")
+    public String userEditConfirmation(@Valid @ModelAttribute("userDto") DtoUserEdit userDto,
+            BindingResult bindingResult, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
 
-	/*
-	 * ユーザー情報編集確認ページに遷移
-	 */
-	@PostMapping("/usereditconfirmation")
-	public String userEditConfirmation(@Valid @ModelAttribute("userDto") DtoUserEdit userDto,
-			BindingResult bindingResult, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-
-
-		try {
+        try {
             // 管理者権限の検証
-			boolean isAdmin = validateTokenAndCheckAdmin(session);
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
             // tokenの検証とユーザーIDの取得
-			if (!isAdmin)
-				return adminPermissionError(redirectAttributes);
+            if (!isAdmin)
+                return adminPermissionError(redirectAttributes);
 
-			// エラーがある場合、編集画面へ遷移する
-			if (bindingResult.hasErrors()) {
-				model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
-				model.addAttribute("errorMessage", "入力内容を確認してください。");
-				return "page/useredit";
-			}
+            // エラーがある場合、編集画面へ遷移する
+            if (bindingResult.hasErrors()) {
+                model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
+                model.addAttribute("errorMessage", "入力内容を確認してください。");
+                return "page/useredit";
+            }
 
-			// 所属課名のセット
-			userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
-			model.addAttribute("userDto", userDto);
-			model.addAttribute("isAdmin", isAdmin);
+            // 所属課名のセット
+            userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
+            model.addAttribute("userDto", userDto);
+            model.addAttribute("isAdmin", isAdmin);
 
-			return "page/usereditconfirmation";
-		} catch (Exception e) {
-			logger.error("usereditconfirmationでエラーが発生しました", e);
-			return error(redirectAttributes);
-		}
-	}
+            return "page/usereditconfirmation";
+        } catch (Exception e) {
+            logger.error("usereditconfirmationでエラーが発生しました", e);
+            return error(redirectAttributes);
+        }
+    }
 
     /*
      * ユーザー編集完了ページに遷移
@@ -189,7 +187,7 @@ public class AdminController extends InternalBooksController {
             userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
             model.addAttribute("userDto", userDto);
             return "page/usereditcomplete";
-            
+
         } catch (IllegalArgumentException e) {
             // 更新に失敗した場合、ユーザー編集ページに遷移する
             logger.warn("更新失敗: {}", e.getMessage());
@@ -197,11 +195,11 @@ public class AdminController extends InternalBooksController {
             userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
             model.addAttribute("userDto", userDto);
             return "page/useredit";
-            
+
         } catch (Exception e) {
             logger.error("userupdatecompleteでエラーが発生しました", e);
             return error(redirectAttributes);
-            
+
         }
     }
 
@@ -269,7 +267,7 @@ public class AdminController extends InternalBooksController {
             userDto.setName(user.getName());
             userDto.setMailAddress(user.getMailAddress());
             userDto.setDepartmentId(String.valueOf(user.getDepartmentId()));
-            
+
             model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
             model.addAttribute("userDto", userDto);
             model.addAttribute("isAdmin", isAdmin);
