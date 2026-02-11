@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.internalbooks.service.TUserService;
 
 import com.example.internalbooks.dto.DtoBookInfo;
+import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.MDepartmentEntity;
 import com.example.internalbooks.entity.TBookEntity;
@@ -134,73 +135,46 @@ public class AdminController extends InternalBooksController {
         }
     }
 
-    /*
-     * ユーザー情報編集確認ページに遷移
-     */
-    @PostMapping("/usereditconfirmation")
-    public String userEditConfirmation(@Valid @ModelAttribute("userDto") TUserEntity userDto,
-            BindingResult bindingResult,
-            @RequestParam(name = "currentPassword", required = false) String currentPwd,
-            @RequestParam(name = "newPassword", required = false) String newPwd,
-            HttpSession session, Model model,
-            RedirectAttributes redirectAttributes) {
 
-        // トークンと管理者権限の検証
-        try {
+	/*
+	 * ユーザー情報編集確認ページに遷移
+	 */
+	@PostMapping("/usereditconfirmation")
+	public String userEditConfirmation(@Valid @ModelAttribute("userDto") DtoUserEdit userDto,
+			BindingResult bindingResult, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+
+
+		try {
             // 管理者権限の検証
-            boolean isAdmin = validateTokenAndCheckAdmin(session);
+			boolean isAdmin = validateTokenAndCheckAdmin(session);
             // tokenの検証とユーザーIDの取得
-            if (!isAdmin)
-                return adminPermissionError(redirectAttributes);
+			if (!isAdmin)
+				return adminPermissionError(redirectAttributes);
 
-            // 名前のチェック
-            if (userDto.getName() == null || userDto.getName().isBlank()) {
-                bindingResult.rejectValue("name", "error.name", "名前を入力してください。");
-            }
+			// エラーがある場合、編集画面へ遷移する
+			if (bindingResult.hasErrors()) {
+				model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
+				model.addAttribute("errorMessage", "入力内容を確認してください。");
+				return "page/useredit";
+			}
 
-            // メールアドレスのチェック
-            if (userDto.getMailAddress() == null || userDto.getMailAddress().isBlank()) {
-                bindingResult.rejectValue("mailAddress", "error.mailAddress", "メールアドレスを入力してください。");
-            } else if (!userDto.getMailAddress().contains("@")) {
-                bindingResult.rejectValue("mailAddress", "error.mailAddress", "メールアドレスの形式が正しくありません。");
-            }
+			// 所属課名のセット
+			userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
+			model.addAttribute("userDto", userDto);
+			model.addAttribute("isAdmin", isAdmin);
 
-            // 現在のパスワードと新しいパスワードに値が入っているか判定
-            boolean hasCurrentPwd = currentPwd != null && !currentPwd.trim().isEmpty();
-            boolean hasNewPwd = newPwd != null && !newPwd.trim().isEmpty();
-            // 現在のパスワードか新しいパスワードの片方だけ入力された場合エラーメッセージリストに追加する
-            if ((hasCurrentPwd && !hasNewPwd) || (!hasCurrentPwd && hasNewPwd)) {
-                bindingResult.rejectValue("password", "error.password", "パスワードを変更する場合は両方のパスワードを入力してください");
-            }
-
-            // エラーメッセージがある場合、編集画面へ遷移する
-            if (bindingResult.hasErrors()) {
-                model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
-                model.addAttribute("errorMessage", "入力内容を確認してください。");
-                return "page/useredit";
-            }
-
-            // ユーザー編集確認画面へ遷移のために値をセットする
-            session.removeAttribute("currentPwd");
-            session.removeAttribute("newPwd");
-            session.setAttribute("currentPwd", currentPwd);
-            session.setAttribute("newPwd", newPwd);
-            userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentId()));
-            model.addAttribute("userDto", userDto);
-            model.addAttribute("isAdmin", isAdmin);
-
-            return "page/usereditconfirmation";
-        } catch (Exception e) {
-            logger.error("usereditconfirmationでエラーが発生しました", e);
-            return error(redirectAttributes);
-        }
-    }
+			return "page/usereditconfirmation";
+		} catch (Exception e) {
+			logger.error("usereditconfirmationでエラーが発生しました", e);
+			return error(redirectAttributes);
+		}
+	}
 
     /*
      * ユーザー編集完了ページに遷移
      */
     @PostMapping("/usereditcomplete")
-    public String userEditComplete(@ModelAttribute("userDto") TUserEntity userDto, HttpSession session, Model model,
+    public String userEditComplete(@ModelAttribute("userDto") DtoUserEdit userDto, HttpSession session, Model model,
             RedirectAttributes redirectAttributes) {
 
         try {
@@ -208,28 +182,26 @@ public class AdminController extends InternalBooksController {
             if (!isAdmin)
                 return adminPermissionError(redirectAttributes);
 
-            String currentPwd = (String) session.getAttribute("currentPwd");
-            String newPwd = (String) session.getAttribute("newPwd");
+            // 編集内容をDBへ上書きする
+            tUserService.updateUser(userDto);
 
-            tUserService.updateUser(userDto, currentPwd, newPwd);
-
-            userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentId()));
+            // 完了画面用の所属課名のセット
+            userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
             model.addAttribute("userDto", userDto);
-
             return "page/usereditcomplete";
+            
         } catch (IllegalArgumentException e) {
             // 更新に失敗した場合、ユーザー編集ページに遷移する
             logger.warn("更新失敗: {}", e.getMessage());
             model.addAttribute("errorMessage", e.getMessage());
-            userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentId()));
+            userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
+            model.addAttribute("userDto", userDto);
             return "page/useredit";
+            
         } catch (Exception e) {
             logger.error("userupdatecompleteでエラーが発生しました", e);
             return error(redirectAttributes);
-        } finally {
-            // セッションに残ったパスワードを削除する
-            session.removeAttribute("currentPwd");
-            session.removeAttribute("newPwd");
+            
         }
     }
 
@@ -289,11 +261,17 @@ public class AdminController extends InternalBooksController {
                 return "redirect:/admin/usersearch";
             }
 
+            // 編集するためDtoUserEditに詰め替える
             TUserEntity user = tUserService.getUserById(userId);
-            user.setDepartmentName(tUserService.getDepartmentNameById(user.getDepartmentId()));
 
+            DtoUserEdit userDto = new DtoUserEdit();
+            userDto.setUserId(user.getUserId());
+            userDto.setName(user.getName());
+            userDto.setMailAddress(user.getMailAddress());
+            userDto.setDepartmentId(String.valueOf(user.getDepartmentId()));
+            
             model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
-            model.addAttribute("userDto", user);
+            model.addAttribute("userDto", userDto);
             model.addAttribute("isAdmin", isAdmin);
 
             return "page/useredit";

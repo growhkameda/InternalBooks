@@ -64,3 +64,4 @@ undo_*
 .metadata/
 Servers/
 
+InternalBooks/src/main/resources/application.properties
