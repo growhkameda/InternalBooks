@@ -37,7 +37,6 @@
       <div class="text-center mb-1">
         <!-- 書籍画像エリア -->
         <div class="text-center p-4">
-<!--		  <img th:src="@{|/images/${book.bookId}.png|}" -->
 		  <img th:src="@{'/images/' + ${book.bookId} + '.png'}"
                class="img-fluid rounded shadow w-25 h-auto"
                alt="書籍画像"
@@ -61,7 +60,6 @@
 
           <!-- 貸出状況 -->
           <div class="mb-0">
-<!--			<p>貸出状況</p>-->
             <span th:if="${book.status == '貸出中'}" class="text-danger fw-bold">貸出中</span>
             <span th:if="${book.status != '貸出中'}" class="text-success fw-bold">貸出可能</span>
           </div>

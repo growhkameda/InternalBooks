@@ -1,6 +1,5 @@
 package com.example.internalbooks.controller;
 
-
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -31,14 +30,14 @@ import io.micrometer.common.util.StringUtils;
 @Controller
 public class InternalBooksController {
 
-    //ロガー
-	private static final Logger logger = LoggerFactory.getLogger(InternalBooksController.class);
-    //DI用フィールド
+    // ロガー
+    private static final Logger logger = LoggerFactory.getLogger(InternalBooksController.class);
+    // DI用フィールド
     private final JwtUtil jwtUtil;
     private final AuthService authService;
     private final TBookService tBookService;
 
-    //コンストラクタインジェクション
+    // コンストラクタインジェクション
     public InternalBooksController(JwtUtil jwtUtil, AuthService authService, TBookService tBookService) {
         this.jwtUtil = jwtUtil;
         this.authService = authService;
@@ -48,7 +47,7 @@ public class InternalBooksController {
     @Autowired
     private TLendingHistoryService lendingHistoryService;
 
-    // 画面遷移用グローバル変数 カテゴリー一覧：1　QRコード：2　貸出中書籍：3
+    // 画面遷移用グローバル変数 カテゴリー一覧：1 QRコード：2 貸出中書籍：3
     Integer screenFlag;
 
     /**
@@ -71,37 +70,37 @@ public class InternalBooksController {
      * ログイン処理
      */
     @PostMapping("/action/login")
-    public String login(@RequestParam(name = "mailAddress") String mailAddress, @RequestParam(name = "password") String password, HttpSession session, RedirectAttributes redirectAttributes) {
+    public String login(@RequestParam(name = "mailAddress") String mailAddress,
+            @RequestParam(name = "password") String password, HttpSession session,
+            RedirectAttributes redirectAttributes) {
 
-    	try {
+        try {
 
-        	// 想定通りの入力がされている場合
-        	if(StringUtils.isNotEmpty(mailAddress) && StringUtils.isNotEmpty(password)) {
-        		// 認証情報を専用のDtoに格納
-        		DtoAuthRequest authRequest = new DtoAuthRequest();
-        		authRequest.setMailAddress(mailAddress);
-        		authRequest.setPassword(password);
+            // 想定通りの入力がされている場合
+            if (StringUtils.isNotEmpty(mailAddress) && StringUtils.isNotEmpty(password)) {
+                // 認証情報を専用のDtoに格納
+                DtoAuthRequest authRequest = new DtoAuthRequest();
+                authRequest.setMailAddress(mailAddress);
+                authRequest.setPassword(password);
 
-        		// ログイン処理を実行し成功したらtokenを設定
-        		// 認証が失敗するとエラーがなげられるためCatchにひっかかる
-        		String token = authService.login(authRequest);
+                // ログイン処理を実行し成功したらtokenを設定
+                // 認証が失敗するとエラーがなげられるためCatchにひっかかる
+                String token = authService.login(authRequest);
 
-        		logger.info("ログイン成功: メールアドレス = {}", mailAddress);
+                logger.info("ログイン成功: メールアドレス = {}", mailAddress);
 
-        		// セッションにtokenを設定
-        		session.setAttribute("token", token);
+                // セッションにtokenを設定
+                session.setAttribute("token", token);
 
-        		return "redirect:/page/top";
-        	}
-        	else {
-        		throw new Exception("ログイン失敗");
-        	}
+                return "redirect:/page/top";
+            } else {
+                throw new Exception("ログイン失敗");
+            }
 
-    	}
-    	catch (Exception e) {
-    		logger.error("ログイン失敗: メールアドレス = {}", mailAddress);
-    		return error(redirectAttributes);
-    	}
+        } catch (Exception e) {
+            logger.error("ログイン失敗: メールアドレス = {}", mailAddress);
+            return error(redirectAttributes);
+        }
 
     }
 
@@ -110,18 +109,17 @@ public class InternalBooksController {
      */
     @GetMapping("/page/top")
     public String top(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// トークンの検証
-    		validateTokenAndGetUserId(session);
+        try {
+            // トークンの検証
+            validateTokenAndGetUserId(session);
 
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             model.addAttribute("isAdmin", isAdmin);
 
             return "page/top";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
+        } catch (Exception e) {
+            return error(redirectAttributes);
+        }
 
     }
 
@@ -130,9 +128,9 @@ public class InternalBooksController {
      */
     @GetMapping("/page/categories")
     public String categories(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// トークンの検証
-    		validateTokenAndGetUserId(session);
+        try {
+            // トークンの検証
+            validateTokenAndGetUserId(session);
 
             // カテゴリーリストを取得
             List<String> categoryList = tBookService.getAllCategories();
@@ -140,10 +138,9 @@ public class InternalBooksController {
             model.addAttribute("categories", categoryList);
 
             return "page/categories";
-    	}
-    	catch (Exception e) {
+        } catch (Exception e) {
             return error(redirectAttributes);
-    	}
+        }
 
     }
 
@@ -152,9 +149,9 @@ public class InternalBooksController {
      */
     @GetMapping("/page/checkedout")
     public String checkedout(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// tokenの検証とユーザーIDの取得
-    		Integer userId = validateTokenAndGetUserId(session);
+        try {
+            // tokenの検証とユーザーIDの取得
+            Integer userId = validateTokenAndGetUserId(session);
 
             // 現在のユーザーの貸出中書籍を取得（返却予定日も含む）
             List<DtoBookInfo> checkedOutBooks = tBookService.getCheckedOutBooksByUserId(userId);
@@ -168,10 +165,9 @@ public class InternalBooksController {
             session.setAttribute("screenFlag", screenFlag);
 
             return "page/checkedout";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
+        } catch (Exception e) {
+            return error(redirectAttributes);
+        }
 
     }
 
@@ -180,9 +176,9 @@ public class InternalBooksController {
      */
     @GetMapping("/page/qrsearch")
     public String qrScanner(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-    	try {
-    		// JWT認証トークンの検証
-    		validateTokenAndGetUserId(session);
+        try {
+            // JWT認証トークンの検証
+            validateTokenAndGetUserId(session);
 
             // フラグ QRコード：2
             screenFlag = 2;
@@ -191,11 +187,10 @@ public class InternalBooksController {
             session.setAttribute("screenFlag", screenFlag);
 
             return "page/qrsearch";
-    	}
-    	catch (Exception e) {
-    		// 認証失敗時はログインページにリダイレクト
+        } catch (Exception e) {
+            // 認証失敗時はログインページにリダイレクト
             return error(redirectAttributes);
-    	}
+        }
 
     }
 
@@ -204,13 +199,13 @@ public class InternalBooksController {
      */
     @GetMapping("/page/categories_detail")
     public String categories_detail(
-        @RequestParam("category") String category,
-        @RequestParam(value = "page", defaultValue = "0") int page,
-        HttpSession session,
-        Model model,
-        RedirectAttributes redirectAttributes) {
+            @RequestParam("category") String category,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-        //1ページに表示する本の数
+        // 1ページに表示する本の数
         final int BOOKS_PER_PAGE = 6;
 
         try {
@@ -223,10 +218,10 @@ public class InternalBooksController {
             // カテゴリーに属するすべての本のIDを取得
             List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
 
-            //取得した本の要素数を取得
+            // 取得した本の要素数を取得
             int TOTAL_BOOK_COUNT = allBookIds.size();
 
-            //指定した表示画像数と、取得した要素数で必要なページ数を計算
+            // 指定した表示画像数と、取得した要素数で必要なページ数を計算
             int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / BOOKS_PER_PAGE);
 
             // ページ範囲を計算
@@ -258,12 +253,12 @@ public class InternalBooksController {
      */
     @GetMapping("/page/searchresult")
     public String searchResult(
-		@ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
-        @RequestParam(name = "bookId", required = false) Integer bookId,
-        @RequestParam(name = "qrData", required = false) String qrData,
-        HttpSession session,
-        Model model,
-        RedirectAttributes redirectAttributes) {
+            @ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
+            @RequestParam(name = "bookId", required = false) Integer bookId,
+            @RequestParam(name = "qrData", required = false) String qrData,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
         try {
             // JWT認証トークンの検証（共通メソッド）
@@ -277,31 +272,33 @@ public class InternalBooksController {
             boolean showButton;
             // コメントの表示・非表示
             boolean showComment;
-            switch(screenFlag) {
-            	// カテゴリー一覧からの遷移
-	            case 1:
-	            	showButton = false;
-	            	showComment = false;
-	            	model.addAttribute("showButton", showButton);
-	            	model.addAttribute("showComment", showComment);
-	            	break;
-            	// QRコードからの遷移
-	            case 2:
-	            	showButton = true;
-	            	showComment = false;
-	            	model.addAttribute("screenFlag", screenFlag);
-	            	model.addAttribute("showButton", showButton);
-	            	model.addAttribute("showComment", showComment);
-	            	break;
-            	// 貸出中の場合
-	            case 3:
-	            	showButton = true;
-	            	showComment = true;
-	            	model.addAttribute("showButton", showButton);
-	            	model.addAttribute("showComment", showComment);
-	            	break;
-	            default:
-	            	break;
+
+            // 遷移元によってボタン・コメントの表示を切り替え
+            switch (screenFlag) {
+                // カテゴリー一覧からの遷移
+                case 1:
+                    showButton = false;
+                    showComment = false;
+                    model.addAttribute("showButton", showButton);
+                    model.addAttribute("showComment", showComment);
+                    break;
+                // QRコードからの遷移
+                case 2:
+                    showButton = true;
+                    showComment = false;
+                    model.addAttribute("screenFlag", screenFlag);
+                    model.addAttribute("showButton", showButton);
+                    model.addAttribute("showComment", showComment);
+                    break;
+                // 貸出中の場合
+                case 3:
+                    showButton = true;
+                    showComment = true;
+                    model.addAttribute("showButton", showButton);
+                    model.addAttribute("showComment", showComment);
+                    break;
+                default:
+                    break;
             }
 
             // 書籍検索処理をServiceで処理
@@ -314,16 +311,15 @@ public class InternalBooksController {
             model.addAttribute("categories", book.getCategories());
 
             // 書籍履歴を取得
-            // TODO 実際の書籍履歴取得機能のロジックをここに記述してください。(サービスに記述したものを引っ張ってくる)
             List<DtoBookHistory> dtoBookHistory;
 
-            if(bookId == null && qrData != null) {
-            	// QRコードから遷移した場合
-            	Integer qrId = Integer.parseInt(qrData);
-            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            if (bookId == null && qrData != null) {
+                // QRコードから遷移した場合
+                Integer qrId = Integer.parseInt(qrData);
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
             } else {
-            	// 一覧から遷移した場合
-            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+                // 一覧から遷移した場合
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
 
             model.addAttribute("bookHistoryList", dtoBookHistory);
@@ -343,25 +339,25 @@ public class InternalBooksController {
 
     @PostMapping("page/LendingCompleted")
     public String searchResultLend(
-    		@ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
-//    		@RequestParam("bookId") Integer bookId,
-    		@RequestParam(name = "qrData", required = false) String qrData,
+            @ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
+            // @RequestParam("bookId") Integer bookId,
+            @RequestParam(name = "qrData", required = false) String qrData,
             HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-    	try {
-    		// torkenの検証
-    		String token = (String) session.getAttribute("token");
-    		Integer bookId;
-    		if (qrData != null) {
-    			// QRコードで読み取った場合
-    			bookId = Integer.parseInt(qrData);
-    		} else {
-    			// 一覧画面から遷移した場合
-    			bookId = dtlend.getBookId();
-    		}
+        try {
+            // torkenの検証
+            String token = (String) session.getAttribute("token");
+            Integer bookId;
             Integer userId = jwtUtil.extractUserId(token);
+            if (qrData != null) {
+                // QRコードで読み取った場合
+                bookId = Integer.parseInt(qrData);
+            } else {
+                // 一覧画面から遷移した場合
+                bookId = dtlend.getBookId();
+            }
 
             dtlend.setBookId(bookId);
             dtlend.setUserId(userId);
@@ -369,46 +365,63 @@ public class InternalBooksController {
             boolean isAdmin = jwtUtil.extractIsAdmin(token);
             model.addAttribute("isAdmin", isAdmin);
 
-//            TLendingHistoryEntity savedLend =
-    		lendingHistoryService.rentalCompleted(dtlend);
-//            DtoBookHistoryRegistration tlend = new DtoBookHistoryRegistration();
+            lendingHistoryService.rentalCompleted(dtlend);
 
-    		if (bookId == null) {
+            DtoBookInfo bookInfo = tBookService.getBookById(bookId);
+            model.addAttribute("book", bookInfo);
+            model.addAttribute("categories", bookInfo.getCategories());
+
+            // 書籍履歴を取得
+            List<DtoBookHistory> dtoBookHistory;
+
+            if (bookId == null) {
+                // QRコードから遷移した場合
+                Integer qrId = Integer.parseInt(qrData);
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            } else {
+                // 一覧から遷移した場合
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            }
+
+            model.addAttribute("bookHistoryList", dtoBookHistory);
+
+            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
+            model.addAttribute("bookHistory", latestHistory);
+
+            if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
                 return "redirect:/page/top";
             }
 
-    		redirectAttributes.addAttribute("bookId", bookId);
+            redirectAttributes.addAttribute("bookId", bookId);
 
-    	} catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
+        } catch (Exception e) {
+            return error(redirectAttributes);
+        }
 
-    	return "page/LendingCompleted";
+        return "redirect:/page/LendingCompleted";
     }
-
 
     @PostMapping("/page/ReturnCompleted")
     public String searchResultReturn(
-    		@ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
-    		@RequestParam("bookId") Integer bookId,
-    		@RequestParam(name = "qrData", required = false) String qrData,
+            @ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
+            @RequestParam("bookId") Integer bookId,
+            @RequestParam(name = "qrData", required = false) String qrData,
             HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-    	try {
-    		// torkenの検証
-    		String token = (String) session.getAttribute("token");
-//    		Integer bookId;
-    		if (qrData != null) {
-    			// QRコードで読み取った場合
-    			bookId = Integer.parseInt(qrData);
-    		} else {
-    			// 一覧画面から遷移した場合
-    			bookId = dtlend.getBookId();
-    		}
+        try {
+            // torkenの検証
+            String token = (String) session.getAttribute("token");
             Integer userId = jwtUtil.extractUserId(token);
+            if (qrData != null) {
+                // QRコードで読み取った場合
+                bookId = Integer.parseInt(qrData);
+            } else {
+                // 一覧画面から遷移した場合
+                bookId = dtlend.getBookId();
+            }
 
             dtlend.setBookId(bookId);
             dtlend.setUserId(userId);
@@ -427,8 +440,27 @@ public class InternalBooksController {
             tlend.setUserId(savedLend.getUserId());
             tlend.setReview(savedLend.getReview());
 
+            DtoBookInfo bookInfo = tBookService.getBookById(bookId);
+
             // 取得した情報を表示
-            model.addAttribute("tlend",tlend);
+            model.addAttribute("book", bookInfo);
+
+            // 書籍履歴を取得
+            List<DtoBookHistory> dtoBookHistory;
+
+            if (bookId == null) {
+                // QRコードから遷移した場合
+                Integer qrId = Integer.parseInt(qrData);
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            } else {
+                // 一覧から遷移した場合
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+            }
+
+            model.addAttribute("bookHistoryList", dtoBookHistory);
+
+            DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
+            model.addAttribute("bookHistory", latestHistory);
 
             if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
@@ -436,14 +468,10 @@ public class InternalBooksController {
             }
 
             redirectAttributes.addAttribute("bookId", bookId);
-//            if (qrData != null) {
-//            	redirectAttributes.addAttribute("qrData", qrData);
-//            }
-            return "page/ReturnCompleted";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
+            return "redirect:/page/ReturnCompleted";
+        } catch (Exception e) {
+            return error(redirectAttributes);
+        }
 
     }
 
@@ -452,19 +480,13 @@ public class InternalBooksController {
      */
     @GetMapping("/page/LendingCompleted")
     public String LendingCompleted(
-    		@RequestParam("bookId") Integer bookId,
-    		@RequestParam(name = "qrData", required = false) String qrData,
+            @RequestParam("bookId") Integer bookId,
+            @RequestParam(name = "qrData", required = false) String qrData,
             HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-    	try {
-    		// torkenの検証
-//    		String token = (String) session.getAttribute("token");
-//            jwtUtil.extractUserId(token);
-
-//            boolean isAdmin = jwtUtil.extractIsAdmin(token);
-//            model.addAttribute("isAdmin", isAdmin);
+        try {
 
             // トークンの検証（共通メソッド）
             validateTokenAndGetUserId(session);
@@ -477,13 +499,13 @@ public class InternalBooksController {
             // 書籍履歴を取得
             List<DtoBookHistory> dtoBookHistory;
 
-            if(bookId == null) {
-            	// QRコードから遷移した場合
-            	Integer qrId = Integer.parseInt(qrData);
-            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            if (bookId == null && qrData != null) {
+                // QRコードから遷移した場合
+                Integer qrId = Integer.parseInt(qrData);
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
             } else {
-            	// 一覧から遷移した場合
-            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+                // 一覧から遷移した場合（基本はこちら）
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
 
             model.addAttribute("bookHistoryList", dtoBookHistory);
@@ -497,26 +519,24 @@ public class InternalBooksController {
             }
 
             return "page/LendingCompleted";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
+        } catch (Exception e) {
+            return error(redirectAttributes);
+        }
 
     }
-
 
     /**
      * 返却完了ページに遷移
      */
     @GetMapping("/page/ReturnCompleted")
     public String ReturnCompleted(
-    		@RequestParam("bookId") Integer bookId,
-    		@RequestParam(name = "qrData", required = false) String qrData,
+            @RequestParam("bookId") Integer bookId,
+            @RequestParam(name = "qrData", required = false) String qrData,
             HttpSession session,
             Model model,
             RedirectAttributes redirectAttributes) {
 
-    	try {
+        try {
             // トークンの検証（共通メソッド）
             validateTokenAndGetUserId(session);
 
@@ -528,13 +548,13 @@ public class InternalBooksController {
             // 書籍履歴を取得
             List<DtoBookHistory> dtoBookHistory;
 
-            if(bookId == null) {
-            	// QRコードから遷移した場合
-            	Integer qrId = Integer.parseInt(qrData);
-            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
+            if (bookId == null) {
+                // QRコードから遷移した場合
+                Integer qrId = Integer.parseInt(qrData);
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(qrId);
             } else {
-            	// 一覧から遷移した場合
-            	dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
+                // 一覧から遷移した場合
+                dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
 
             model.addAttribute("bookHistoryList", dtoBookHistory);
@@ -542,17 +562,15 @@ public class InternalBooksController {
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
             model.addAttribute("bookHistory", latestHistory);
 
-
             if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
                 return "redirect:/page/top";
             }
 
             return "page/ReturnCompleted";
-    	}
-    	catch (Exception e) {
-    		return error(redirectAttributes);
-    	}
+        } catch (Exception e) {
+            return error(redirectAttributes);
+        }
 
     }
 
@@ -561,7 +579,7 @@ public class InternalBooksController {
      * セッション切れなどの際にloginページにリダイレクト
      */
     protected String error(RedirectAttributes redirectAttributes) {
-    	redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
+        redirectAttributes.addFlashAttribute("errorMessage", "セッションが切れました。再度ログインしてください。");
         return "redirect:/page/login";
     }
 
@@ -570,7 +588,7 @@ public class InternalBooksController {
      * 管理者権限が必要な機能にアクセスした際にloginページにリダイレクト
      */
     protected String adminPermissionError(RedirectAttributes redirectAttributes) {
-    	redirectAttributes.addFlashAttribute("errorMessage", "管理者権限が必要です。");
+        redirectAttributes.addFlashAttribute("errorMessage", "管理者権限が必要です。");
         return "redirect:/page/login";
     }
 
@@ -594,6 +612,10 @@ public class InternalBooksController {
             throw new Exception("Token not found in session");
         }
         jwtUtil.extractUserId(token); // トークンの有効性確認
+
+        Integer userId = jwtUtil.extractUserId(token);
+        session.setAttribute("currentUserId", userId);
+
         return jwtUtil.extractIsAdmin(token);
     }
 

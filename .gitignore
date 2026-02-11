@@ -59,4 +59,8 @@ ibdata*
 ibtmp*
 mysql_upgrade_history
 undo_*
-/.metadata/
+
+# Eclipse workspace metadata
+.metadata/
+Servers/
+
