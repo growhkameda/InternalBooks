@@ -1,36 +1,42 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-    <title>削除対象カテゴリー</title>
+	<title>削除対象カテゴリー</title>
 </head>
 
 <body>
-<section class="vh-100 d-flex justify-content-center align-items-center">
-	<div class="container vh-100 d-flex justify-content-center align-items-center">
-	  <div class="w-100" style="max-width: 400px;">
-	    <h1 class="mb-4 text-center">カテゴリー</h1>
+	<section class="vh-100 d-flex justify-content-center align-items-center">
+		<div class="container vh-100 d-flex justify-content-center align-items-center">
+			<div class="w-100" style="max-width: 400px;">
+				<h1 class="mb-4 text-center">カテゴリー</h1>
 
-	    <div class="row g-3">
-	      <!-- 2列レイアウト -->
-	      <div class="col-6" th:each="category : ${categories}">
-	        <a 			class="btn btn-primary w-100"
-			   th:href="@{'/admin/bookdeleting?category=' + ${category}}"
-			   th:text="${category}">Button</a>
-	      </div>
-	    </div>
 
-		<!-- ========== 管理者TOPへ戻るボタン ========== -->
-		<div class="border-0 mt-4 mb-3 text-start">
-			<a href="/admin/adminusertop" class="text-black ms-1">
-				 管理者TOPへ戻る
-				 <i class="bi bi-arrow-return-left ms-1"></i>
-			</a>
+				<!--2列レイアウト -->
+				<div class="row g-3">
+					<div class="col-6" th:each="category : ${categories}">
+
+						<!--	  DBよりカテゴリーをリストで取得し、画面に表示-->
+						<!--    カテゴリー毎にボタンのデザインを変更するために三項演算子を追記-->
+						<!--注意：三項演算子を複数行で記載すると値をとってこれないため、一行で記載-->
+						<a th:href="@{'/page/categories_detail?category=' + ${category}}" th:text="${category}"
+							class="btn btn-outline-secondary w-100 bg-white  shadow py-3 fw-bold"
+							th:classappend="${category == 'Java'} ? ' text-primary' : (${category == 'Python'} ? ' text-info' : (${category == 'C言語'} ? ' text-warning' : (${category == '基本情報'} ? ' text-success' : (${category == 'ITパスポート'} ? ' text-danger' : ' btn-primary'))))">
+						</a>
+					</div>
+				</div>
+
+				<!-- ========== 管理者TOPへ戻るボタン ========== -->
+				<div class="border-0 mt-4 mb-3 text-start">
+					<a href="/admin/adminusertop" class="text-black ms-1">
+						管理者TOPへ戻る
+						<i class="bi bi-arrow-return-left ms-1"></i>
+					</a>
+				</div>
+
+			</div>
 		</div>
-
-	  </div>
-	</div>
-</section>
+	</section>
 </body>
+
 </html>
