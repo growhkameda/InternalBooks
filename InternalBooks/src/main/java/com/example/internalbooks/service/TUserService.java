@@ -164,7 +164,6 @@ public class TUserService implements UserDetailsService {
 				);
 	}
 
-<<<<<<< HEAD
 	   /**
      *所属課と所属課IDの対応表
      */ 

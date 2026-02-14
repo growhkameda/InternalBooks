@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -39,7 +38,6 @@ import com.example.internalbooks.utils.JwtUtil;
  */
 @Controller
 @RequestMapping("/admin")
-@SessionAttributes({ "userDto", "bookdto" })
 public class AdminController extends InternalBooksController {
 
     // ロガー
@@ -517,10 +515,19 @@ public class AdminController extends InternalBooksController {
      * 書籍登録確認画面へ遷移
      */
     @PostMapping("/bookingconfirmation")
-    public String BookingConfirmation(@Valid @ModelAttribute("bookdto") DtoBookInfo bookDto,
-            BindingResult bindingResult, HttpSession session, RedirectAttributes redirectAttributes,
-            @RequestParam("imagefile") MultipartFile file, Model model) {
-
+    public String BookingConfirmation(@Valid @ModelAttribute("bookdto")DtoBookInfo bookDto, BindingResult bindingResult, @RequestParam("imageFile")MultipartFile file,
+    	 HttpSession session, RedirectAttributes redirectAttributes,Model model) {
+    	
+    	//書籍画像選択されない時用エラー表示
+        //MultipartFileはBeanvalidationに向いていないため下記で選択されていない場合のエラーバリデーション作成
+    	if (bookDto.getImageFile() == null || bookDto.getImageFile().isEmpty()) {
+		    bindingResult.rejectValue(
+		        "imageFile",
+		        "imageFile.empty",
+		        "画像を選択してください");
+		}
+    	
+    	//その他のエラー表示
         if (bindingResult.hasErrors()) {
             for (FieldError error : bindingResult.getFieldErrors()) {
                 // コンソールにも表示
@@ -539,22 +546,14 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
-            model.addAttribute("bookdto", bookDto);
+            tBookService.tbookconfirm(bookDto);
 
-            if (!file.isEmpty()) {
-                try {
-                    byte[] imageBytes = file.getBytes();
-                    session.setAttribute("imageBytes", imageBytes);
+            System.out.println("imageurl =" + bookDto.getImageUrl());
 
-                    String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-                    model.addAttribute("imagePreview", base64Image);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            model.addAttribute("bookdto",bookDto);
 
             return "page/BookingConfirmation";
+            
         } catch (Exception e) {
             return error(redirectAttributes);
         }
