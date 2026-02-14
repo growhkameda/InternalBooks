@@ -37,13 +37,8 @@ public class DtoUserRegistration {
 	private Integer deleteFlg = 0;
 
 //	StringをIntegerへ変換するメソッド
-	public Integer getUserIdAsIntger() {
+	public Integer getUserIdAsInteger() {
 		return Integer.valueOf(userId);
-	}
-
-//	StringをIntegerへ変換するメソッド
-	public Integer getDepartmentIdAsInteger() {
-		return Integer.valueOf(departmentId);
 	}
 
 }

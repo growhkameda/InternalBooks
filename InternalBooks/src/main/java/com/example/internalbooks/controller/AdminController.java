@@ -1,7 +1,5 @@
 package com.example.internalbooks.controller;
 
-import java.io.IOException;
-import java.util.Base64;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -31,7 +29,6 @@ import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
-import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.utils.JwtUtil;
 
 /**
@@ -337,6 +334,8 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
 
             model.addAttribute("userDto", new DtoUserRegistration()); // 空のDTOを返す
+            
+            model.addAttribute("departments",tUserService.getDepartments());
 
             return "page/UserRegistration";
 
@@ -355,8 +354,10 @@ public class AdminController extends InternalBooksController {
 
         if (bindingResult.hasErrors()) {
             for (FieldError error : bindingResult.getFieldErrors()) {
-
-                if ("Pattern".equals(error.getCode())) {
+            	//バリデーションエラー後もセレクトを表示
+            	model.addAttribute("departments",tUserService.getDepartments());
+                
+            	if ("Pattern".equals(error.getCode())) {
 
                     // コンソールにも表示
                 }
@@ -397,6 +398,8 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
 
             model.addAttribute("userDto", userDto);
+            
+            model.addAttribute("departments",tUserService.getDepartments());
 
             return "page/UserRegistration";
         } catch (Exception e) {

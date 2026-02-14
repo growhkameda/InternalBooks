@@ -157,6 +157,16 @@ public class TUserService implements UserDetailsService {
 		}
 		return user;
 	}
+	
+	//ユーザー登録入力時プルダウン表示
+	public List<String> getDepartments() {
+		return List.of(
+				"開発課",
+				"評価検証課",
+				"ITサポート課",
+				"営業課"
+				);
+	}
 
 	   /**
      *所属課と所属課IDの対応表
@@ -183,7 +193,7 @@ public class TUserService implements UserDetailsService {
      */
     public TUserEntity userRegistration(DtoUserRegistration dtuser) {
     	TUserEntity tuser = new TUserEntity();
-    	tuser.setUserId(dtuser.getUserIdAsIntger());
+    	tuser.setUserId(dtuser.getUserIdAsInteger());
     	tuser.setName(dtuser.getName());
     	tuser.setMailAddress(dtuser.getMailAddress());
     	String hash = passwordEncoder.encode(dtuser.getPassword());
