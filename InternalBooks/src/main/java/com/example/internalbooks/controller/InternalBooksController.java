@@ -221,10 +221,14 @@ public class InternalBooksController {
             screenFlag = 1;
 
             // カテゴリーに属するすべての本のIDを取得
-            List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
+//            List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
+
+            List<DtoBookInfo> allBooks = tBookService.getBooksByCategoryWithDetails(category);
 
             //取得した本の要素数を取得
-            int TOTAL_BOOK_COUNT = allBookIds.size();
+//            int TOTAL_BOOK_COUNT = allBookIds.size();
+          int TOTAL_BOOK_COUNT = allBooks.size();
+            
 
             //指定した表示画像数と、取得した要素数で必要なページ数を計算
             int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / BOOKS_PER_PAGE);
@@ -234,10 +238,12 @@ public class InternalBooksController {
             int toIndex = Math.min(fromIndex + BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
 
             // 表示対象の本IDリストを抽出
-            List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
+//            List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
+            List<DtoBookInfo> pagedBookIds = allBooks.subList(fromIndex, toIndex);
 
             // Viewに渡すモデル属性を設定
-            model.addAttribute("bookIdList", pagedBookIds);
+//            model.addAttribute("bookIdList", pagedBookIds);
+            model.addAttribute("bookList", pagedBookIds);
             model.addAttribute("category", category);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", totalPages);
