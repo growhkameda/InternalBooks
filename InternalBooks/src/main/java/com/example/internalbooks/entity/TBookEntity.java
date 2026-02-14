@@ -20,10 +20,10 @@ public class TBookEntity {
     @Id
     @Column(name = Const.BOOK_ID)
     private Integer bookId;
-    
+
     @Transient
     private String providerName;
-    
+
     @Column(name = Const.TITLE)
     private String title;
 
@@ -41,5 +41,5 @@ public class TBookEntity {
 
     @Column(name = Const.MEMO)
     private String memo;
-    
+
 }

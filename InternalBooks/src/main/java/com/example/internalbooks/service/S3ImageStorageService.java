@@ -77,28 +77,25 @@ public class S3ImageStorageService implements ImageStorageService {
             return false;
         }
     }
-    
-    //佐野（多分使わない）S3用書籍画像登録
+
+    // 佐野（多分使わない）S3用書籍画像登録
     @Override
     public String savetbook(MultipartFile file) throws IOException {
-    	System.out.println("save() called"); 
-    	String fileName = file.getOriginalFilename();
-    	PutObjectRequest request= PutObjectRequest.builder()
-    			 .bucket(bucketName)
-    			 .key(fileName)
-    			 .contentType(file.getContentType())
-    			 .build();
-    	
-    	s3Client.putObject(
-    			request,
-    			RequestBody.fromInputStream(
-    					file.getInputStream(),
-    					file.getSize()
-    					)
-    			);
-    	
-    	return prefix + "/" + fileName;
-    }
-    
-}
+        System.out.println("save() called");
+        String fileName = file.getOriginalFilename();
+        PutObjectRequest request = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .contentType(file.getContentType())
+                .build();
 
+        s3Client.putObject(
+                request,
+                RequestBody.fromInputStream(
+                        file.getInputStream(),
+                        file.getSize()));
+
+        return prefix + "/" + fileName;
+    }
+
+}

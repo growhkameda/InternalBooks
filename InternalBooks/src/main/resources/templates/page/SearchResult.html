@@ -37,7 +37,6 @@
       <div class="text-center mb-1">
         <!-- 書籍画像エリア -->
         <div class="text-center p-4">
-<!--		  <img th:src="@{|/images/${book.bookId}.png|}" -->
 		  <img th:src="@{'/images/' + ${book.bookId} + '.png'}"
                class="img-fluid rounded shadow w-25 h-auto"
                alt="書籍画像"
@@ -61,7 +60,6 @@
 
           <!-- 貸出状況 -->
           <div class="mb-0">
-<!--			<p>貸出状況</p>-->
             <span th:if="${book.status == '貸出中'}" class="text-danger fw-bold">貸出中</span>
             <span th:if="${book.status != '貸出中'}" class="text-success fw-bold">貸出可能</span>
           </div>
@@ -215,6 +213,7 @@
 				  </tr>
              </tbody>
           </table>
+		  
 		  <style>
 			  #b-confirmation,
 	  		  #r-confirmation {
@@ -235,57 +234,17 @@
 	  		  }
 
 		      .comment {
-		          height: 0px;
-		          overflow: hidden;           /* はみ出しを隠す */
-		          opacity: 0;                 /* 透明 */
-		          pointer-events: none;
+		          overflow: hidden;
 		          border: 1px white;
-		          transition: none; /* ← 通常時はアニメーションなし */
-		          margin: 0px;
-		      }
-
-		      .comment p {
-		          height: 0px;
-		          opacity: 0;
-		      }
-
-		      .return:hover + .comment,
-		      .comment:hover {
-		          max-height: 500px;          /* アニメーションで高さを展開 */
-		          opacity: 1;                 /* フェードイン */
-		          transform: translateY(0);   /* 元の位置に移動 */
-		          pointer-events: auto;
-		          transition: all 0.6s ease; /* ← hover時だけアニメーション */
-		      }
-
-		      .return:hover + .comment p,
-		      .comment:hover p {
-		          opacity: 1;
-				  height: 25px;
-		          max-height: 500px;
-		          transition: all 0.6s ease; /* ← hover時だけアニメーション */
-		      }
-
-		      .return:hover + .comment p:nth-child(2),
-		      .comment:hover p:nth-child(2) {
-		          opacity: 1;                 /* フェードイン */
-				  height: 100px;
 		      }
 
 		      .lending {
-		          transition: all 0.6s ease;  /* アニメーション */
 		          border: 1px white;
-		      }
-
-		      .return:hover ~ .lending,
-		      .comment:hover ~ .lending {
-		          transform: translateY(0);
 		      }
 		  </style>
         </div>
       </div>
     </div>
-
 
 
   <!-- 画像エラー処理用JavaScript -->
@@ -324,7 +283,6 @@
 	  cancelR.addEventListener('click', rcHideConfirmation);
 	}
 
-
     function handleImageError(img) {
       // 無限ループを防ぐため、既にエラー処理済みの場合は何もしない
       if (img.dataset.errorHandled === 'true') {
@@ -347,7 +305,6 @@
 	  // textareaの値をhiddenにコピー
 	  document.querySelector('#review-hidden').value = document.querySelector('#comment').value;
 	});
-
 
 	const comDisplay = document.getElementById("comDisplay");
 	const comment = document.getElementById("commentText");
@@ -378,23 +335,8 @@
 		comment.style.height = commentHeight + "px";
 	};
 
-	returnCol.addEventListener("mouseenter", adjustHeight);
-	returnCol.addEventListener("mouseleave", function() {
-	    comDisplay.style.height = "0px";
-	    comment.style.height = "0px";
-	});
-
-	comDisplay.addEventListener("mouseenter", adjustHeight);
-	comDisplay.addEventListener("mouseleave", function() {
-	    comDisplay.style.height = "0px";
-	    comment.style.height = "0px";
-	});
-
-	comment.addEventListener("mouseenter", adjustHeight);
-	comment.addEventListener("mouseleave", function() {
-	    comDisplay.style.height = "0px";
-	    comment.style.height = "0px";
-	});
+	document.addEventListener("DOMContentLoaded", adjustHeight);
+	
 
   </script>
   </section>

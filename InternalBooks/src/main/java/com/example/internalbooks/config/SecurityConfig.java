@@ -28,7 +28,7 @@ import com.example.internalbooks.filter.JwtAuthenticationFilter;
 public class SecurityConfig {
 
     @Autowired
-    private UserDetailsService userDetailsService;  // UserDetailsService を Autowire
+    private UserDetailsService userDetailsService; // UserDetailsService を Autowire
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -39,20 +39,20 @@ public class SecurityConfig {
      */
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())  // CSRFを無効化
-            .authorizeHttpRequests(auth -> auth
+                .csrf(csrf -> csrf.disable()) // CSRFを無効化
+                .authorizeHttpRequests(auth -> auth
 
+                        .requestMatchers("/", "/page/**", "/action/**", "/admin/**", "/test/**", "/webjars/**",
+                                "/logo/**", "/favicon.ico", "/images/**", "/js/**")
+                        .permitAll() // 認証不要のエンドポイント
 
-                .requestMatchers("/", "/page/**", "/action/**", "/admin/**", "/test/**", "/webjars/**", "/logo/**","/favicon.ico", "/images/**", "/js/**").permitAll()  // 認証不要のエンドポイント
+                        .anyRequest().authenticated() // 他のエンドポイントは認証が必要
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // フィルターを追加;
 
-                .anyRequest().authenticated()  // 他のエンドポイントは認証が必要
-            )
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED )
-            )
-            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // フィルターを追加;
-
-        	http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
     }
@@ -62,12 +62,12 @@ public class SecurityConfig {
      * 認証情報を管理するためのメソッド
      */
     protected AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = 
-            http.getSharedObject(AuthenticationManagerBuilder.class);
+        AuthenticationManagerBuilder authenticationManagerBuilder = http
+                .getSharedObject(AuthenticationManagerBuilder.class);
 
         authenticationManagerBuilder
-        .userDetailsService(userDetailsService)
-        .passwordEncoder(passwordEncoder);  // PasswordEncoder を設定
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder); // PasswordEncoder を設定
 
         return authenticationManagerBuilder.build();
     }
@@ -91,9 +91,9 @@ public class SecurityConfig {
         // 本番環境では以下をコメントアウトして "list.of(*)" に戻すこと
         // テスト環境で動かすときはngrokのURLを設定する
         configuration.setAllowedOrigins(List.of(
-            "http://localhost:8080", 
-            "https://a476e2ff19fa.ngrok-free.app",    // 新ngrok用URL（本番時削除）
-            "https://*.ngrok-free.app"                // ngrok用ワイルドカード（本番時削除）
+                "http://localhost:8080",
+                "https://a476e2ff19fa.ngrok-free.app", // 新ngrok用URL（本番時削除）
+                "https://*.ngrok-free.app" // ngrok用ワイルドカード（本番時削除）
         )); // 許可するオリジン
 
         // 本番環境用設定（現在はコメントアウト）

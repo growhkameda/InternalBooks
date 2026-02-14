@@ -36,17 +36,17 @@ public class DtoBookInfo {
 
     // 書籍画像URL
     private String imageUrl;
-     
+
     // 書籍画像
     private MultipartFile imageFile;
-        
+
     // 書籍提供者ID
     @NotBlank(message = "書籍提供者は必須です")
     private String providerId;
-    
-    //書籍提供者名変換用ID
+
+    // 書籍提供者名変換用ID
     private Integer Id;
- 
+
     // 書籍提供者名
     private String providerName;
 
@@ -85,8 +85,8 @@ public class DtoBookInfo {
         this.categories = categories;
     }
 
-	public boolean isEmpty() {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
-	}
+    public boolean isEmpty() {
+        // TODO 自動生成されたメソッド・スタブ
+        return false;
+    }
 }

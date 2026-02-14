@@ -30,7 +30,7 @@ public class TLendingHistoryService {
     @Autowired
     private TBookRepository bookRepository;
 
-    //コンストラクタインジェクション
+    // コンストラクタインジェクション
     public TLendingHistoryService(TLendingHistoryRepository lendingHistoryRepository, TUserRepository userRepository) {
         this.lendingHistoryRepository = lendingHistoryRepository;
         this.userRepository = userRepository;
@@ -45,14 +45,11 @@ public class TLendingHistoryService {
             DtoBookHistory dto = new DtoBookHistory();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
             dto.setLendingDate(
-            	e.getLendingDate() != null ? e.getLendingDate().format(formatter) : "-"
-            );
+                    e.getLendingDate() != null ? e.getLendingDate().format(formatter) : "-");
             dto.setScheduledReturnDate(
-                e.getScheduledReturnDate() != null ? e.getScheduledReturnDate().format(formatter) : "-"
-            );
+                    e.getScheduledReturnDate() != null ? e.getScheduledReturnDate().format(formatter) : "-");
             dto.setReturnDate(
-                e.getReturnDate() != null ? e.getReturnDate().format(formatter) : "-"
-            );
+                    e.getReturnDate() != null ? e.getReturnDate().format(formatter) : null);
             dto.setReview(e.getReview());
 
             // userName はまだ仮セット
@@ -63,53 +60,49 @@ public class TLendingHistoryService {
         return dtoList;
     }
 
-
     /**
      * 貸出時にレビューをDBへ保存するメソッド
      */
-	public TLendingHistoryEntity rentalCompleted(DtoBookHistoryRegistration dtlend) {
+    public TLendingHistoryEntity rentalCompleted(DtoBookHistoryRegistration dtlend) {
 
-		TLendingHistoryEntity tlend = new TLendingHistoryEntity();
+        TLendingHistoryEntity tlend = new TLendingHistoryEntity();
 
-		// dtoの内容をEntityにマッピング
+        // dtoの内容をEntityにマッピング
         tlend.setBookId(dtlend.getBookId());
 
         tlend.setLendingDate(LocalDateTime.now());
 
-    	tlend.setScheduledReturnDate(LocalDateTime.now().plusDays(7));
+        tlend.setScheduledReturnDate(LocalDateTime.now().plusDays(7));
 
         tlend.setReturnDate(null);
         tlend.setUserId(dtlend.getUserId());
-    	tlend.setReview(null);
-//        tlend.setStatus("返却済み");
+        tlend.setReview(null);
 
-        lendingHistoryRepository.save(tlend);
+        lendingHistoryRepository.saveAndFlush(tlend);
 
         // 書籍の borrowerId を貸出ユーザーIDに更新
         bookRepository.updateBorrowerByBookId(dtlend.getBookId(), dtlend.getUserId());
 
-		return tlend;
+        return tlend;
     }
 
-
-	/**
+    /**
      * 返却時にレビューをDBへ保存するメソッド
      */
-	public TLendingHistoryEntity returnCompleted(DtoBookHistoryRegistration dtlend) {
+    public TLendingHistoryEntity returnCompleted(DtoBookHistoryRegistration dtlend) {
 
-		TLendingHistoryEntity tlend = lendingHistoryRepository.
-				findActiveLendingHistory(dtlend.getBookId(), dtlend.getUserId()).orElse(new TLendingHistoryEntity());
-//				new TLendingHistoryEntity();
-		// dtoの内容をEntityにマッピング
+        TLendingHistoryEntity tlend = lendingHistoryRepository
+                .findActiveLendingHistory(dtlend.getBookId(), dtlend.getUserId()).orElse(new TLendingHistoryEntity());
+        // dtoの内容をEntityにマッピング
         tlend.setBookId(dtlend.getBookId());
 
         // DTOの値がnullでなければ上書き
         if (dtlend.getLendingDate() != null) {
-        	tlend.setLendingDate(dtlend.getLendingDate());
+            tlend.setLendingDate(dtlend.getLendingDate());
         }
 
         if (dtlend.getScheduledReturnDate() != null) {
-        	tlend.setScheduledReturnDate(dtlend.getScheduledReturnDate());
+            tlend.setScheduledReturnDate(dtlend.getScheduledReturnDate());
         }
 
         tlend.setReturnDate(LocalDateTime.now());
@@ -117,18 +110,18 @@ public class TLendingHistoryService {
 
         // reviewが入力されていれば更新
         if (dtlend.getReview() != null && !dtlend.getReview().isEmpty()) {
-        	tlend.setReview(dtlend.getReview());
+            tlend.setReview(dtlend.getReview());
         }
-//        tlend.setStatus("返却済み");
 
-        lendingHistoryRepository.save(tlend);
+        lendingHistoryRepository.saveAndFlush(tlend);
 
         bookRepository.clearBorrowerByBookId(dtlend.getBookId());
 
-		return tlend;
+        return tlend;
     }
 
-    /** 木俣(2025/10/26)
+    /**
+     * 木俣(2025/10/26)
      * 書籍IDのリストから返却予定日のリストを取得する
      */
     public List<DtoBookHistory> getScheduledReturnDatesByBookIds(List<Integer> bookIds) {
