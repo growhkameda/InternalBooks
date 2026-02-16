@@ -391,8 +391,8 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
 
             model.addAttribute("userDto", new DtoUserRegistration()); // 空のDTOを返す
-            
-            model.addAttribute("departments",tUserService.getDepartments());
+
+            model.addAttribute("departments", tUserService.getDepartments());
 
             return "page/UserRegistration";
 
@@ -411,10 +411,10 @@ public class AdminController extends InternalBooksController {
 
         if (bindingResult.hasErrors()) {
             for (FieldError error : bindingResult.getFieldErrors()) {
-            	//バリデーションエラー後もセレクトを表示
-            	model.addAttribute("departments",tUserService.getDepartments());
-                
-            	if ("Pattern".equals(error.getCode())) {
+                // バリデーションエラー後もセレクトを表示
+                model.addAttribute("departments", tUserService.getDepartments());
+
+                if ("Pattern".equals(error.getCode())) {
 
                     // コンソールにも表示
                 }
@@ -455,8 +455,8 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
 
             model.addAttribute("userDto", userDto);
-            
-            model.addAttribute("departments",tUserService.getDepartments());
+
+            model.addAttribute("departments", tUserService.getDepartments());
 
             return "page/UserRegistration";
         } catch (Exception e) {
@@ -515,19 +515,20 @@ public class AdminController extends InternalBooksController {
      * 書籍登録確認画面へ遷移
      */
     @PostMapping("/bookingconfirmation")
-    public String BookingConfirmation(@Valid @ModelAttribute("bookdto")DtoBookInfo bookDto, BindingResult bindingResult, @RequestParam("imageFile")MultipartFile file,
-    	 HttpSession session, RedirectAttributes redirectAttributes,Model model) {
-    	
-    	//書籍画像選択されない時用エラー表示
-        //MultipartFileはBeanvalidationに向いていないため下記で選択されていない場合のエラーバリデーション作成
-    	if (bookDto.getImageFile() == null || bookDto.getImageFile().isEmpty()) {
-		    bindingResult.rejectValue(
-		        "imageFile",
-		        "imageFile.empty",
-		        "画像を選択してください");
-		}
-    	
-    	//その他のエラー表示
+    public String BookingConfirmation(@Valid @ModelAttribute("bookdto") DtoBookInfo bookDto,
+            BindingResult bindingResult, @RequestParam("imageFile") MultipartFile file,
+            HttpSession session, RedirectAttributes redirectAttributes, Model model) {
+
+        // 書籍画像選択されない時用エラー表示
+        // MultipartFileはBeanvalidationに向いていないため下記で選択されていない場合のエラーバリデーション作成
+        if (bookDto.getImageFile() == null || bookDto.getImageFile().isEmpty()) {
+            bindingResult.rejectValue(
+                    "imageFile",
+                    "imageFile.empty",
+                    "画像を選択してください");
+        }
+
+        // その他のエラー表示
         if (bindingResult.hasErrors()) {
             for (FieldError error : bindingResult.getFieldErrors()) {
                 // コンソールにも表示
@@ -550,11 +551,12 @@ public class AdminController extends InternalBooksController {
 
             System.out.println("imageurl =" + bookDto.getImageUrl());
 
-            model.addAttribute("bookdto",bookDto);
+            model.addAttribute("bookdto", bookDto);
 
             return "page/BookingConfirmation";
-            
+
         } catch (Exception e) {
+            logger.error("bookingconfirmationでエラーが発生しました", e);
             return error(redirectAttributes);
         }
     }
