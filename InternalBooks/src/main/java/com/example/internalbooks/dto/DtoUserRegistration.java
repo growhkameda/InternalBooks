@@ -10,7 +10,7 @@ import lombok.Data;
 public class DtoUserRegistration {
 
 	@NotBlank(message = "ユーザーIDは必須です")
-//	regexp = "\\d+"で１文字以上の数字を表す
+	// regexp = "\\d+"で１文字以上の数字を表す
 	@Pattern(regexp = "\\d+", message = "社員IDは数字で入力してください")
 	private String userId;
 
@@ -23,25 +23,26 @@ public class DtoUserRegistration {
 
 	@NotBlank(message = "所属課は必須です")
 	private String departmentId;
-	
-    //DB用(数字）
+
+	// DB用(数字）
 	private Integer departmentNumber;
 
 	@NotBlank(message = "パスワードは必須です")
 	private String password;
 
-//	初期値の設定
+	// 初期値の設定
 	private Integer role = 0;
 
-//	初期値の設定
+	// 初期値の設定
 	private Integer deleteFlg = 0;
 
-//	StringをIntegerへ変換するメソッド
-	public Integer getUserIdAsIntger() {
+	
+    //	StringをIntegerへ変換するメソッド
+	public Integer getUserIdAsInteger() {
 		return Integer.valueOf(userId);
 	}
 
-//	StringをIntegerへ変換するメソッド
+	// StringをIntegerへ変換するメソッド
 	public Integer getDepartmentIdAsInteger() {
 		return Integer.valueOf(departmentId);
 	}
