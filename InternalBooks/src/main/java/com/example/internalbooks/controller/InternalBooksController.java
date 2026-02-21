@@ -215,8 +215,7 @@ public class InternalBooksController {
             // フラグ カテゴリー一覧：1
             screenFlag = 1;
 
-            // カテゴリーに属するすべての本のIDを取得
-//            List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
+            // カテゴリーに属するすべての本の情報を取得
 
             List<DtoBookInfo> allBooks = tBookService.getBooksByCategoryWithDetails(category);
 
@@ -230,13 +229,11 @@ public class InternalBooksController {
             int fromIndex = page * BOOKS_PER_PAGE;
             int toIndex = Math.min(fromIndex + BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
 
-            // 表示対象の本IDリストを抽出
-//            List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
-            List<DtoBookInfo> pagedBookIds = allBooks.subList(fromIndex, toIndex);
+            // 表示対象の本リストを抽出
+            List<DtoBookInfo> pagedBooks = allBooks.subList(fromIndex, toIndex);
 
             // Viewに渡すモデル属性を設定
-//            model.addAttribute("bookIdList", pagedBookIds);
-            model.addAttribute("bookList", pagedBookIds);
+            model.addAttribute("bookList", pagedBooks);
             model.addAttribute("category", category);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", totalPages);
