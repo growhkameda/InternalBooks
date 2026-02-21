@@ -392,7 +392,7 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("userDto", new DtoUserRegistration()); // 空のDTOを返す
             
-            model.addAttribute("departments",tUserService.getDepartments());
+            model.addAttribute("departments",tUserService.getAllDepartments());
 
             return "page/UserRegistration";
 
@@ -412,7 +412,7 @@ public class AdminController extends InternalBooksController {
         if (bindingResult.hasErrors()) {
             for (FieldError error : bindingResult.getFieldErrors()) {
             	//バリデーションエラー後もセレクトを表示
-            	model.addAttribute("departments",tUserService.getDepartments());
+            	model.addAttribute("departments",tUserService.getAllDepartments());
                 
             	if ("Pattern".equals(error.getCode())) {
 
@@ -456,7 +456,7 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("userDto", userDto);
             
-            model.addAttribute("departments",tUserService.getDepartments());
+            model.addAttribute("departments",tUserService.getAllDepartments());
 
             return "page/UserRegistration";
         } catch (Exception e) {
@@ -484,19 +484,15 @@ public class AdminController extends InternalBooksController {
                 throw new IllegalStateException("DTOがnullです");
             }
 
-            // 所属課をIDへ変換
-            tUserService.userDepartmentId(userdto);
-
             // DBへ(userId,name,mailAddress,password,departmentId)を保存
             TUserEntity savedUser = tUserService.userRegistration(userdto);
             // DBに保存した値をDTOを経由して再度取得
             DtoUserRegistration tuser = new DtoUserRegistration();
-            tuser.setUserId(savedUser.getUserIdAsString());
+            tuser.setUserId(String.valueOf(savedUser.getUserId()));
             tuser.setName(savedUser.getName());
             tuser.setMailAddress(savedUser.getMailAddress());
             // 所属課はStringで表示させるためuserdtoからそのままセットする
             tuser.setDepartmentId(userdto.getDepartmentId());
-            tuser.setPassword(savedUser.getPassword());
 
             // 取得した情報を表示
             model.addAttribute("tuser", tuser);

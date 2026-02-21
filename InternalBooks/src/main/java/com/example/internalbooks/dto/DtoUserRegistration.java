@@ -46,5 +46,5 @@ public class DtoUserRegistration {
 	public Integer getDepartmentIdAsInteger() {
 		return Integer.valueOf(departmentId);
 	}
-
+	
 }

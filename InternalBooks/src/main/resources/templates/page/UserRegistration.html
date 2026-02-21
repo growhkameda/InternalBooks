@@ -79,8 +79,8 @@
 				      	<Select th:field="*{departmentId}" class="form-control bg-light">
 							  <option value="">選択してください</option>
 							  <option th:each="dept:${departments}"
-							          th:value="${dept}"
-							          th:text="${dept}">
+							          th:value="${dept.name}"
+							          th:text="${dept.name}">
 							  </option>
 				      	</Select>
 				  </div>
