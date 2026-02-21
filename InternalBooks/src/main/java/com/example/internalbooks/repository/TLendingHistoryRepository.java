@@ -22,11 +22,6 @@ public interface TLendingHistoryRepository extends JpaRepository<TLendingHistory
     // ユーザーごとの履歴
     List<TLendingHistoryEntity> findByUserId(Integer userId);
 
-    // bookId と status で検索するメソッド
-//    Optional<TLendingHistoryEntity> findByBookIdAndReturnDateIsNull(Integer bookId);
-//    Optional<TLendingHistoryEntity> findByBookIdAndUserId(Integer bookId, Integer userId);
-//    Optional<TLendingHistoryEntity> findByBookIdAndStatus(Integer bookId, String status);
-
     @Query("SELECT t FROM TLendingHistoryEntity t " +
     	       "WHERE t.bookId = :bookId " +
     	       "AND t.userId = :userId " +

@@ -22,11 +22,19 @@ public interface TBookRepository extends JpaRepository<TBookEntity, Integer> {
 	// カテゴリーに一致する本情報を取得する
 	List<TBookEntity> findByCategories(String category);
 
+	// カテゴリ名よりIDを取得 大文字小文字関係なし
+	@Query("SELECT MAX(b.id) FROM TBookEntity b WHERE LOWER(b.categories) = LOWER(:categories)")
+	Integer findMaxIdByName(@Param("categories") String categories);
+
+	// IDの最大値を取得する。
+	@Query("SELECT MAX(b.id) FROM TBookEntity b")
+	Integer findMaxBookId();
+
 	// 書籍返却時にborrowerIdをNULLに更新する
 	@Modifying
-    @Transactional
-    @Query("UPDATE TBookEntity b SET b.borrowerId = NULL WHERE b.bookId = :bookId")
-    void clearBorrowerByBookId(@Param("bookId") Integer bookId);
+	@Transactional
+	@Query("UPDATE TBookEntity b SET b.borrowerId = NULL WHERE b.bookId = :bookId")
+	void clearBorrowerByBookId(@Param("bookId") Integer bookId);
 
 	@Modifying
 	@Transactional

@@ -26,4 +26,5 @@ public class MDepartmentEntity {
     @Column(name = Const.DETAIL)
     private String detail;
 
-}
+
+    }

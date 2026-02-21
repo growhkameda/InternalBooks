@@ -1,51 +1,49 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-  <title>カテゴリー詳細画面</title>
+	<title>カテゴリー詳細画面</title>
 </head>
 
 <body>
-  <section th:fragment="section">
+	<section th:fragment="section">
 
-    <style>
+		<style>
+			.fixed-page-width {
+				max-width: 600px;
+				margin: 0 auto;
+				padding: 0 20px;
+			}
 
-      .fixed-page-width {
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 0 20px;
-      }
+			.pagination-buttons {
+				display: flex;
+				justify-content: space-between;
+				margin-bottom: 10px;
+			}
 
-      .pagination-buttons {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 10px;
-      }
+			.pagination-buttons .btn {
+				font-size: 16px;
+			}
+		</style>
 
-      .pagination-buttons .btn {
-        font-size: 16px;
-      }
-    </style>
+		<div class="container text-center fixed-page-width"
+			style="margin-bottom: 60px; font-size: 30px; font-weight: 600;">
+			図書館システム
+		</div>
 
-    <div class="container text-center fixed-page-width"
-         style="margin-bottom: 60px; font-size: 30px; font-weight: 600;">
-      図書館システム
-    </div>
+		<div class="container text-center fixed-page-width" style="margin-bottom: 60px; font-size: 30px;">
+			カテゴリー：<span th:text="${category}">カテゴリー名</span>
+		</div>
 
-	<div class="container text-center fixed-page-width"
-	     style="margin-bottom: 60px; font-size: 30px;">
-	  カテゴリー：<span th:text="${category}">カテゴリー名</span>
-	</div>
-
-    <div class="container fixed-page-width">
-      <div class="row">
-		<!--「page」内の「categories.html」に飛ぶボタン-->
-        <a th:href="@{/page/categories}" class="col-auto btn" style="margin-bottom: 10px; font-size: 16px; text-align: left;">
-          カテゴリー選択へ戻る↵
-        </a>
-      </div>
-    </div>
+		<div class="container fixed-page-width">
+			<div class="row">
+				<!--「page」内の「categories.html」に飛ぶボタン-->
+				<a th:href="@{/page/categories}" class="col-auto btn"
+					style="margin-bottom: 10px; font-size: 16px; text-align: left;">
+					カテゴリー選択へ戻る↵
+				</a>
+			</div>
+		</div>
 
     <div class="container fixed-page-width">
 		<div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
@@ -83,5 +81,7 @@
 	</div>
 
   </section>
+
 </body>
+
 </html>

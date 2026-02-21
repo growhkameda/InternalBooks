@@ -66,14 +66,12 @@
 	  <!-- 貸出完了時に当日の日付とそこから+1週間した日付をデータベースへ登録が必要 -->
 	  <div class="row d-flex justify-content-center">
   		<h5 class="col-8">貸出日</h5>
-<!--  		<p th:text="${bookHistory.scheduledReturnDate}" class="col-8">2025年6月10日</p>-->
-		<p class="col-8">2025年9月25日</p>
+  		<p th:text="${bookHistory.lendingDate}" class="col-8">2025年6月10日</p>
   	  </div>
 
 	  <div class="row d-flex justify-content-center">
 		<h5 class="col-8">返却予定日</h5>
-<!--		<p th:text="${bookHistory.scheduledReturnDate}" class="col-8">2025年6月10日</p>-->
-		<p class="col-8">2025年10月1日</p>
+		<p th:text="${bookHistory.scheduledReturnDate}" class="col-8">2025年6月10日</p>
 	  </div>
 
       <!-- ========== 一覧へ戻るボタン ========== -->
