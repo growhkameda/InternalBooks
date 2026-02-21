@@ -221,7 +221,7 @@ public class InternalBooksController {
             List<DtoBookInfo> allBooks = tBookService.getBooksByCategoryWithDetails(category);
 
             // 取得した本の要素数を取得
-            int TOTAL_BOOK_COUNT = allBookIds.size();
+            int TOTAL_BOOK_COUNT = allBooks.size();
 
             // 指定した表示画像数と、取得した要素数で必要なページ数を計算
             int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / BOOKS_PER_PAGE);

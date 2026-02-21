@@ -46,15 +46,6 @@
 		</div>
 
     <div class="container fixed-page-width">
-      <div class="row">
-		<!--「page」内の「categories.html」に飛ぶボタン-->
-        <a th:href="@{/page/categories}" class="col-auto btn" style="margin-bottom: 10px; font-size: 16px; text-align: left;">
-          カテゴリー選択へ戻る↵
-        </a>
-      </div>
-    </div>
-
-    <div class="container fixed-page-width">
 		<div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
 		 	<!-- bookList をループ -->
 			<div th:each="book : ${bookList}" class="col-md-4 mb-4">
