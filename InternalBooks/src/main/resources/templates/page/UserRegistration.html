@@ -42,17 +42,19 @@
 				</div>
 			</div>
 
+			
 			<!-- パスワード -->
-			<div class="container mt-3">
-				<div class="row justify-content-center">
-					<div class="col-8 pt-2">
-						<label for="password" class="form-label text-start"> パスワード</label>
-						<!-- バリデーションエラーを表示 -->
-						<span th:errors="*{password}" class="text-danger ms-3"></span>
-						<input type="text" th:field="*{password}" class="form-control bg-light">
-					</div>
-				</div>
+			<div class ="container mt-3">
+			  <div class = "row justify-content-center">
+				  <div class = "col-8 pt-2">
+				      	<label for = "password" class="form-label text-start"> パスワード</label>
+				      	<!-- バリデーションエラーを表示 -->
+				      	<span th:errors="*{password}" class="text-danger ms-3"></span>
+				      	<input type="password" th:field="*{password}" class="form-control bg-light">
+				  </div>
+			  </div>
 			</div>
+
 
 			<!-- 名前 -->
 			<div class="container mt-3">
@@ -66,18 +68,25 @@
 				</div>
 			</div>
 
-			<!-- 所属課  -->
-			<div class="container mt-3">
-				<div class="row justify-content-center">
-					<div class="col-8 pt-2">
-						<label for="department" class="form-label text-start">所属課</label>
-						<!-- バリデーションエラーを表示 -->
-						<span th:errors="*{departmentId}" class="text-danger ms-3"></span>
-						<input type="text" th:field="*{departmentId}" class="form-control bg-light">
-					</div>
-				</div>
-			</div>
 
+			<!-- 所属課  -->
+			<div class ="container mt-3">
+			  <div class = "row justify-content-center">
+				  <div class = "col-8 pt-2">
+				      	<label for = "department" class="form-label text-start">所属課</label>
+				      	<!-- バリデーションエラーを表示 -->
+				      	<span th:errors="*{departmentId}" class="text-danger ms-3"></span>
+				      	<Select th:field="*{departmentId}" class="form-control bg-light">
+							  <option value="">選択してください</option>
+							  <option th:each="dept:${departments}"
+							          th:value="${dept.name}"
+							          th:text="${dept.name}">
+							  </option>
+				      	</Select>
+				  </div>
+			  </div>
+			</div>
+			
 			<!-- 戻る -->
 			<div class="container mt-5">
 				<div class="row">

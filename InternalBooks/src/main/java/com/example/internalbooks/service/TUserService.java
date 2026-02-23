@@ -2,7 +2,6 @@ package com.example.internalbooks.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -10,9 +9,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.example.internalbooks.common.Const;
+import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.MDepartmentEntity;
 import com.example.internalbooks.entity.TUserEntity;
@@ -154,39 +153,24 @@ public class TUserService implements UserDetailsService {
 		return user;
 	}
 
-	/**
-	 * 所属課と所属課IDの対応表
-	 */
-	private static final Map<String, Integer> DEPT_MAP = Map.of(
-			"開発課", 1,
-			"評価検証課", 2,
-			"ITサポート課", 3,
-			"営業課", 4);
-
-	/**
-	 * 所属課をIntegerへ変換
-	 */
-	public void userDepartmentId(DtoUserRegistration userdto) {
-		Integer depmId = DEPT_MAP.getOrDefault(
-				userdto.getDepartmentId(),
-				5 // 上記の対応表に一致しなければ5
-		);
-		userdto.setDepartmentNumber(depmId);
-	}
-
-	/**
-	 * ユーザー情報をDBへ保存するメソッド
-	 */
-	public TUserEntity userRegistration(DtoUserRegistration dtuser) {
-		TUserEntity tuser = new TUserEntity();
-		tuser.setUserId(dtuser.getUserIdAsIntger());
-		tuser.setName(dtuser.getName());
-		tuser.setMailAddress(dtuser.getMailAddress());
-		String hash = passwordEncoder.encode(dtuser.getPassword());
-		tuser.setPassword(hash);
-		tuser.setDepartmentId(dtuser.getDepartmentNumber());
-		tuser.setRole(dtuser.getRole());
-		tuser.setDeleteFlg(dtuser.getDeleteFlg());
+    /**
+     * ユーザー情報をDBへ保存するメソッド
+     */
+    public TUserEntity userRegistration(DtoUserRegistration dtuser) {
+    	
+    	 MDepartmentEntity deptId = mDepartmentRepository
+		                           .findIdByName((dtuser.getDepartmentId()))
+                                   .orElseThrow(() -> new IllegalArgumentException("部署なし"));
+    	
+    	TUserEntity tuser = new TUserEntity();
+    	tuser.setUserId(dtuser.getUserIdAsInteger());
+    	tuser.setName(dtuser.getName());
+    	tuser.setMailAddress(dtuser.getMailAddress());
+    	String hash = passwordEncoder.encode(dtuser.getPassword());
+    	tuser.setPassword(hash);
+    	tuser.setDepartmentId(deptId.getId());
+    	tuser.setRole(dtuser.getRole());
+    	tuser.setDeleteFlg(dtuser.getDeleteFlg());
 
 		tUserRepository.save(tuser);
 
@@ -197,28 +181,34 @@ public class TUserService implements UserDetailsService {
 	/**
 	 * ユーザー編集保存
 	 */
-	public void updateUser(TUserEntity userDto, String currentPwd, String newPwd) {
-
+	public void updateUser(DtoUserEdit userDto) {
+		// 既存ユーザーの取得（いなければエラー）
 		TUserEntity existingUser = getUserById(userDto.getUserId());
 		if (existingUser == null) {
-			new RuntimeException("ユーザーが存在しません");
+			throw new RuntimeException("ユーザーが存在しません");
 		}
+		Optional<TUserEntity> otherUserOpt = tUserRepository.findByMailAddress(userDto.getMailAddress());
 
-		// パスワード更新ロジック
-		if (StringUtils.hasText(currentPwd) && StringUtils.hasText(newPwd)) {
-			if (passwordEncoder.matches(currentPwd, existingUser.getPassword())) {
-				existingUser.setPassword(passwordEncoder.encode(newPwd));
-			} else {
-				throw new IllegalArgumentException("現在のパスワードが正しくありません");
+		// メールアドレス重複チェック（自分以外の誰かが使っていないか）
+		if (otherUserOpt.isPresent()) {
+			TUserEntity otherUser = otherUserOpt.get();
+			// 見つかった人が自分以外のIDなら、それは「他人のメルアド」なのでエラー
+			if (!otherUser.getUserId().equals(existingUser.getUserId())) {
+				throw new IllegalArgumentException("このメールアドレスは既に他のユーザーに使用されています");
 			}
 		}
 
-		// 基本情報の更新（パスワード有無に関わらず実行）
+		// 編集のためTUserEntityクラスに詰め替え
 		existingUser.setName(userDto.getName());
 		existingUser.setMailAddress(userDto.getMailAddress());
-		existingUser.setDepartmentId(userDto.getDepartmentId());
+		existingUser.setDepartmentId(userDto.getDepartmentIdAsInteger());
 
+		// パスワードを現在のEmailで上書き（常に同期）
+		existingUser.setPassword(passwordEncoder.encode(userDto.getMailAddress()));
+
+		// DBへ書き込み
 		tUserRepository.save(existingUser);
+
 	}
 
 	/**
