@@ -282,15 +282,14 @@ public class InternalBooksController {
                     model.addAttribute("showButton", showButton);
                     model.addAttribute("showComment", showComment);
                     break;
-                // QRコードからの遷移
+                // 借りるボタンからの遷移
                 case 2:
                     showButton = true;
                     showComment = false;
-                    model.addAttribute("screenFlag", screenFlag);
                     model.addAttribute("showButton", showButton);
                     model.addAttribute("showComment", showComment);
                     break;
-                // 貸出中の場合
+                // 返すボタンからの遷移
                 case 3:
                     showButton = true;
                     showComment = true;
@@ -300,6 +299,7 @@ public class InternalBooksController {
                 default:
                     break;
             }
+            model.addAttribute("screenFlag", screenFlag);
 
             // 書籍検索処理をServiceで処理
             DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
