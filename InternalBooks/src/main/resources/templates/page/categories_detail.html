@@ -51,7 +51,7 @@
 			<div th:each="book : ${bookList}" class="col-md-4 mb-4">
 		    <!-- 貸出可能：クリック可能 -->
 		    <a th:if="${book.status == '貸出可能'}"
-		       th:href="@{'/page/searchresult?bookid=' + ${book.bookId}}"
+		       th:href="@{/page/searchresult(bookId=${book.bookId})}"
 		       class="btn d-block p-0"
 		       style="text-decoration: none;">
 		      <img th:src="@{'/images/' + ${book.bookId} + '.png'}"
