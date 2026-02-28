@@ -17,5 +17,7 @@ public interface MDepartmentRepository extends JpaRepository<MDepartmentEntity, 
 	// 指定された部署IDから部署名を取得
 	@Query("SELECT d.name FROM MDepartmentEntity d WHERE d.id = :departmentId")
 	Optional<String> findNameById(@Param("departmentId") Integer departmentId);
+	
+	Optional<MDepartmentEntity> findIdByName(String Name);
 
 }

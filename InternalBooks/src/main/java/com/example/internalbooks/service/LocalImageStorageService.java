@@ -1,6 +1,5 @@
 package com.example.internalbooks.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,14 +66,29 @@ public class LocalImageStorageService implements ImageStorageService {
     @Override
     public String savetbook(MultipartFile file) throws IOException {
 
-        // 画像の名前を変数を保存
+        // 画像の名前を取得
         String fileName = file.getOriginalFilename();
-        // 絶対パスの指定
-        String projectDir = System.getProperty("user.dir");
-        String path = projectDir + imageDirectory;
-        File saveFile = new File(path, fileName);
-        // saveFileに格納されたURLにアップロードされた画像を物理的に書き込む
-        file.transferTo(saveFile);
+        if (fileName == null || fileName.isBlank()) {
+            throw new IOException("ファイル名が取得できませんでした");
+        }
+
+        // プロジェクトルートからの絶対パスを安全に構築
+        Path projectDir = Paths.get(System.getProperty("user.dir"));
+        Path saveDirPath = projectDir.resolve(imageDirectory.startsWith("/")
+                ? imageDirectory.substring(1)
+                : imageDirectory).normalize();
+
+        // 保存先ディレクトリが存在しない場合は作成
+        if (!Files.exists(saveDirPath)) {
+            Files.createDirectories(saveDirPath);
+            logger.info("画像保存ディレクトリを作成しました: {}", saveDirPath);
+        }
+
+        // 絶対パスでファイルを保存（Spring BootのtransferTo(Path)を使用）
+        Path saveFilePath = saveDirPath.resolve(fileName).toAbsolutePath();
+        file.transferTo(saveFilePath);
+        logger.info("画像ファイルを保存しました: {}", saveFilePath);
+
         // URLを返す
         return fileName;
     }
