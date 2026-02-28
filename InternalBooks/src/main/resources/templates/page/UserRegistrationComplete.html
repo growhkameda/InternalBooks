@@ -52,7 +52,8 @@
   <div class = "row justify-content-center">
 	  <div class = "col-8 pt-2">
 	      	<label for = "password" class="form-label text-start"> パスワード</label>
-	      	<p th:text="${tuser.password}" class="form-control bg-white border-dark">
+	      	<span class="form-control bg-white border-dark"
+	      	      th:text="${#strings.repeat('*',userDto.password.length())}"></span>
 	  </div>
   </div>
 </div>

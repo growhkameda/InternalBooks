@@ -1,7 +1,5 @@
 package com.example.internalbooks.controller;
 
-import java.io.IOException;
-import java.util.Base64;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -41,7 +38,6 @@ import com.example.internalbooks.utils.JwtUtil;
  */
 @Controller
 @RequestMapping("/admin")
-@SessionAttributes({ "userDto", "bookdto" })
 public class AdminController extends InternalBooksController {
 
     // ロガー
@@ -395,6 +391,9 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
 
             model.addAttribute("userDto", new DtoUserRegistration()); // 空のDTOを返す
+            
+            model.addAttribute("departments",tUserService.getAllDepartments());
+
 
             return "page/UserRegistration";
 
@@ -413,8 +412,11 @@ public class AdminController extends InternalBooksController {
 
         if (bindingResult.hasErrors()) {
             for (FieldError error : bindingResult.getFieldErrors()) {
-
-                if ("Pattern".equals(error.getCode())) {
+            	
+            	//バリデーションエラー後もセレクトを表示
+            	model.addAttribute("departments",tUserService.getAllDepartments());
+                
+            	if ("Pattern".equals(error.getCode())) {
 
                     // コンソールにも表示
                 }
@@ -456,6 +458,10 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("userDto", userDto);
 
+            
+            model.addAttribute("departments",tUserService.getAllDepartments());
+
+
             return "page/UserRegistration";
         } catch (Exception e) {
             return error(redirectAttributes);
@@ -482,19 +488,15 @@ public class AdminController extends InternalBooksController {
                 throw new IllegalStateException("DTOがnullです");
             }
 
-            // 所属課をIDへ変換
-            tUserService.userDepartmentId(userdto);
-
             // DBへ(userId,name,mailAddress,password,departmentId)を保存
             TUserEntity savedUser = tUserService.userRegistration(userdto);
             // DBに保存した値をDTOを経由して再度取得
             DtoUserRegistration tuser = new DtoUserRegistration();
-            tuser.setUserId(savedUser.getUserIdAsString());
+            tuser.setUserId(String.valueOf(savedUser.getUserId()));
             tuser.setName(savedUser.getName());
             tuser.setMailAddress(savedUser.getMailAddress());
             // 所属課はStringで表示させるためuserdtoからそのままセットする
             tuser.setDepartmentId(userdto.getDepartmentId());
-            tuser.setPassword(savedUser.getPassword());
 
             // 取得した情報を表示
             model.addAttribute("tuser", tuser);
@@ -514,9 +516,19 @@ public class AdminController extends InternalBooksController {
      */
     @PostMapping("/bookingconfirmation")
     public String BookingConfirmation(@Valid @ModelAttribute("bookdto") DtoBookInfo bookDto,
-            BindingResult bindingResult, HttpSession session, RedirectAttributes redirectAttributes,
-            @RequestParam("imagefile") MultipartFile file, Model model) {
+            BindingResult bindingResult, @RequestParam("imageFile") MultipartFile file,
+            HttpSession session, RedirectAttributes redirectAttributes, Model model) {
 
+        // 書籍画像選択されない時用エラー表示
+        // MultipartFileはBeanvalidationに向いていないため下記で選択されていない場合のエラーバリデーション作成
+        if (bookDto.getImageFile() == null || bookDto.getImageFile().isEmpty()) {
+            bindingResult.rejectValue(
+                    "imageFile",
+                    "imageFile.empty",
+                    "画像を選択してください");
+        }
+
+        // その他のエラー表示
         if (bindingResult.hasErrors()) {
             for (FieldError error : bindingResult.getFieldErrors()) {
                 // コンソールにも表示
@@ -535,23 +547,16 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
+            tBookService.tbookconfirm(bookDto);
+
+            System.out.println("imageurl =" + bookDto.getImageUrl());
+
             model.addAttribute("bookdto", bookDto);
 
-            if (!file.isEmpty()) {
-                try {
-                    byte[] imageBytes = file.getBytes();
-                    session.setAttribute("imageBytes", imageBytes);
-
-                    String base64Image = Base64.getEncoder().encodeToString(imageBytes);
-                    model.addAttribute("imagePreview", base64Image);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
             return "page/BookingConfirmation";
+
         } catch (Exception e) {
+            logger.error("bookingconfirmationでエラーが発生しました", e);
             return error(redirectAttributes);
         }
     }

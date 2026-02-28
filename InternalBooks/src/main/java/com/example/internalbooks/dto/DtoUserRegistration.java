@@ -36,8 +36,9 @@ public class DtoUserRegistration {
 	// 初期値の設定
 	private Integer deleteFlg = 0;
 
-	// StringをIntegerへ変換するメソッド
-	public Integer getUserIdAsIntger() {
+	
+    //	StringをIntegerへ変換するメソッド
+	public Integer getUserIdAsInteger() {
 		return Integer.valueOf(userId);
 	}
 
@@ -45,5 +46,5 @@ public class DtoUserRegistration {
 	public Integer getDepartmentIdAsInteger() {
 		return Integer.valueOf(departmentId);
 	}
-
+	
 }
