@@ -198,7 +198,7 @@
 		<th:block th:each="history : ${bookHistoryList}">
 			<!-- ========== 感想表示 ========== -->
 			<div th:if="${!#strings.isEmpty(history.review)}"
-				 class="d-flex flex-column justify-content-center col-8 mb-3" style="background-color: #E5EAE5; border-radius: 10px;">
+				 class="d-flex flex-column justify-content-center shadow col-8 mb-4" style="background-color: #E5EAE5; border-radius: 10px;">
 				<p th:text="${history.review}" class="col-12 mt-2 mb-0">感想</p>
 				<div class="d-flex mt-3 justify-content-end me-4">
 					<p th:text="${history.userName}" class="me-3">武藤</p>
