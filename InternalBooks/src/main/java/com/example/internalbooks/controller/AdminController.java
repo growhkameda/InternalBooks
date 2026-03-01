@@ -339,6 +339,10 @@ public class AdminController extends InternalBooksController {
             DtoBookInfo bookInfo = tBookService.getBookById(bookId);
             model.addAttribute("bookInfo", bookInfo);
 
+            // セッションからカテゴリーを取得
+            String category = (String) session.getAttribute("currentCategory");
+            model.addAttribute("category", category);
+
             return "page/bookdeletingconfirmation";
         } catch (Exception e) {
             return error(redirectAttributes);
@@ -670,9 +674,59 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", totalPages);
 
+            // セッションにカテゴリーを保存（削除処理で使用）
+            session.setAttribute("currentCategory", category);
+
             return "page/bookdeleting";
         } catch (Exception e) {
             // 認証失敗時はログインページにリダイレクト
+            return error(redirectAttributes);
+        }
+
+    }
+
+    /**
+     * 11/03 木俣
+     * 書籍削除処理（貸出履歴もカスケード削除）
+     */
+    @PostMapping("/bookdeleting")
+    public String bookDeletingPost(
+            @RequestParam("bookId") Integer bookId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        try {
+            // トークンと管理者権限の検証
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+
+            model.addAttribute("isAdmin", isAdmin);
+
+            // セッションからカテゴリーを取得
+            String category = (String) session.getAttribute("currentCategory");
+
+            // 書籍削除処理
+            boolean isDeleted = tBookService.deleteBookById(bookId);
+
+            if (isDeleted) {
+                redirectAttributes.addFlashAttribute("message", "書籍の削除が完了しました");
+            } else {
+                redirectAttributes.addFlashAttribute("message", "書籍の削除に失敗しました");
+            }
+
+            // 元のカテゴリーページにリダイレクトさせる
+            redirectAttributes.addAttribute("category", category);
+            return "redirect:/admin/bookdeleting";
+
+        } catch (IllegalStateException e) {
+            // 貸出中の書籍削除エラー
+            redirectAttributes.addFlashAttribute("message", "エラー: " + e.getMessage());
+            return "redirect:/admin/bookdeletingcategories";
+
+        } catch (Exception e) {
             return error(redirectAttributes);
         }
 
