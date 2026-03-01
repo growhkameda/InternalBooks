@@ -192,8 +192,7 @@
 		<h5 class="col-8 fw-bold mb-2 mt-5">書籍感想</h5>
 		<!-- ========== 感想がない場合 ========== -->
 		<div class="text-center return" 
-			 th:if="${#lists.isEmpty(bookHistoryList) 
-		             and (bookHistoryList[0].returnDate == null and #strings.isEmpty(bookHistoryList[0].review))}">
+			 th:if="${#lists.isEmpty(bookHistoryList) or !hasReviewHistory}">
 	    	<p class="text-center text-muted">この書籍はまだ感想がありません</p>
 		</div>
 		<th:block th:each="history : ${bookHistoryList}">

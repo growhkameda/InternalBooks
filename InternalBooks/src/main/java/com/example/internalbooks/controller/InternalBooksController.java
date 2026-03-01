@@ -321,8 +321,11 @@ public class InternalBooksController {
                 // 一覧から遷移した場合
                 dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
-
             model.addAttribute("bookHistoryList", dtoBookHistory);
+            
+            // 書籍感想有無の判定
+            boolean hasReviewHistory = dtoBookHistory.stream().anyMatch(h -> h.getReview() != null);
+            model.addAttribute("hasReviewHistory", hasReviewHistory);
 
             if (bookId == null && qrData == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
@@ -382,7 +385,6 @@ public class InternalBooksController {
                 // 一覧から遷移した場合
                 dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
-
             model.addAttribute("bookHistoryList", dtoBookHistory);
 
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
@@ -487,7 +489,6 @@ public class InternalBooksController {
             RedirectAttributes redirectAttributes) {
 
         try {
-
             // トークンの検証（共通メソッド）
             validateTokenAndGetUserId(session);
 
@@ -512,6 +513,10 @@ public class InternalBooksController {
 
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
             model.addAttribute("bookHistory", latestHistory);
+            
+            // 書籍感想有無の判定
+            boolean hasReviewHistory = dtoBookHistory.stream().anyMatch(h -> h.getReview() != null);
+            model.addAttribute("hasReviewHistory", hasReviewHistory);
 
             if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");

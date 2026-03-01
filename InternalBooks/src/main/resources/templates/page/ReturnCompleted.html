@@ -34,31 +34,23 @@
     <div th:if="${book != null}"
          class="container-sm">
 
-      <!-- ========== 書籍カード表示 ========== -->
-      <div class="text-center mb-1">
-        <!-- 書籍画像エリア -->
-		<div class="text-center p-4">
-<!--		  <img th:src="@{|/images/${book.bookId}.png|}" -->
-			<img th:src="@{'/images/' + ${book.bookId} + '.png'}"
-               class="img-fluid rounded shadow w-25 h-auto"
-               alt="書籍画像"
-               onerror="handleImageError(this)" />
-        </div>
-
+		<!-- ========== 書籍カード表示 ========== -->
+	    <div class="d-flex flex-column justify-content-center align-items-center mb-1">
+	 		<!-- 書籍画像エリア -->
+	 		<div class="col-7 d-flex justify-content-center border overflow-hidden"
+	 						 style="border-radius: 15px; aspect-ratio: 1; max-width: 500px;">
+	 			<div class="p-5">
+	 		  		<img th:src="@{'/images/' + ${book.bookId} + '.png'}"
+	                 	 class="w-100 h-100 object-fit-contain"
+	               		 alt="書籍画像"
+	                		 onerror="handleImageError(this)" style="border-radius: 10px">
+	     		</div>
+	 	 </div>
 
         <!-- 書籍情報エリア -->
         <div class="card-body p-4 pt-1">
           <!-- 書籍名 -->
           <h5 class="card-title fw-bold mb-3 text-dark" th:text="${book.title}">書籍名</h5>
-
-          <!-- カテゴリー -->
-          <div class="mb-3">
-			<span th:each="category : ${categories}"
-			      class="badge bg-primary rounded-pill me-3 px-3 py-2 fs-6"
-			      th:text="${category}">
-  				カテゴリー
-	    	</span>
-          </div>
         </div>
       </div>
 
