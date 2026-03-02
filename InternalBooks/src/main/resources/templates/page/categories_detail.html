@@ -31,12 +31,13 @@
 			<h1 class="mb-4 text-center">書籍一覧</h1>
 		</div>
 
-		<div class="container text-center d-flex fs-6 fixed-page-width" style="margin-bottom: 60px; font-size: 30px;">
-			カテゴリー
+		<div class="container text-center fixed-page-width" style="margin-bottom: 60px;">
+			<div class="d-flex justify-content-center align-items-baseline gap-3">
+				<span style="font-size:18px; font-weight:500;">カテゴリー</span>
+				<span th:text="${category}" style="font-size:32px; font-weight:600;"></span>
+			</div>
 		</div>
-		<div class="container text-center fs-3 fixed-page-width" style="margin-bottom: 60px; font-size: 30px;">
-			<span th:text="${category}">カテゴリー名</span>
-		</div>
+
 
 		<!--				「page」内の「categories.html」に飛ぶボタン-->
 		<div class="container fixed-page-width">
