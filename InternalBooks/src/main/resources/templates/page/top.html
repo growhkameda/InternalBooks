@@ -6,49 +6,52 @@
 </head>
 
 <body>
+    <!--    <section class="vh-100 d-flex justify-content-center align-items-center">-->
     <section class="vh-100 d-flex justify-content-center align-items-center bg-top">
 
 		<div class="position-relative vh-100">
   			<img th:src="@{/logo/TOP.jpg}" 
        			class="position-absolute top-50 start-50 translate-middle h-100 object-fit-cover" 
-       			style="z-index: -1;">
+       			style="z-index: -1; ">
 
 	        <div class="container vh-100 d-flex justify-content-center align-items-center">
     	        <div class="" style="width: 330px;">
+<!--            <div class="w-100" style="max-width: 330px;">-->
         	        <h1 class="mb-4 text-center">Top</h1>
 
                 	<!-- ボタンを縦に並べ、中央に配置 -->
-            	    <div class="d-flex justify-content-between mb-3">
-                    	<!-- 正方形ボタン（借りる） -->
-                	    <a class=" btn btn-outline-secondary bg-white text-success shadow fs-4 fw-bold d-flex justify-content-center align-items-center"
-                    	    th:href="@{/page/qrsearch}" style="width: 45%; aspect-ratio: 1;">
-                        	借りる
-                    	</a>
-						
+                	    <div class="d-flex justify-content-between mb-3">
+                        <!-- 正方形ボタン（借りる） -->
+                    	    <a class=" btn btn-outline-secondary bg-white text-success shadow fs-4  fw-bold d-flex justify-content-center align-items-center"
+                        	    th:href="@{/page/qrsearch}" style="width: 45%; aspect-ratio: 1;">
+                            借りる
+                        	</a>
 						<!-- 正方形ボタン（返す） -->
-                        <a class="w-40 btn btn-outline-secondary bg-white text-success shadow fs-4 fw-bold d-flex justify-content-center align-items-center"
-                            th:href="@{/page/checkedout}" style="width: 45%; aspect-ratio: 1;">
-                            返す
-                        </a>
-                    </div>
+	                        <a class="w-40 btn btn-outline-secondary bg-white text-success shadow fs-4  fw-bold d-flex justify-content-center align-items-center"
+	                            th:href="@{/page/checkedout}" style="width: 45%; aspect-ratio: 1;">
+	                            返す
+	                        </a>
+	                    </div>
+						
+						<div class="d-flex flex-column align-items-center gap-3">
+	<!--                 ボタンを縦に並べ、中央に配置 -->
+	<!--                <div class="d-flex flex-column align-items-center gap-3">-->
 
-					<!--ボタンを縦に並べ、中央に配置 -->
-					<div class="d-flex flex-column align-items-center gap-3">
-                    	<a class="btn btn-outline-secondary w-100  bg-white text-success fs-5 shadow py-3 fw-bold"
-                        	th:href="@{/page/categories}">
-                        	カテゴリーで検索
-                    	</a>
+	                    <!-- 通常幅のボタン（カテゴリーで検索） -->
+	                    <a class="btn btn-outline-secondary w-100  bg-white text-success fs-5 shadow py-3 fw-bold"
+	                        th:href="@{/page/categories}">
+	                        カテゴリーで検索
+	                    </a>
 
 	                    <!-- isAdmin が true のときだけ表示 -->
 	                    <a class="btn bg-success w-100 text-white fs-5 shadow py-3 fw-bold" th:if="${isAdmin}"
-    	                    href="/admin/adminusertop">管理者ユーザー画面へ
-						</a>
+	                        href="/admin/adminusertop">管理者ユーザー画面へ</a>
 					</div>
-            	</div>
+	            </div>
 	        </div>
-		</div>
+	</div>
 
-    </section>
-</body>
+	    </section>
+	</body>
 
-</html>
+	</html>

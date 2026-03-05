@@ -28,59 +28,87 @@
 
 		<div class="container text-center fixed-page-width"
 			style="margin-bottom: 60px; font-size: 30px; font-weight: 600;">
-			図書館システム
+			<h1 class="mb-4 text-center">書籍一覧</h1>
 		</div>
 
-		<div class="container text-center fixed-page-width" style="margin-bottom: 60px; font-size: 30px;">
-			カテゴリー：<span th:text="${category}">カテゴリー名</span>
+		<div class="container text-center fixed-page-width" style="margin-bottom: 60px;">
+			<div class="d-flex justify-content-center align-items-baseline gap-3">
+				<span style="font-size:18px; font-weight:500;">カテゴリー</span>
+				<span th:text="${category}" style="font-size:32px; font-weight:600;"></span>
+			</div>
 		</div>
 
+		<!--				「page」内の「categories.html」に飛ぶボタン-->
 		<div class="container fixed-page-width">
-			<div class="row">
-				<!--「page」内の「categories.html」に飛ぶボタン-->
-				<a th:href="@{/page/categories}" class="col-auto btn"
-					style="margin-bottom: 10px; font-size: 16px; text-align: left;">
-					カテゴリー選択へ戻る↵
+			<div class="col-12 border-0 mt-4 mb-2">
+				<a href="/page/top" class="text-black ms-2">
+					<i class="bi bi-arrow-left"></i>
+					TOPに戻る
 				</a>
 			</div>
 		</div>
 
-    <div class="container fixed-page-width">
-		<div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
-		 	<!-- bookList をループ -->
-			<div th:each="book : ${bookList}" class="col-md-4 mb-4">
-		    <!-- 貸出可能：クリック可能 -->
-		    <a th:if="${book.status == '貸出可能'}"
-		       th:href="@{/page/searchresult(bookId=${book.bookId})}"
-		       class="btn d-block p-0"
-		       style="text-decoration: none;">
-		      <img th:src="@{'/images/' + ${book.bookId} + '.png'}"
-		           alt="Book Image"
-		           class="img-fluid fixed-size-img" />
-		    </a>
-		    <!-- 貸出中：クリック不可 + グレーアウト -->
-		    <div th:if="${book.status == '貸出中'}"
-		         class="d-inline-block"
-		         style="position: relative; cursor: not-allowed;">
-		      <img th:src="@{'/images/' + ${book.bookId} + '.png'}"
-		           alt="Book Image (貸出中)"
-		           class="img-fluid fixed-size-img"
-		           style="opacity: 0.5; filter: grayscale(100%) brightness(0.6);" />
-		      <!-- 貸出中ラベル -->
-		      <div style="position: absolute; top: 50%; left: 50%;
+		<div class="container fixed-page-width">
+			<div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
+				<!-- bookList をループ -->
+				<div th:each="book : ${bookList}" class="col-md-4 mb-4">
+					<!-- 貸出可能：クリック可能 -->
+					<a th:if="${book.status == '貸出可能'}" th:href="@{/page/searchresult(bookId=${book.bookId})}"
+						class="btn d-block p-0" style="text-decoration: none;">
+						<img th:src="@{'/images/' + ${book.bookId} + '.png'}" alt="Book Image"
+							class="img-fluid fixed-size-img" />
+					</a>
+					<!-- 貸出中：クリック不可 + グレーアウト -->
+					<div th:if="${book.status == '貸出中'}" class="d-inline-block"
+						style="position: relative; cursor: not-allowed;">
+						<img th:src="@{'/images/' + ${book.bookId} + '.png'}" alt="Book Image (貸出中)"
+							class="img-fluid fixed-size-img"
+							style="opacity: 0.5; filter: grayscale(100%) brightness(0.6);" />
+						<!-- 貸出中ラベル -->
+						<div style="position: absolute; top: 50%; left: 50%;
 		                  transform: translate(-50%, -50%);
 		                  background: rgba(0, 0, 0, 0.75);
 		                  color: white; padding: 10px 20px;
 		                  border-radius: 5px; font-weight: bold;
 		                  font-size: 16px; white-space: nowrap;">
-		        貸出中
-		      </div>
-		 	</div>
+							貸出中
+						</div>
+					</div>
+				</div>
+				<div th:if="${#lists.isEmpty(bookIdList)}">
+					<p>該当する本が見つかりませんでした。</p>
+				</div>
+
+				<div class="pagination-buttons fixed-page-width">
+
+					<!--左側に「← 前のページ」ボタンを表示-->
+					<!--左側に表示するように指定-->
+					<div class="text-start">
+						<div th:if="${currentPage > 0}">
+							<a th:href="@{/page/categories_detail(category=${category}, page=${currentPage - 1})}"
+								class="btn bg-success text-white">
+								← 前のページ
+							</a>
+						</div>
+					</div>
+
+					<!--右側に「次のページ →」ボタンを表示-->
+					<div th:if="${currentPage + 1 < totalPages}">
+						<!--右側に表示するように指定-->
+						<div class="text-end">
+							<a th:href="@{/page/categories_detail(category=${category}, page=${currentPage + 1})}"
+								class="btn bg-success text-white">
+								次のページ →
+							</a>
+						</div>
+					</div>
+
+				</div>
+
 			</div>
 		</div>
-	</div>
 
-  </section>
+	</section>
 
 </body>
 
