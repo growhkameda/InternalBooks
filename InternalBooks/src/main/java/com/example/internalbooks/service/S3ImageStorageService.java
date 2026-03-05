@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -96,6 +97,43 @@ public class S3ImageStorageService implements ImageStorageService {
                         file.getSize()));
 
         return prefix + "/" + fileName;
+    }
+
+    /**
+     * S3上の仮ファイル名オブジェクトを {bookId}.png にコピー後、元オブジェクトを削除する。
+     */
+    @Override
+    public void renameToBookId(String currentFileName, Integer bookId) throws IOException {
+        if (currentFileName == null || currentFileName.isBlank()) {
+            throw new IOException("リネーム元のファイル名が指定されていません");
+        }
+        if (bookId == null) {
+            throw new IOException("リネーム先の bookId が指定されていません");
+        }
+
+        String sourceKey = prefix + currentFileName;
+        String targetKey = prefix + bookId + ".png";
+
+        try {
+            CopyObjectRequest copyRequest = CopyObjectRequest.builder()
+                    .sourceBucket(bucketName)
+                    .sourceKey(sourceKey)
+                    .destinationBucket(bucketName)
+                    .destinationKey(targetKey)
+                    .build();
+            s3Client.copyObject(copyRequest);
+
+            DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(sourceKey)
+                    .build();
+            s3Client.deleteObject(deleteRequest);
+
+            logger.info("S3上の画像をリネームしました: {} → {}", sourceKey, targetKey);
+
+        } catch (SdkException e) {
+            throw new IOException("S3上の画像リネームに失敗しました: " + e.getMessage(), e);
+        }
     }
 
 }

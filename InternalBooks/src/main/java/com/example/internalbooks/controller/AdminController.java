@@ -92,7 +92,9 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
             logger.info("bookediting() にアクセスされました");
 
-            model.addAttribute("bookdto", new DtoBookInfo()); // 空のDTOを返す
+            model.addAttribute("bookdto", new DtoBookInfo());
+            model.addAttribute("activeUsers", tUserService.getActiveUsers());
+            model.addAttribute("existingCategories", tBookService.getAllCategories());
 
             return "page/bookediting";
         } catch (Exception e) {
@@ -568,7 +570,7 @@ public class AdminController extends InternalBooksController {
     @PostMapping("/bookingregistrationcomplete")
     public String BookingRegistrationcomplete(@ModelAttribute("bookdto") DtoBookInfo bookDto, SessionStatus status,
             HttpSession session, RedirectAttributes redirectAttributes,
-            MultipartFile file, Model model) {
+            Model model) {
 
         // トークンと管理者権限の検証
         try {
@@ -598,6 +600,7 @@ public class AdminController extends InternalBooksController {
 
             return "page/BookingRegistrationComplete";
         } catch (Exception e) {
+            logger.error("bookingregistrationcompleteでエラーが発生しました", e);
             return error(redirectAttributes);
         }
 

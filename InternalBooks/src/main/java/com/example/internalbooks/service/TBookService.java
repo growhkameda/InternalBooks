@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ import com.example.internalbooks.common.Const;
  * TBookテーブルに対してどんな操作をしていくかをTBookリポジトリを介して制御していくサービス
  */
 public class TBookService {
+
+	private static final Logger logger = LoggerFactory.getLogger(TBookService.class);
 
 	// DI用フィールド
 	private final TBookRepository tBookRepository;
@@ -346,21 +350,34 @@ public class TBookService {
 				nextId = maxId + Const.PLUS_KIZONBOOKID;
 			} else {
 				// 既存のカテゴリ名がない場合
-				Integer maxIdAll = tBookRepository.findMaxBookId();
-				// データがある場合はその最大値に10001をたす。
-				nextId = maxIdAll + Const.PLUS_NEWBOOKID;
+			Integer maxIdAll = tBookRepository.findMaxBookId();
+			// データがある場合はその最大値に10001をたす。DBが空の場合は0として扱う
+			nextId = (maxIdAll != null ? maxIdAll : 0) + Const.PLUS_NEWBOOKID;
 			}
-			// 取得したIDをセット
-			tbook.setBookId(nextId);
-			// DBへセットした値を保存
-			TBookEntity saved = tBookRepository.save(tbook);
-			// ユーザー名をTbookEntityの提供者名にセット
-			saved.setProviderName(user.getName());
-			return saved;
+		// 取得したIDをセット
+		tbook.setBookId(nextId);
+		// DBへセットした値を保存
+		TBookEntity saved = tBookRepository.save(tbook);
+		// ユーザー名をTbookEntityの提供者名にセット
+		saved.setProviderName(user.getName());
 
-		} catch (DataIntegrityViolationException e) {
-			throw new IllegalStateException("登録に失敗しました", e);
+		// 確認ステップで元ファイル名として保存した画像を {bookId}.png にリネーム
+		// リネーム失敗はDB登録に影響させない（ログのみ記録して継続）
+		String currentFileName = dtbook.getImageUrl();
+		if (currentFileName != null && !currentFileName.isBlank()) {
+			try {
+				imageStorageService.renameToBookId(currentFileName, saved.getBookId());
+			} catch (Exception e) {
+				logger.warn("画像のリネームに失敗しました（書籍登録は継続します）: currentFileName={}, bookId={}, error={}",
+						currentFileName, saved.getBookId(), e.getMessage(), e);
+			}
 		}
+
+		return saved;
+
+	} catch (DataIntegrityViolationException e) {
+		throw new IllegalStateException("登録に失敗しました", e);
+	}
 
 	}
 

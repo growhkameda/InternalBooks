@@ -25,6 +25,15 @@ public class LocalImageStorageService implements ImageStorageService {
     }
 
     /**
+     * 画像保存ディレクトリの絶対パスを返す。
+     * user.dir（プロジェクトルート）を基点に imageDirectory を結合する。
+     * Java の Path API がOSのファイルセパレータを自動処理するため Mac/Windows 両対応。
+     */
+    private Path resolveImageDir() {
+        return Paths.get(System.getProperty("user.dir")).resolve(imageDirectory).normalize();
+    }
+
+    /**
      * 指定されたbookIdに対応する画像を削除する
      * 削除が存在しない場合もtrueを返す
      * 削除が失敗したときのみfalseを返すが、DBの削除は継続する
@@ -37,60 +46,74 @@ public class LocalImageStorageService implements ImageStorageService {
         }
 
         try {
-            // 画像ファイルのパスを構築
             String fileName = bookId + ".png";
-            Path imagePath = Paths.get(imageDirectory, fileName);
+            Path imagePath = resolveImageDir().resolve(fileName);
 
-            // ファイルが存在するか確認
             if (!Files.exists(imagePath)) {
                 logger.warn("画像ファイルが存在しません: {}", imagePath);
-                return true; // 存在しない場合は成功として扱う
+                return true;
             }
 
-            // ファイルを削除
             Files.delete(imagePath);
             logger.info("画像ファイルを削除しました: {}", imagePath);
             return true;
 
         } catch (IOException e) {
             logger.error("画像ファイルの削除に失敗しました: bookId={}, error={}", bookId, e.getMessage(), e);
-            // エラーが発生しても例外をスローせず、falseを返す
-            // DB削除は継続するため、例外はスローしない
             return false;
         }
     }
 
     /**
      * 書籍画像を指定したディレクトリへ保存する。
+     * 確認ステップで呼び出され、元のファイル名で一時保存する。
+     * DB登録後に renameToBookId() で正式名称 ({bookId}.png) にリネームすること。
      */
     @Override
     public String savetbook(MultipartFile file) throws IOException {
 
-        // 画像の名前を取得
         String fileName = file.getOriginalFilename();
         if (fileName == null || fileName.isBlank()) {
             throw new IOException("ファイル名が取得できませんでした");
         }
 
-        // プロジェクトルートからの絶対パスを安全に構築
-        Path projectDir = Paths.get(System.getProperty("user.dir"));
-        Path saveDirPath = projectDir.resolve(imageDirectory.startsWith("/")
-                ? imageDirectory.substring(1)
-                : imageDirectory).normalize();
+        Path saveDirPath = resolveImageDir();
 
-        // 保存先ディレクトリが存在しない場合は作成
         if (!Files.exists(saveDirPath)) {
             Files.createDirectories(saveDirPath);
             logger.info("画像保存ディレクトリを作成しました: {}", saveDirPath);
         }
 
-        // 絶対パスでファイルを保存（Spring BootのtransferTo(Path)を使用）
         Path saveFilePath = saveDirPath.resolve(fileName).toAbsolutePath();
         file.transferTo(saveFilePath);
         logger.info("画像ファイルを保存しました: {}", saveFilePath);
 
-        // URLを返す
         return fileName;
+    }
+
+    /**
+     * 仮ファイル名で保存済みの画像を {bookId}.png にリネームする。
+     * DB保存後に確定した bookId でファイルを正式名称に変更するために使用する。
+     */
+    @Override
+    public void renameToBookId(String currentFileName, Integer bookId) throws IOException {
+        if (currentFileName == null || currentFileName.isBlank()) {
+            throw new IOException("リネーム元のファイル名が指定されていません");
+        }
+        if (bookId == null) {
+            throw new IOException("リネーム先の bookId が指定されていません");
+        }
+
+        Path imageDir = resolveImageDir();
+        Path sourcePath = imageDir.resolve(currentFileName).toAbsolutePath();
+        Path targetPath = imageDir.resolve(bookId + ".png").toAbsolutePath();
+
+        if (!Files.exists(sourcePath)) {
+            throw new IOException("リネーム元の画像ファイルが見つかりません: " + sourcePath);
+        }
+
+        Files.move(sourcePath, targetPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        logger.info("画像ファイルをリネームしました: {} → {}", sourcePath, targetPath);
     }
 
 }
