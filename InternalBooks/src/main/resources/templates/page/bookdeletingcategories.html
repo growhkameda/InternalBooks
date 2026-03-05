@@ -18,8 +18,7 @@
 
 						<!--	  DBよりカテゴリーをリストで取得し、画面に表示-->
 						<!--    カテゴリー毎にボタンのデザインを変更するために三項演算子を追記-->
-						<!--注意：三項演算子を複数行で記載すると値をとってこれないため、一行で記載-->
-						<a th:href="@{'/page/categories_detail?category=' + ${category}}" th:text="${category}"
+						<a th:href="@{'/admin/bookdeleting?category=' + ${category}}" th:text="${category}"
 							class="btn btn-outline-secondary w-100 bg-white  shadow py-3 fw-bold"
 							th:classappend="${category == 'Java'} ? ' text-primary' : (${category == 'Python'} ? ' text-info' : (${category == 'C言語'} ? ' text-warning' : (${category == '基本情報'} ? ' text-success' : (${category == 'ITパスポート'} ? ' text-danger' : ' btn-primary'))))">
 						</a>
