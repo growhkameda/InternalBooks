@@ -166,7 +166,7 @@ public class TUserService implements UserDetailsService {
     	tuser.setUserId(dtuser.getUserIdAsInteger());
     	tuser.setName(dtuser.getName());
     	tuser.setMailAddress(dtuser.getMailAddress());
-    	String hash = passwordEncoder.encode(dtuser.getPassword());
+    	String hash = passwordEncoder.encode(dtuser.getMailAddress());
     	tuser.setPassword(hash);
     	tuser.setDepartmentId(deptId.getId());
     	tuser.setRole(dtuser.getRole());
