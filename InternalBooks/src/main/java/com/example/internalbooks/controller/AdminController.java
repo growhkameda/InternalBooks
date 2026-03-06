@@ -92,7 +92,9 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
             logger.info("bookediting() にアクセスされました");
 
-            model.addAttribute("bookdto", new DtoBookInfo()); // 空のDTOを返す
+            model.addAttribute("bookdto", new DtoBookInfo());
+            model.addAttribute("activeUsers", tUserService.getActiveUsers());
+            model.addAttribute("existingCategories", tBookService.getAllCategories());
 
             return "page/bookediting";
         } catch (Exception e) {
@@ -339,6 +341,10 @@ public class AdminController extends InternalBooksController {
             DtoBookInfo bookInfo = tBookService.getBookById(bookId);
             model.addAttribute("bookInfo", bookInfo);
 
+            // セッションからカテゴリーを取得
+            String category = (String) session.getAttribute("currentCategory");
+            model.addAttribute("category", category);
+
             return "page/bookdeletingconfirmation";
         } catch (Exception e) {
             return error(redirectAttributes);
@@ -391,9 +397,8 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
 
             model.addAttribute("userDto", new DtoUserRegistration()); // 空のDTOを返す
-            
-            model.addAttribute("departments",tUserService.getAllDepartments());
 
+            model.addAttribute("departments", tUserService.getAllDepartments());
 
             return "page/UserRegistration";
 
@@ -412,11 +417,11 @@ public class AdminController extends InternalBooksController {
 
         if (bindingResult.hasErrors()) {
             for (FieldError error : bindingResult.getFieldErrors()) {
-            	
-            	//バリデーションエラー後もセレクトを表示
-            	model.addAttribute("departments",tUserService.getAllDepartments());
-                
-            	if ("Pattern".equals(error.getCode())) {
+
+                // バリデーションエラー後もセレクトを表示
+                model.addAttribute("departments", tUserService.getAllDepartments());
+
+                if ("Pattern".equals(error.getCode())) {
 
                     // コンソールにも表示
                 }
@@ -458,9 +463,7 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("userDto", userDto);
 
-            
-            model.addAttribute("departments",tUserService.getAllDepartments());
-
+            model.addAttribute("departments", tUserService.getAllDepartments());
 
             return "page/UserRegistration";
         } catch (Exception e) {
@@ -567,7 +570,7 @@ public class AdminController extends InternalBooksController {
     @PostMapping("/bookingregistrationcomplete")
     public String BookingRegistrationcomplete(@ModelAttribute("bookdto") DtoBookInfo bookDto, SessionStatus status,
             HttpSession session, RedirectAttributes redirectAttributes,
-            MultipartFile file, Model model) {
+            Model model) {
 
         // トークンと管理者権限の検証
         try {
@@ -597,6 +600,7 @@ public class AdminController extends InternalBooksController {
 
             return "page/BookingRegistrationComplete";
         } catch (Exception e) {
+            logger.error("bookingregistrationcompleteでエラーが発生しました", e);
             return error(redirectAttributes);
         }
 
@@ -651,11 +655,11 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
-            // カテゴリーに属するすべての本のIDを取得
-            List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
+            // カテゴリーに属するすべての本の情報を取得
+            List<DtoBookInfo> allBooks = tBookService.getBooksByCategoryWithDetails(category);
 
             // 取得した本の要素数を取得
-            int TOTAL_BOOK_COUNT = allBookIds.size();
+            int TOTAL_BOOK_COUNT = allBooks.size();
 
             // 指定した表示画像数と、取得した要素数で必要なページ数を計算
             int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / BOOKS_PER_PAGE);
@@ -664,18 +668,68 @@ public class AdminController extends InternalBooksController {
             int fromIndex = page * BOOKS_PER_PAGE;
             int toIndex = Math.min(fromIndex + BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
 
-            // 表示対象の本IDリストを抽出
-            List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
+            // 表示対象の本リストを抽出
+            List<DtoBookInfo> pagedBooks = allBooks.subList(fromIndex, toIndex);
 
             // Viewに渡すモデル属性を設定
-            model.addAttribute("bookIdList", pagedBookIds);
+            model.addAttribute("bookList", pagedBooks);
             model.addAttribute("category", category);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", totalPages);
 
+            // セッションにカテゴリーを保存（削除処理で使用）
+            session.setAttribute("currentCategory", category);
+
             return "page/bookdeleting";
         } catch (Exception e) {
             // 認証失敗時はログインページにリダイレクト
+            return error(redirectAttributes);
+        }
+
+    }
+
+    /**
+     * 11/03 木俣
+     * 書籍削除処理（貸出履歴もカスケード削除）
+     */
+    @PostMapping("/bookdeleting")
+    public String bookDeletingPost(
+            @RequestParam("bookId") Integer bookId,
+            HttpSession session,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+
+        try {
+            // トークンと管理者権限の検証
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+
+            model.addAttribute("isAdmin", isAdmin);
+
+            // セッションからカテゴリーを取得
+            String category = (String) session.getAttribute("currentCategory");
+
+            // 書籍削除処理
+            boolean isDeleted = tBookService.deleteBookById(bookId);
+
+            if (isDeleted) {
+                redirectAttributes.addFlashAttribute("message", "書籍の削除が完了しました");
+            } else {
+                redirectAttributes.addFlashAttribute("message", "書籍の削除に失敗しました");
+            }
+
+            // 元のカテゴリーページにリダイレクトさせる
+            redirectAttributes.addAttribute("category", category);
+            return "redirect:/admin/bookdeleting";
+
+        } catch (IllegalStateException e) {
+            // 貸出中の書籍削除エラー
+            redirectAttributes.addFlashAttribute("message", "エラー: " + e.getMessage());
+            return "redirect:/admin/bookdeletingcategories";
+
+        } catch (Exception e) {
             return error(redirectAttributes);
         }
 

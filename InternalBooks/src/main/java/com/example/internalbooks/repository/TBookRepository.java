@@ -23,11 +23,11 @@ public interface TBookRepository extends JpaRepository<TBookEntity, Integer> {
 	List<TBookEntity> findByCategories(String category);
 
 	// カテゴリ名よりIDを取得 大文字小文字関係なし
-	@Query("SELECT MAX(b.id) FROM TBookEntity b WHERE LOWER(b.categories) = LOWER(:categories)")
+	@Query("SELECT MAX(b.bookId) FROM TBookEntity b WHERE LOWER(b.categories) = LOWER(:categories)")
 	Integer findMaxIdByName(@Param("categories") String categories);
 
 	// IDの最大値を取得する。
-	@Query("SELECT MAX(b.id) FROM TBookEntity b")
+	@Query("SELECT MAX(b.bookId) FROM TBookEntity b")
 	Integer findMaxBookId();
 
 	// 書籍返却時にborrowerIdをNULLに更新する
@@ -38,7 +38,7 @@ public interface TBookRepository extends JpaRepository<TBookEntity, Integer> {
 
 	@Modifying
 	@Transactional
-	@Query("UPDATE TBookEntity b SET b.borrowerId = :userId WHERE b.id = :bookId")
+	@Query("UPDATE TBookEntity b SET b.borrowerId = :userId WHERE b.bookId = :bookId")
 	void updateBorrowerByBookId(@Param("bookId") Integer bookId, @Param("userId") Integer userId);
 
 }

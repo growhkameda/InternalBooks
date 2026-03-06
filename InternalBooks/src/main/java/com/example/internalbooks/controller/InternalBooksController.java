@@ -215,11 +215,12 @@ public class InternalBooksController {
             // フラグ カテゴリー一覧：1
             screenFlag = 1;
 
-            // カテゴリーに属するすべての本のIDを取得
-            List<Integer> allBookIds = tBookService.getCategoriesdetail(category);
+            // カテゴリーに属するすべての本の情報を取得
+
+            List<DtoBookInfo> allBooks = tBookService.getBooksByCategoryWithDetails(category);
 
             // 取得した本の要素数を取得
-            int TOTAL_BOOK_COUNT = allBookIds.size();
+            int TOTAL_BOOK_COUNT = allBooks.size();
 
             // 指定した表示画像数と、取得した要素数で必要なページ数を計算
             int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / BOOKS_PER_PAGE);
@@ -228,11 +229,11 @@ public class InternalBooksController {
             int fromIndex = page * BOOKS_PER_PAGE;
             int toIndex = Math.min(fromIndex + BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
 
-            // 表示対象の本IDリストを抽出
-            List<Integer> pagedBookIds = allBookIds.subList(fromIndex, toIndex);
+            // 表示対象の本リストを抽出
+            List<DtoBookInfo> pagedBooks = allBooks.subList(fromIndex, toIndex);
 
             // Viewに渡すモデル属性を設定
-            model.addAttribute("bookIdList", pagedBookIds);
+            model.addAttribute("bookList", pagedBooks);
             model.addAttribute("category", category);
             model.addAttribute("currentPage", page);
             model.addAttribute("totalPages", totalPages);
@@ -282,15 +283,14 @@ public class InternalBooksController {
                     model.addAttribute("showButton", showButton);
                     model.addAttribute("showComment", showComment);
                     break;
-                // QRコードからの遷移
+                // 借りるボタンからの遷移
                 case 2:
                     showButton = true;
                     showComment = false;
-                    model.addAttribute("screenFlag", screenFlag);
                     model.addAttribute("showButton", showButton);
                     model.addAttribute("showComment", showComment);
                     break;
-                // 貸出中の場合
+                // 返すボタンからの遷移
                 case 3:
                     showButton = true;
                     showComment = true;
@@ -300,6 +300,7 @@ public class InternalBooksController {
                 default:
                     break;
             }
+            model.addAttribute("screenFlag", screenFlag);
 
             // 書籍検索処理をServiceで処理
             DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
@@ -321,8 +322,11 @@ public class InternalBooksController {
                 // 一覧から遷移した場合
                 dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
-
             model.addAttribute("bookHistoryList", dtoBookHistory);
+            
+            // 書籍感想有無の判定
+            boolean hasReviewHistory = dtoBookHistory.stream().anyMatch(h -> h.getReview() != null);
+            model.addAttribute("hasReviewHistory", hasReviewHistory);
 
             if (bookId == null && qrData == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
@@ -382,7 +386,6 @@ public class InternalBooksController {
                 // 一覧から遷移した場合
                 dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
-
             model.addAttribute("bookHistoryList", dtoBookHistory);
 
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
@@ -487,7 +490,6 @@ public class InternalBooksController {
             RedirectAttributes redirectAttributes) {
 
         try {
-
             // トークンの検証（共通メソッド）
             validateTokenAndGetUserId(session);
 
@@ -512,6 +514,10 @@ public class InternalBooksController {
 
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
             model.addAttribute("bookHistory", latestHistory);
+            
+            // 書籍感想有無の判定
+            boolean hasReviewHistory = dtoBookHistory.stream().anyMatch(h -> h.getReview() != null);
+            model.addAttribute("hasReviewHistory", hasReviewHistory);
 
             if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
