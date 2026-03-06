@@ -22,6 +22,7 @@ import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
+import com.example.internalbooks.common.Const;
 import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
 
@@ -127,15 +128,16 @@ public class InternalBooksController {
      * カテゴリーリストを表示
      */
     @GetMapping("/page/categories")
-    public String categories(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String categories(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         try {
             // トークンの検証
             validateTokenAndGetUserId(session);
 
-            // カテゴリーリストを取得
-            List<String> categoryList = tBookService.getAllCategories();
-
-            model.addAttribute("categories", categoryList);
+            model.addAttribute("categories", tBookService.getPagedCategories(page, Const.CATEGORIES_PER_PAGE));
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", tBookService.getCategoryTotalPages(Const.CATEGORIES_PER_PAGE));
 
             return "page/categories";
         } catch (Exception e) {
@@ -205,9 +207,6 @@ public class InternalBooksController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        // 1ページに表示する本の数
-        final int BOOKS_PER_PAGE = 6;
-
         try {
             // ユーザー認証（共通処理）
             validateTokenAndGetUserId(session);
@@ -223,11 +222,11 @@ public class InternalBooksController {
             int TOTAL_BOOK_COUNT = allBooks.size();
 
             // 指定した表示画像数と、取得した要素数で必要なページ数を計算
-            int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / BOOKS_PER_PAGE);
+            int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / Const.BOOKS_PER_PAGE);
 
             // ページ範囲を計算
-            int fromIndex = page * BOOKS_PER_PAGE;
-            int toIndex = Math.min(fromIndex + BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
+            int fromIndex = page * Const.BOOKS_PER_PAGE;
+            int toIndex = Math.min(fromIndex + Const.BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
 
             // 表示対象の本リストを抽出
             List<DtoBookInfo> pagedBooks = allBooks.subList(fromIndex, toIndex);

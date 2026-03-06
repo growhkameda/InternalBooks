@@ -6,8 +6,8 @@
 </head>
 
 <body>
-	<section class="vh-100 d-flex justify-content-center align-items-center">
-		<div class="container vh-100 d-flex justify-content-center align-items-center">
+	<section class="min-vh-100 d-flex justify-content-center align-items-center py-4">
+		<div class="container d-flex justify-content-center align-items-center">
 			<div class="w-100" style="max-width: 400px;">
 				<h1 class="mb-4 text-center">カテゴリー</h1>
 
@@ -20,24 +20,39 @@
 						<!--    カテゴリー毎にボタンのデザインを変更するために三項演算子を追記-->
 						<!--注意：三項演算子を複数行で記載すると値をとってこれないため、一行で記載-->
 
-						<a th:href="@{/page/categories_detail(category=${category})}" th:text="${category}"
-							class="btn w-100 shadow py-3 fw-bold" style="background-color:white;"
-							th:styleappend="${category == 'Java'} ? 'border:2px solid #02536F; color:#02536F;' : (${category == 'Python'} ? 'border:2px solid #A000DF; color:#A000DF;' : (${category == 'C言語'} ? 'border:2px solid #A0A91A; color:#A0A91A;' : (${category == '基本情報'} ? 'border:2px solid #00A313; color:#00A313;' : (${category == 'ITパスポート'} ? 'border:2px solid #E49502; color:#E49502;' : 'border:2px solid #6c757d; color:#6c757d;'))))">
-						</a>
+					<a th:href="@{/page/categories_detail(category=${category})}" th:text="${category}"
+						class="btn w-100 shadow py-3 fw-bold"
+						style="background-color:white; color:#3CB371; border:2px solid #3CB371;">
+					</a>
 
 					</div>
 				</div>
 
-				<!-- ========== 一覧へ戻るボタン ========== -->
-				<!-- 戻るボタンを設置　どこの画面からの遷移で切り替え -->
-			    <div class="row d-flex justify-content-center border-0 mt-3">
-					<a href="/page/top" class="text-black ms-1">
-						<img src="/images/TOP_Return.png" style="width: 40px; height: 40px;">
-					</a>
-			    </div>
+			<!-- ========== 一覧へ戻るボタン ========== -->
+			<!-- 戻るボタンを設置　どこの画面からの遷移で切り替え -->
+		    <div class="row d-flex justify-content-center border-0 mt-3">
+				<a href="/page/top" class="text-black ms-1">
+					<img src="/images/TOP_Return.png" style="width: 40px; height: 40px;">
+				</a>
+		    </div>
+
+			<!-- ========== ページネーションボタン ========== -->
+			<div class="d-flex justify-content-between mt-3">
+				<div>
+					<div th:if="${currentPage > 0}">
+						<a th:href="@{/page/categories(page=${currentPage - 1})}"
+							class="btn bg-success text-white">← 前のページ</a>
+					</div>
+				</div>
+				<div th:if="${currentPage + 1 < totalPages}">
+					<a th:href="@{/page/categories(page=${currentPage + 1})}"
+						class="btn bg-success text-white">次のページ →</a>
+				</div>
 			</div>
+
 		</div>
-	</section>
+	</div>
+</section>
 </body>
 
 </html>

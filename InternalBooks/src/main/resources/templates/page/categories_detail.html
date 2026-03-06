@@ -85,7 +85,7 @@
 			<div class="text-start">
 				<div th:if="${currentPage > 0}">
 					<a th:href="@{/page/categories_detail(category=${category}, page=${currentPage - 1})}"
-						class="btn btn-outline-primary">
+						class="btn bg-success text-white">
 						← 前のページ
 					</a>
 				</div>
@@ -95,7 +95,7 @@
 			<div th:if="${currentPage + 1 < totalPages}">
 				<div class="text-end">
 					<a th:href="@{/page/categories_detail(category=${category}, page=${currentPage + 1})}"
-						class="btn btn-outline-primary">
+						class="btn bg-success text-white">
 						次のページ →
 					</a>
 				</div>

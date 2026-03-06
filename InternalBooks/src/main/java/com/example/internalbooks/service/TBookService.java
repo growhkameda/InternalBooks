@@ -73,6 +73,20 @@ public class TBookService {
 		return categoryList;
 	}
 
+	/** 指定ページのカテゴリー一覧を返す */
+	public List<String> getPagedCategories(int page, int pageSize) {
+		List<String> all = getAllCategories();
+		int fromIndex = page * pageSize;
+		if (fromIndex >= all.size()) return new ArrayList<>();
+		int toIndex = Math.min(fromIndex + pageSize, all.size());
+		return all.subList(fromIndex, toIndex);
+	}
+
+	/** カテゴリーの総ページ数を返す */
+	public int getCategoryTotalPages(int pageSize) {
+		return (int) Math.ceil((double) getAllCategories().size() / pageSize);
+	}
+
 	public List<Integer> getCategoriesdetail(String category) {
 		List<Integer> bookid_list = new ArrayList<>();
 		try {
