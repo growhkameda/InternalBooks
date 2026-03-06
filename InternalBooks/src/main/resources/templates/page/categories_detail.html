@@ -78,6 +78,31 @@
 		 	</div>
 			</div>
 		</div>
+
+		<div class="pagination-buttons fixed-page-width">
+
+			<!--左側に「← 前のページ」ボタンを表示-->
+			<div class="text-start">
+				<div th:if="${currentPage > 0}">
+					<a th:href="@{/page/categories_detail(category=${category}, page=${currentPage - 1})}"
+						class="btn btn-outline-primary">
+						← 前のページ
+					</a>
+				</div>
+			</div>
+
+			<!--右側に「次のページ →」ボタンを表示-->
+			<div th:if="${currentPage + 1 < totalPages}">
+				<div class="text-end">
+					<a th:href="@{/page/categories_detail(category=${category}, page=${currentPage + 1})}"
+						class="btn btn-outline-primary">
+						次のページ →
+					</a>
+				</div>
+			</div>
+
+		</div>
+
 	</div>
 
   </section>
