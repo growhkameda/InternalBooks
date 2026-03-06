@@ -20,7 +20,7 @@
 						<!--    カテゴリー毎にボタンのデザインを変更するために三項演算子を追記-->
 						<!--注意：三項演算子を複数行で記載すると値をとってこれないため、一行で記載-->
 
-						<a th:href="@{'/page/categories_detail?category=' + ${category}}" th:text="${category}"
+						<a th:href="@{/page/categories_detail(category=${category})}" th:text="${category}"
 							class="btn w-100 shadow py-3 fw-bold" style="background-color:white;"
 							th:styleappend="${category == 'Java'} ? 'border:2px solid #02536F; color:#02536F;' : (${category == 'Python'} ? 'border:2px solid #A000DF; color:#A000DF;' : (${category == 'C言語'} ? 'border:2px solid #A0A91A; color:#A0A91A;' : (${category == '基本情報'} ? 'border:2px solid #00A313; color:#00A313;' : (${category == 'ITパスポート'} ? 'border:2px solid #E49502; color:#E49502;' : 'border:2px solid #6c757d; color:#6c757d;'))))">
 						</a>

@@ -59,12 +59,13 @@ public class TBookService {
 			// カテゴリー情報を登録されている本情報から取得する
 			for (TBookEntity book : bookList) {
 				// カンマ区切りのカテゴリを分割し、重複しないように値を格納
-				String[] categories = book.getCategories().split(",");
-				for (String category : categories) {
-					if (!categoryList.contains(category)) {
-						categoryList.add(category);
-					}
+			String[] categories = book.getCategories().split(",");
+			for (String category : categories) {
+				String trimmed = category.strip();
+				if (!categoryList.contains(trimmed)) {
+					categoryList.add(trimmed);
 				}
+			}
 			}
 		} catch (Exception e) {
 			throw e;
@@ -86,7 +87,7 @@ public class TBookService {
 				String[] categoriesArray = book_categories.split(",");
 				for (String list_category : categoriesArray) {
 					// 引数のカテゴリーの値が含まれている本情報のみbookid_listに追加する
-					if (list_category.trim().equals(category)) {
+					if (list_category.strip().equals(category.strip())) {
 						bookid_list.add(book.getBookId());
 						break;
 					}
@@ -114,9 +115,9 @@ public class TBookService {
 				String bookCategories = book.getCategories();
 				// 複数のカテゴリーをカンマ区切りで分割
 				String[] categoriesArray = bookCategories.split(",");
-				for (String bookCategory : categoriesArray) {
-					// 引数のカテゴリーに一致する書籍のみ追加
-					if (bookCategory.trim().equals(category)) {
+			for (String bookCategory : categoriesArray) {
+				// 引数のカテゴリーに一致する書籍のみ追加
+				if (bookCategory.strip().equals(category.strip())) {
 						// convertEntityToDtoで書籍情報をDTOに変換（status含む）
 						DtoBookInfo dto = convertEntityToDto(book, false);
 						bookList.add(dto);
