@@ -152,7 +152,7 @@ public class AdminController extends InternalBooksController {
             if (bindingResult.hasErrors()) {
                 model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
                 model.addAttribute("errorMessage", "入力内容を確認してください。");
-                return "page/useredit";
+                return "page/userEdit";
             }
 
             // 所属課名のセット
@@ -160,7 +160,7 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("userDto", userDto);
             model.addAttribute("isAdmin", isAdmin);
 
-            return "page/usereditconfirmation";
+            return "page/userEditConfirmation";
         } catch (Exception e) {
             logger.error("usereditconfirmationでエラーが発生しました", e);
             return error(redirectAttributes);
@@ -185,7 +185,7 @@ public class AdminController extends InternalBooksController {
             // 完了画面用の所属課名のセット
             userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
             model.addAttribute("userDto", userDto);
-            return "page/usereditcomplete";
+            return "page/userEditComplete";
 
         } catch (IllegalArgumentException e) {
             // 更新に失敗した場合、ユーザー編集ページに遷移する
@@ -193,7 +193,7 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("errorMessage", e.getMessage());
             userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
             model.addAttribute("userDto", userDto);
-            return "page/useredit";
+            return "page/userEdit";
 
         } catch (Exception e) {
             logger.error("userupdatecompleteでエラーが発生しました", e);
@@ -236,7 +236,7 @@ public class AdminController extends InternalBooksController {
             // ログを出力
             logger.info("userconfirmationscreenにアクセスされました");
 
-            return "page/userdeleteconfirmation";
+            return "page/userDeleteConfirmation";
         } catch (Exception e) {
             return error(redirectAttributes);
         }
@@ -271,7 +271,7 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("userDto", userDto);
             model.addAttribute("isAdmin", isAdmin);
 
-            return "page/useredit";
+            return "page/userEdit";
         } catch (Exception e) {
             logger.error("userEditでエラーが発生しました", e);
             return error(redirectAttributes);
@@ -316,7 +316,7 @@ public class AdminController extends InternalBooksController {
             // ログを出力
             logger.info("userdeletecompleteにアクセスされました");
 
-            return "page/userdeletecomplete";
+            return "page/userDeleteComplete";
         } catch (Exception e) {
             logger.error("userdeletecompleteでエラーが発生しました", e);
             return error(redirectAttributes);

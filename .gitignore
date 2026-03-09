@@ -33,12 +33,18 @@ out/
 ### VS Code ###
 .vscode/
 
+### Cursor ###
+.cursor/
+
 ### OS ###
 .DS_Store
 Thumbs.db
 
 # docker
 data/*
+
+# 本番環境の機密情報（.env.prod.example はコミット対象）
+.env.prod
 !data/.gitkeep
 
 # MySQL data files

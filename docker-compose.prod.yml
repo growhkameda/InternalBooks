@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  app:
+    image: internalbooks-app:1.0.0 # 本番用にタグを固定してビルドしたイメージ名に置き換える
+    container_name: internalbooks-app
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    ports:
+      - "80:8080" # 必要に応じて調整（例: ALB配下に置く場合は内部ポートのみ公開）
+    depends_on:
+      - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  mysql:
+    image: mysql:8.0
+    container_name: internalbooks-mysql
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    environment:
+      # コンテナ内で明示的に参照したい場合の例。基本は .env.prod に記載。
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+    volumes:
+      # EC2上でマウントしたEBSボリュームを /data/mysql にマウントし、そこをMySQLデータとして利用する想定
+      - /data/mysql:/var/lib/mysql
+    ports:
+      # 原則、EC2外部には公開しない。デバッグ時のみ一時的に開ける。
+      - "127.0.0.1:3306:3306"
+
+networks:
+  default:
+    name: internalbooks-net

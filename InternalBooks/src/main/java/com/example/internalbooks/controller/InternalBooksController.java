@@ -332,7 +332,7 @@ public class InternalBooksController {
                 return "redirect:/page/top";
             }
 
-            return "page/searchresult";
+            return "page/SearchResult";
 
         } catch (Exception e) {
             logger.error("検索結果詳細ページでエラーが発生しました", e);
@@ -340,7 +340,7 @@ public class InternalBooksController {
         }
     }
 
-    @PostMapping("page/LendingCompleted")
+    @PostMapping("/page/LendingCompleted")
     public String searchResultLend(
             @ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
             // @RequestParam("bookId") Integer bookId,
