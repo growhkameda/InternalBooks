@@ -3,12 +3,14 @@ package com.example.internalbooks.controller;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +26,6 @@ import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
-
-import io.micrometer.common.util.StringUtils;
 
 @Controller
 public class InternalBooksController {
@@ -62,7 +62,8 @@ public class InternalBooksController {
      * ログインページに遷移
      */
     @GetMapping("/page/login")
-    public String Login() {
+    public String Login(Model model) {
+    	model.addAttribute("authDto", new DtoAuthRequest()); // 空のDTOを返す
         return "page/login";
     }
 
@@ -70,35 +71,29 @@ public class InternalBooksController {
      * ログイン処理
      */
     @PostMapping("/action/login")
-    public String login(@RequestParam(name = "mailAddress") String mailAddress,
-            @RequestParam(name = "password") String password, HttpSession session,
-            RedirectAttributes redirectAttributes) {
+    public String login(@Valid @ModelAttribute("authDto") DtoAuthRequest authDto, BindingResult bindingResult,
+    		HttpSession session,RedirectAttributes redirectAttributes,
+    		Model model) {
+    	
+    	if (bindingResult.hasErrors()) {
+    		model.addAttribute("errorMessage","入力内容を確認してください。");
+    		return "page/login";
+    	}
 
         try {
-
-            // 想定通りの入力がされている場合
-            if (StringUtils.isNotEmpty(mailAddress) && StringUtils.isNotEmpty(password)) {
-                // 認証情報を専用のDtoに格納
-                DtoAuthRequest authRequest = new DtoAuthRequest();
-                authRequest.setMailAddress(mailAddress);
-                authRequest.setPassword(password);
-
                 // ログイン処理を実行し成功したらtokenを設定
                 // 認証が失敗するとエラーがなげられるためCatchにひっかかる
-                String token = authService.login(authRequest);
+                String token = authService.login(authDto);
 
-                logger.info("ログイン成功: メールアドレス = {}", mailAddress);
+                logger.info("ログイン成功: メールアドレス = {}", authDto.getMailAddress());
 
                 // セッションにtokenを設定
                 session.setAttribute("token", token);
 
-                return "redirect:/page/top";
-            } else {
-                throw new Exception("ログイン失敗");
-            }
+                return "page/top";
 
         } catch (Exception e) {
-            logger.error("ログイン失敗: メールアドレス = {}", mailAddress);
+            logger.error("ログイン失敗: メールアドレス = {}", authDto.getMailAddress());
             return error(redirectAttributes);
         }
 

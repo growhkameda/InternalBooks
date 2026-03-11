@@ -10,17 +10,21 @@
 <section class="vh-100 d-flex justify-content-center align-items-center">
     <main class="form-signin w-100" style="max-width: 330px;">
         <!-- ngrok用設定：enctype="application/x-www-form-urlencoded" は本番環境では削除可能 -->
-        <form th:action="@{/action/login}" method="post" enctype="application/x-www-form-urlencoded" class="text-center">
+        <form th:action="@{/action/login}" th:object="${authDto}" method="post" enctype="application/x-www-form-urlencoded" class="text-center">
             <img class="mb-4" th:src="@{/logo/titlelogo.png}" alt="Title Logo" width="200" height="100">
             <h1 class="h3 mb-3 fw-normal">ログイン</h1>
 
             <div class="form-floating mb-3">
-                <input type="email" name="mailAddress" class="form-control" id="floatingInput" placeholder="name@example.com">
-                <label for="floatingInput">Email address</label>
+                <input type="email" th:field="*{mailAddress}" class="form-control" id="floatingInput" placeholder="name@example.com">
+				<!-- バリデーションエラーを表示 -->
+				<span th:errors="*{mailAddress}" class="text-danger ms-3"></span>
+				<label for="floatingInput">Email address</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password">
-                <label for="floatingPassword">Password</label>
+                <input type="password" th:field="*{password}" class="form-control" id="floatingPassword" placeholder="Password">
+				<!-- バリデーションエラーを表示 -->
+				<span th:errors="*{password}" class="text-danger ms-3"></span>
+				<label for="floatingPassword">Password</label>
             </div>
 
             <button class="w-100 btn btn-lg btn-primary" type="submit">ログイン</button>
