@@ -8,8 +8,8 @@ WORKDIR /app
 # Gradle プロジェクトをコピー
 COPY InternalBooks/ .
 
-# WAR をビルド（テストはスキップして高速化、本番ビルド時は -x test を外すことを推奨）
-RUN ./gradlew bootWar --no-daemon -x test
+# JAR をビルド（テストはスキップして高速化、本番ビルド時は -x test を外すことを推奨）
+RUN ./gradlew bootJar --no-daemon -x test
 
 # 実行用ステージ
 FROM eclipse-temurin:21-jre
@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
 
 # ビルド成果物をコピー
-COPY --from=build /app/build/libs/*.war app.war
+COPY --from=build /app/build/libs/*.jar app.jar
 
-EXPOSE 8080
-ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.war"]
+EXPOSE 443 80
+ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]

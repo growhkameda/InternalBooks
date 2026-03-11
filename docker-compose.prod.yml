@@ -8,11 +8,15 @@ services:
     env_file:
       - .env.prod
     ports:
-      - "80:8080" # 必要に応じて調整（例: ALB配下に置く場合は内部ポートのみ公開）
+      - "443:443" # HTTPS
+      - "80:80"   # HTTP (リダイレクト用)
+    volumes:
+      # SSL証明書（Let's Encrypt PKCS12キーストア）
+      - /opt/ssl:/opt/ssl:ro
     depends_on:
       - mysql
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:443/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3

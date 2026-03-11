@@ -1,0 +1,60 @@
+# Git
+.git
+.gitignore
+
+# GitHub
+.github
+
+# Documentation
+docs
+*.md
+!README.md
+
+# Environment files
+.env*
+!.env.prod.example
+
+# IDE
+.idea
+*.iml
+.vscode
+*.swp
+*.swo
+
+# Build artifacts
+build
+target
+*.class
+*.jar
+*.war
+
+# Gradle
+.gradle
+gradle-app.setting
+!gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Node (if any frontend assets)
+node_modules
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs
+
+# Test results
+test-results
+test-output
+
+# Cursor/Claude settings
+.cursor
+.claude
+
+# Scripts (not needed in container)
+scripts
+
+# MySQL init (separate container)
+mysql

@@ -40,8 +40,13 @@ out/
 AGENTS.md
 CLAUDE.md
 
-# evidence
+# evidence / 手順書（AWS構成など機密情報を含む可能性）
 docs/*
+InternalBooks/docs/
+
+# 運用スクリプト（機密情報を含む可能性）
+scripts/
+InternalBooks/scripts/
 
 ### OS ###
 .DS_Store
