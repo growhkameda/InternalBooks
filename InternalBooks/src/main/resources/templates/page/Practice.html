@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>小林、Gridとかいろいろ勉強するってよ</title>
+<link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+</head>
+<body class="bg-light">
+	<div class="container py-4" style="text-align: center;">
+		<h2 class="mb-4">これが私のアナザースカイ</h2>
+	</div>
+	<div class="container py-5" style="text-align: center;">
+		<button type="button" class="btn btn-primary">ぼたんだよー</button>
+	</div>
+	<div>
+		<div class="accordion" id="accordionExample">
+			<div class="accordion-item">
+				<h2 class="accordion-header">
+					<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+						アコーディオン機能でっっっっっっす
+					</button>
+				</h2>
+				<div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+					<div class="accordion-body">
+						<strong>これがアコーディオン機能です。</strong>ほぼほぼコピーでしかないんですけど。何ならドキュメント的なのをコピペしたかったんですけど、理解していきたいなっていう気持ちがあったのでこうやって一つだけ書いてみたりしているんですけど、なかなかよくわかっていなかったりそんなことなかったりしています。やっぱり覚えるよりこうやって書いていった方が頭に入っていくなあと実感しています。これから頑張っていきたいと思います。
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="container py-4">
+			<details>
+				<summary>こんにちは！推してみてね！！</summary>
+				エラーにならないって言われてるけどどうなんでしょうか！
+				↑動きました！！！表示されました！！！警告マーク的なの出てるけど表示されました！！！EmmetがバグってるかもってCopilot君に言われたよ！！！
+			</details>
+		</div>
+		<div class="row">
+			<!--カード①グロウの企業ロゴ-->
+			<div class="col">
+				<div class="card" style="width: 18rem;">
+					<img src="https://image.en-gage.net/image/logo/481001/logo_0000481922.jpg?width=300"
+					class="card-img-top" alt="...">
+					<div class="card-body">
+						<h5 class="card-title">グロウの企業ロゴです！</h5>
+						<p class="card-text">これがわが社GrowCommunityの企業マーク的なやつです。かっこいいですね。以上です。</p>
+						<a href="#" class="btn btn-danger">推してどうなっても知りませんよ、、、？？？</a>
+					</div>
+				</div>
+			</div>
+			<!--カード②トヨタの企業ロゴ-->
+			<div class="col">
+				<div class="card" style="width: 18rem;">
+					<img src="data:image/webp;base64,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"
+					class="card-img-middle1" alt="...">
+					<div class="card-body">
+						<h5 class="card-title">こっちがトヨタの企業ロゴです！</h5>
+						<p class="card-text">これがかの有名企業、トヨタの企業ロゴです。最近、YoutubeShortで流れてきた動画でこのロゴで「TOYOTA」の文字が表現されているというのを知り、驚愕しました。</p>
+						<a href="#" class="btn btn-primary">ここを推してもトヨタのホームページには飛びません！</a>
+					</div>
+				</div>
+			</div>
+			<!--カード③日産の企業ロゴ-->
+			<div class="col">
+				<div class="card" style="width: 18rem;">
+					<img src="https://car.motor-fan.jp/images/articles/10016125/big_3502890_202008311645150000001.jpg"
+					class="card-img-middle2" alt="...">
+					<div class="card-body">
+						<h5 class="card-title">これは日産の企業ロゴです！</h5>
+						<p class="card-text">これは僕の好きな車がある企業です。が、元へっぽこ整備から言わせてもらうと整備性はあまりよくないです。オイルフィルター問題何とかしてもらえないかしら、、、</p>
+						<a href="#" class="btn btn-dark">ちなみに僕が日産で好きな車はフェアレディZです。</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--↓失敗-->
+	<!--div class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">モーダル機能、、？？？</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>これを押したところで何も変わらない。これは、お前が始めた物語だろ</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">いいえ</button>
+					<button type="button" class="btn btn-primary">エレン！！これでよかったのか！！！</button>
+				</div>
+			</div>
+		</div>
+	</div-->
+	<div class="spinner-border" role="status">
+		<span class="visually-hidden">Loading...</span>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
