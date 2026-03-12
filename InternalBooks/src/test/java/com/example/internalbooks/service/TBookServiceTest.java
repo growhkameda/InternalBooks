@@ -23,8 +23,6 @@ import org.springframework.data.domain.Sort;
 
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TBookEntity;
-import com.example.internalbooks.entity.TLendingHistoryEntity;
-import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TBookRepository;
 import com.example.internalbooks.repository.TLendingHistoryRepository;
 import com.example.internalbooks.repository.TUserRepository;

@@ -23,4 +23,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl \
 COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 443 80
-ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]
+ENTRYPOINT ["java", \
+  "-XX:+UseContainerSupport", \
+  "-XX:MaxRAMPercentage=50.0", \
+  "-XX:InitialRAMPercentage=50.0", \
+  "-XX:+UseSerialGC", \
+  "-XX:MaxMetaspaceSize=128m", \
+  "-Xss256k", \
+  "-jar", "app.jar"]
