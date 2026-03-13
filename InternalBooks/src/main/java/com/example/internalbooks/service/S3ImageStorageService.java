@@ -1,6 +1,7 @@
 package com.example.internalbooks.service;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,7 @@ public class S3ImageStorageService implements ImageStorageService {
 
         try {
             // S3オブジェクトキーを構築
-            String objectKey = (prefix.isEmpty() ? "" : prefix) + bookId + ".png";
+            String objectKey = prefix + bookId + ".png";
 
             // 削除リクエストを作成
             DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
@@ -79,14 +80,15 @@ public class S3ImageStorageService implements ImageStorageService {
         }
     }
 
-    // 佐野（多分使わない）S3用書籍画像登録
+    // S3用書籍画像登録（一時キーに保存し、renameToBookIdで確定）
     @Override
     public String savetbook(MultipartFile file) throws IOException {
-        System.out.println("save() called");
-        String fileName = file.getOriginalFilename();
+        String uuid = UUID.randomUUID().toString();
+        String tmpKey = prefix + "tmp/" + uuid + ".png";
+
         PutObjectRequest request = PutObjectRequest.builder()
                 .bucket(bucketName)
-                .key(fileName)
+                .key(tmpKey)
                 .contentType(file.getContentType())
                 .build();
 
@@ -96,7 +98,7 @@ public class S3ImageStorageService implements ImageStorageService {
                         file.getInputStream(),
                         file.getSize()));
 
-        return prefix + "/" + fileName;
+        return tmpKey;
     }
 
     /**
@@ -111,7 +113,7 @@ public class S3ImageStorageService implements ImageStorageService {
             throw new IOException("リネーム先の bookId が指定されていません");
         }
 
-        String sourceKey = prefix + currentFileName;
+        String sourceKey = currentFileName;
         String targetKey = prefix + bookId + ".png";
 
         try {

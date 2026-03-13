@@ -8,6 +8,8 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -553,6 +556,14 @@ public class AdminController extends InternalBooksController {
 
             tBookService.tbookconfirm(bookDto);
 
+            // 確認ページプレビュー用に画像バイト列をセッションに保持
+            MultipartFile imageFile = bookDto.getImageFile();
+            if (imageFile != null && !imageFile.isEmpty()) {
+                session.setAttribute("tempImageBytes", imageFile.getBytes());
+                session.setAttribute("tempImageContentType",
+                        imageFile.getContentType() != null ? imageFile.getContentType() : "image/png");
+            }
+
             System.out.println("imageurl =" + bookDto.getImageUrl());
 
             model.addAttribute("bookdto", bookDto);
@@ -563,6 +574,22 @@ public class AdminController extends InternalBooksController {
             logger.error("bookingconfirmationでエラーが発生しました", e);
             return error(redirectAttributes);
         }
+    }
+
+    /**
+     * 書籍登録確認ページ用 一時画像プレビューエンドポイント
+     */
+    @GetMapping("/temp-image")
+    @ResponseBody
+    public ResponseEntity<byte[]> getTempImage(HttpSession session) {
+        byte[] imageBytes = (byte[]) session.getAttribute("tempImageBytes");
+        if (imageBytes == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String contentType = (String) session.getAttribute("tempImageContentType");
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(imageBytes);
     }
 
     /**
@@ -596,6 +623,8 @@ public class AdminController extends InternalBooksController {
 
             // 完了後に画像をセッションから削除
             session.removeAttribute("imageBytes");
+            session.removeAttribute("tempImageBytes");
+            session.removeAttribute("tempImageContentType");
             // セッション破棄（フォームを消す）
             status.setComplete();
 

@@ -34,12 +34,6 @@ services:
     restart: unless-stopped
     env_file:
       - .env.prod
-    environment:
-      # コンテナ内で明示的に参照したい場合の例。基本は .env.prod に記載。
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     command:
       - "--character-set-server=utf8mb4"
       - "--collation-server=utf8mb4_unicode_ci"
@@ -56,6 +50,8 @@ services:
     volumes:
       # EC2上でマウントしたEBSボリュームを /data/mysql にマウントし、そこをMySQLデータとして利用する想定
       - /data/mysql:/var/lib/mysql
+      # 初回起動時にSQLファイルを実行してDBを自動初期化
+      - ./mysql/init-sql:/docker-entrypoint-initdb.d:ro
     ports:
       # 原則、EC2外部には公開しない。デバッグ時のみ一時的に開ける。
       - "127.0.0.1:3306:3306"

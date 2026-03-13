@@ -24,9 +24,8 @@ public class ImageStorageConfig {
 	@Value("${app.image.storage.s3.region:ap-northeast-1}")
 	private String s3Region;
 
-	@Value("${app.image.storage.local.path:src/main/resources/static/images}")
-
-	private String localImagePath;
+	@Value("${app.image.storage.local.directory:src/main/resources/static/images/}")
+	private String localImageDirectory;
 
 	@Value("${app.image.storage.s3.bucket-name:}")
 	private String s3BucketName;
@@ -42,8 +41,7 @@ public class ImageStorageConfig {
 	@Primary
 	@ConditionalOnProperty(name = "app.image.storage.type", havingValue = "local", matchIfMissing = true)
 	public ImageStorageService localImageStorageService() {
-		System.out.println("imageLocal bean created");
-		return new LocalImageStorageService(localImagePath);
+		return new LocalImageStorageService(localImageDirectory);
 	}
 
 	/**

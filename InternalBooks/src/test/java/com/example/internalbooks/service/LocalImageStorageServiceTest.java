@@ -30,16 +30,38 @@ class LocalImageStorageServiceTest {
     // ─── savetbook ────────────────────────────────────────────────────────────
 
     @Test
-    @DisplayName("savetbook_正常_ファイルを保存してファイル名を返す")
-    void savetbook_savesFileAndReturnsFileName() throws IOException {
+    @DisplayName("savetbook_正常_UUIDベースの一時ファイル名で保存してファイル名を返す")
+    void savetbook_savesFileAndReturnsUuidFileName() throws IOException {
         MockMultipartFile file = new MockMultipartFile(
             "file", "test-image.png", "image/png", "dummy content".getBytes());
 
         String result = service.savetbook(file);
 
-        assertThat(result).isEqualTo("test-image.png");
-        Path saved = tempDir.resolve("images").resolve("test-image.png");
+        assertThat(result).startsWith("tmp_").endsWith(".png");
+        Path saved = tempDir.resolve("images").resolve(result);
         assertThat(Files.exists(saved)).isTrue();
+    }
+
+    @Test
+    @DisplayName("savetbook_正常_既存書籍と同名ファイルを登録しても既存画像を上書きしない")
+    void savetbook_doesNotOverwriteExistingBookImage() throws IOException {
+        // 既存書籍の画像 10020009.png をあらかじめ配置
+        Path imagesDir = tempDir.resolve("images");
+        Files.createDirectories(imagesDir);
+        Path existingImage = imagesDir.resolve("10020009.png");
+        Files.writeString(existingImage, "existing book image");
+
+        // 同名ファイルをアップロード
+        MockMultipartFile file = new MockMultipartFile(
+            "file", "10020009.png", "image/png", "new upload".getBytes());
+
+        String result = service.savetbook(file);
+
+        // 既存画像が破壊されていないこと
+        assertThat(Files.readString(existingImage)).isEqualTo("existing book image");
+        // 一時ファイルは別名で保存されていること
+        assertThat(result).startsWith("tmp_").endsWith(".png");
+        assertThat(result).isNotEqualTo("10020009.png");
     }
 
     // ─── deleteImage ─────────────────────────────────────────────────────────
