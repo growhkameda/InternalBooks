@@ -48,6 +48,10 @@ InternalBooks/docs/
 scripts/
 InternalBooks/scripts/
 
+# 資料
+docs/
+
+
 ### OS ###
 .DS_Store
 Thumbs.db
@@ -83,3 +87,5 @@ undo_*
 Servers/
 
 InternalBooks/src/main/resources/application.properties
+
+
