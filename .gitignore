@@ -85,7 +85,3 @@ undo_*
 # Eclipse workspace metadata
 .metadata/
 Servers/
-
-InternalBooks/src/main/resources/application.properties
-
-

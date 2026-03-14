@@ -92,11 +92,15 @@ public class S3ImageStorageService implements ImageStorageService {
                 .contentType(file.getContentType())
                 .build();
 
-        s3Client.putObject(
-                request,
-                RequestBody.fromInputStream(
-                        file.getInputStream(),
-                        file.getSize()));
+        try {
+            s3Client.putObject(
+                    request,
+                    RequestBody.fromInputStream(
+                            file.getInputStream(),
+                            file.getSize()));
+        } catch (SdkException e) {
+            throw new IOException("S3への画像アップロードに失敗しました: " + e.getMessage(), e);
+        }
 
         return tmpKey;
     }
