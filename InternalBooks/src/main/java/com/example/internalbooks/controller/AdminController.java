@@ -414,9 +414,15 @@ public class AdminController extends InternalBooksController {
     public String UserConfir(@Valid @ModelAttribute("userDto") DtoUserRegistration userDto, BindingResult bindingResult,
             HttpSession session, RedirectAttributes redirectAttributes,
             Model model) {
+    	
+    	
+    	if(tUserService.getUserId(userDto.getUserId()).isPresent()) {
+    		bindingResult.rejectValue("userId",null,"このIDは存在します");
+    	}
 
         if (bindingResult.hasErrors()) {
             for (FieldError error : bindingResult.getFieldErrors()) {
+            	
 
                 // バリデーションエラー後もセレクトを表示
                 model.addAttribute("departments", tUserService.getAllDepartments());
