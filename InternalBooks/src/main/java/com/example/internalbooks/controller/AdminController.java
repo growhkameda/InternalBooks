@@ -617,6 +617,8 @@ public class AdminController extends InternalBooksController {
             dbook.setProviderId(savedBook.getProviderName());
             dbook.setCategory(savedBook.getCategories());
             dbook.setProviderComment(savedBook.getProviderComment());
+            dbook.setBookId(savedBook.getBookId());
+            dbook.setImageUrlFromBookId();
 
             // 取得した情報を表示
             model.addAttribute("dbook", dbook);
