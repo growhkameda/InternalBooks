@@ -416,28 +416,28 @@ public class AdminController extends InternalBooksController {
             HttpSession session, RedirectAttributes redirectAttributes,
             Model model) {
     	
-    	
-    	if(tUserService.getUserId(userDto.getUserId()).isPresent()) {
-    		bindingResult.rejectValue("userId",null,"このIDは存在します");
-    	}
-
         if (bindingResult.hasErrors()) {
+        	
+        	// バリデーションエラー後もセレクトを表示
+            model.addAttribute("departments", tUserService.getAllDepartments());
+            
             for (FieldError error : bindingResult.getFieldErrors()) {
-            	
-
-                // バリデーションエラー後もセレクトを表示
-                model.addAttribute("departments", tUserService.getAllDepartments());
-
-                if ("Pattern".equals(error.getCode())) {
-
-                    // コンソールにも表示
-                }
+                // コンソールにも表示
                 System.out.println(error.getField() + ":" + error.getDefaultMessage());
-
-                return "page/UserRegistration";
             }
 
-        }
+                return "page/UserRegistration";
+         }
+            
+          //重複IDがある場合に表示
+         if(tUserService.getUserId(userDto.getUserId()).isPresent()) {
+        	bindingResult.rejectValue("userId",null,"このIDは存在します");
+             // バリデーションエラー後もセレクトを表示
+             model.addAttribute("departments", tUserService.getAllDepartments());
+                
+                return "page/UserRegistration";
+        	}
+
         // トークンと管理者権限の検証
         try {
             boolean isAdmin = validateTokenAndCheckAdmin(session);

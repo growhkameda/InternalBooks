@@ -124,10 +124,11 @@ public class TUserService implements UserDetailsService {
 	}
 	
 	/**
-	 * ユーザーの所属課を取得（リスト形式）
+	 * ユーザーのIDを取得（リスト形式）
 	 */
 	public Optional<TUserEntity> getUserId(String userId) {
 		
+		//String型をInteger型へ変換
 		Integer id = Integer.valueOf(userId);
 		
 		return tUserRepository.findById(id);
