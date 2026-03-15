@@ -90,7 +90,7 @@ public class InternalBooksController {
                 // セッションにtokenを設定
                 session.setAttribute("token", token);
 
-                return "page/top";
+                return "redirect:/page/top";
 
         } catch (Exception e) {
             logger.error("ログイン失敗: メールアドレス = {}", authDto.getMailAddress());
@@ -116,14 +116,6 @@ public class InternalBooksController {
             return error(redirectAttributes);
         }
 
-    }
-
-    /**
-     * 練習画面に遷移
-     */
-    @GetMapping("/page/Practice")
-    public String practice() {
-    	return "/page/Practice";
     }
 
     /**
