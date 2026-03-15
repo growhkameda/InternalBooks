@@ -13,6 +13,8 @@ services:
     volumes:
       # SSL証明書（Let's Encrypt PKCS12キーストア）
       - /opt/ssl:/opt/ssl:ro
+      # EBSマウント上の画像ディレクトリをコンテナ内静的リソースパスにマウント
+      - /data/images:/opt/static/images
     depends_on:
       - mysql
     healthcheck:
