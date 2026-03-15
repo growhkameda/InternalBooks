@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -46,6 +47,12 @@ public class AdminController extends InternalBooksController {
 
     // ロガー
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+
+    @Value("${app.image.cdn.enabled:false}")
+    private boolean cdnEnabled;
+
+    @Value("${app.image.cdn.base-url:}")
+    private String cdnBaseUrl;
 
     // DI用フィールド
     private final TUserService tUserService;
@@ -618,7 +625,11 @@ public class AdminController extends InternalBooksController {
             dbook.setCategory(savedBook.getCategories());
             dbook.setProviderComment(savedBook.getProviderComment());
             dbook.setBookId(savedBook.getBookId());
-            dbook.setImageUrlFromBookId();
+            if (cdnEnabled && cdnBaseUrl != null && !cdnBaseUrl.isBlank()) {
+                dbook.setImageUrl(cdnBaseUrl + "/images/" + savedBook.getBookId() + ".png");
+            } else {
+                dbook.setImageUrlFromBookId();
+            }
 
             // 取得した情報を表示
             model.addAttribute("dbook", dbook);
