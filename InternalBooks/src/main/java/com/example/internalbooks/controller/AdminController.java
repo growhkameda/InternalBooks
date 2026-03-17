@@ -521,33 +521,35 @@ public class AdminController extends InternalBooksController {
             BindingResult bindingResult, @RequestParam("imageFile") MultipartFile file,
             HttpSession session, RedirectAttributes redirectAttributes, Model model) {
 
-        // 書籍画像選択されない時用エラー表示
-        // MultipartFileはBeanvalidationに向いていないため下記で選択されていない場合のエラーバリデーション作成
-        if (bookDto.getImageFile() == null || bookDto.getImageFile().isEmpty()) {
-            bindingResult.rejectValue(
-                    "imageFile",
-                    "imageFile.empty",
-                    "画像を選択してください");
-        }
-
-        // その他のエラー表示
-        if (bindingResult.hasErrors()) {
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                // コンソールにも表示
-                System.out.println(error.getField() + ":" + error.getDefaultMessage());
-
-                return "page/bookediting";
-            }
-        }
-
-        // トークンと管理者権限の検証
         try {
+            // トークンと管理者権限の検証
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
             }
 
             model.addAttribute("isAdmin", isAdmin);
+
+            // 書籍画像選択されない時用エラー表示
+            // MultipartFileはBeanvalidationに向いていないため下記で選択されていない場合のエラーバリデーション作成
+            if (bookDto.getImageFile() == null || bookDto.getImageFile().isEmpty()) {
+                bindingResult.rejectValue(
+                        "imageFile",
+                        "imageFile.empty",
+                        "画像を選択してください");
+            }
+
+            // その他のエラー表示
+            if (bindingResult.hasErrors()) {
+                for (FieldError error : bindingResult.getFieldErrors()) {
+                    // コンソールにも表示
+                    System.out.println(error.getField() + ":" + error.getDefaultMessage());
+                }
+                // bookediting.htmlが必要とするモデル属性をセット
+                model.addAttribute("activeUsers", tUserService.getActiveUsers());
+                model.addAttribute("existingCategories", tBookService.getAllCategories());
+                return "page/bookediting";
+            }
 
             tBookService.tbookconfirm(bookDto);
 
