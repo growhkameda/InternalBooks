@@ -31,7 +31,6 @@ import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.MDepartmentEntity;
-import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.common.Const;
 import com.example.internalbooks.service.AuthService;
@@ -264,13 +263,7 @@ public class AdminController extends InternalBooksController {
             }
 
             // 編集するためDtoUserEditに詰め替える
-            TUserEntity user = tUserService.getUserById(userId);
-
-            DtoUserEdit userDto = new DtoUserEdit();
-            userDto.setUserId(user.getUserId());
-            userDto.setName(user.getName());
-            userDto.setMailAddress(user.getMailAddress());
-            userDto.setDepartmentId(String.valueOf(user.getDepartmentId()));
+            DtoUserEdit userDto = tUserService.getUserEditDtoById(userId);
 
             model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
             model.addAttribute("userDto", userDto);
@@ -503,15 +496,8 @@ public class AdminController extends InternalBooksController {
                 throw new IllegalStateException("DTOがnullです");
             }
 
-            // DBへ(userId,name,mailAddress,password,departmentId)を保存
-            TUserEntity savedUser = tUserService.userRegistration(userdto);
-            // DBに保存した値をDTOを経由して再度取得
-            DtoUserRegistration tuser = new DtoUserRegistration();
-            tuser.setUserId(String.valueOf(savedUser.getUserId()));
-            tuser.setName(savedUser.getName());
-            tuser.setMailAddress(savedUser.getMailAddress());
-            // 所属課はStringで表示させるためuserdtoからそのままセットする
-            tuser.setDepartmentId(userdto.getDepartmentId());
+            // DBへ(userId,name,mailAddress,password,departmentId)を保存し、登録完了表示用DTOを取得
+            DtoUserRegistration tuser = tUserService.userRegistration(userdto);
 
             // 取得した情報を表示
             model.addAttribute("tuser", tuser);
@@ -617,16 +603,8 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
-            // DBへ(tilte,catgory,providerId,providercommnet)を保存
-            TBookEntity savedBook = tBookService.bookEditing(bookDto);
-            // DBに保存した値をDTOを経由して再度取得
-            DtoBookInfo dbook = new DtoBookInfo();
-            dbook.setTitle(savedBook.getTitle());
-            dbook.setProviderId(savedBook.getProviderName());
-            dbook.setCategory(savedBook.getCategories());
-            dbook.setProviderComment(savedBook.getProviderComment());
-            dbook.setBookId(savedBook.getBookId());
-            dbook.setImageUrlFromBookId();
+            // DBへ(tilte,catgory,providerId,providercommnet)を保存し、登録完了表示用DTOを取得
+            DtoBookInfo dbook = tBookService.bookEditing(bookDto);
 
             // 取得した情報を表示
             model.addAttribute("dbook", dbook);
@@ -692,27 +670,11 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
-            // カテゴリーに属するすべての本の情報を取得
-            List<DtoBookInfo> allBooks = tBookService.getBooksByCategoryWithDetails(category);
-
-            // 取得した本の要素数を取得
-            int TOTAL_BOOK_COUNT = allBooks.size();
-
-            // 指定した表示画像数と、取得した要素数で必要なページ数を計算
-            int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / Const.BOOKS_PER_PAGE);
-
-            // ページ範囲を計算
-            int fromIndex = page * Const.BOOKS_PER_PAGE;
-            int toIndex = Math.min(fromIndex + Const.BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
-
-            // 表示対象の本リストを抽出
-            List<DtoBookInfo> pagedBooks = allBooks.subList(fromIndex, toIndex);
-
             // Viewに渡すモデル属性を設定
-            model.addAttribute("bookList", pagedBooks);
+            model.addAttribute("bookList", tBookService.getPagedBooksByCategory(category, page, Const.BOOKS_PER_PAGE));
             model.addAttribute("category", category);
             model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("totalPages", tBookService.getBooksByCategoryTotalPages(category, Const.BOOKS_PER_PAGE));
 
             // セッションにカテゴリーを保存（削除処理で使用）
             session.setAttribute("currentCategory", category);

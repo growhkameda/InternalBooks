@@ -160,11 +160,11 @@ class TUserServiceTest {
         when(passwordEncoder.encode("alice@example.com")).thenReturn("hashed");
         when(tUserRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
-        TUserEntity result = tUserService.userRegistration(dto);
+        DtoUserRegistration result = tUserService.userRegistration(dto);
 
         verify(passwordEncoder).encode("alice@example.com");
         verify(tUserRepository).save(any(TUserEntity.class));
-        assertThat(result.getPassword()).isEqualTo("hashed");
+        assertThat(result.getName()).isEqualTo("Alice");
     }
 
     // ─── updateUser ───────────────────────────────────────────────────────────
