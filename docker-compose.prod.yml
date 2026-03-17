@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  app:
+    image: internalbooks-app:1.0.0 # 本番用にタグを固定してビルドしたイメージ名に置き換える
+    container_name: internalbooks-app
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    ports:
+      - "443:443" # HTTPS
+      - "80:80"   # HTTP (リダイレクト用)
+    volumes:
+      # SSL証明書（Let's Encrypt PKCS12キーストア）
+      - /opt/ssl:/opt/ssl:ro
+      # EBSマウント上の画像ディレクトリをコンテナ内静的リソースパスにマウント
+      - /data/images:/opt/static/images
+    depends_on:
+      - mysql
+    healthcheck:
+      test: ["CMD", "curl", "-f", "-k", "https://localhost:443/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1200M
+        reservations:
+          memory: 800M
+
+  mysql:
+    image: mysql:8.0
+    container_name: internalbooks-mysql
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    command:
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+      # メモリ最適化（2GB EC2向け）
+      - "--innodb-buffer-pool-size=256M"
+      - "--innodb-log-buffer-size=8M"
+      - "--key-buffer-size=8M"
+      - "--max-connections=50"
+      - "--table-open-cache=200"
+      - "--thread-cache-size=4"
+      - "--tmp-table-size=16M"
+      - "--max-heap-table-size=16M"
+      - "--performance-schema=OFF"
+    volumes:
+      # EC2上でマウントしたEBSボリュームを /data/mysql にマウントし、そこをMySQLデータとして利用する想定
+      - /data/mysql:/var/lib/mysql
+      # 初回起動時にSQLファイルを実行してDBを自動初期化
+      - ./mysql/init-sql:/docker-entrypoint-initdb.d:ro
+    ports:
+      # 原則、EC2外部には公開しない。デバッグ時のみ一時的に開ける。
+      - "127.0.0.1:3306:3306"
+    deploy:
+      resources:
+        limits:
+          memory: 600M
+        reservations:
+          memory: 400M
+
+networks:
+  default:
+    name: internalbooks-net

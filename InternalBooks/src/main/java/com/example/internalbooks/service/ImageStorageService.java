@@ -26,4 +26,5 @@ public interface ImageStorageService {
      * DB保存後に確定した bookId でファイルを正式名称に変更するために使用する。
      */
     void renameToBookId(String currentFileName, Integer bookId) throws IOException;
+
 }

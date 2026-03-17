@@ -342,7 +342,7 @@ public class TBookService {
 	/**
 	 * 書籍登録するメソッド
 	 */
-	public TBookEntity bookEditing(DtoBookInfo dtbook) {
+	public DtoBookInfo bookEditing(DtoBookInfo dtbook) {
 		// 書籍提供者とユーザーIDの紐付け
 		TUserEntity user = tUserRepository.findByName(dtbook.getProviderId())
 				.orElseThrow(() -> new RuntimeException("名前が見つかりません"));
@@ -388,12 +388,38 @@ public class TBookService {
 			}
 		}
 
-		return saved;
+		return toRegistrationCompleteDto(saved);
 
 	} catch (DataIntegrityViolationException e) {
 		throw new IllegalStateException("登録に失敗しました", e);
 	}
 
+	}
+
+	/** 書籍登録完了画面用にEntityをDTOへ変換する */
+	private DtoBookInfo toRegistrationCompleteDto(TBookEntity saved) {
+		DtoBookInfo dto = new DtoBookInfo();
+		dto.setTitle(saved.getTitle());
+		dto.setProviderId(saved.getProviderName());
+		dto.setCategory(saved.getCategories());
+		dto.setProviderComment(saved.getProviderComment());
+		dto.setBookId(saved.getBookId());
+		dto.setImageUrlFromBookId();
+		return dto;
+	}
+
+	/** 指定カテゴリーの指定ページの書籍リストを返す */
+	public List<DtoBookInfo> getPagedBooksByCategory(String category, int page, int pageSize) {
+		List<DtoBookInfo> all = getBooksByCategoryWithDetails(category);
+		int fromIndex = page * pageSize;
+		if (fromIndex >= all.size()) return new ArrayList<>();
+		int toIndex = Math.min(fromIndex + pageSize, all.size());
+		return all.subList(fromIndex, toIndex);
+	}
+
+	/** 指定カテゴリーの総ページ数を返す */
+	public int getBooksByCategoryTotalPages(String category, int pageSize) {
+		return (int) Math.ceil((double) getBooksByCategoryWithDetails(category).size() / pageSize);
 	}
 
 	/**

@@ -8,6 +8,9 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -27,7 +31,6 @@ import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.MDepartmentEntity;
-import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.common.Const;
 import com.example.internalbooks.service.AuthService;
@@ -43,6 +46,7 @@ public class AdminController extends InternalBooksController {
 
     // ロガー
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
+
 
     // DI用フィールド
     private final TUserService tUserService;
@@ -152,7 +156,7 @@ public class AdminController extends InternalBooksController {
             if (bindingResult.hasErrors()) {
                 model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
                 model.addAttribute("errorMessage", "入力内容を確認してください。");
-                return "page/useredit";
+                return "page/userEdit";
             }
 
             // 所属課名のセット
@@ -160,7 +164,7 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("userDto", userDto);
             model.addAttribute("isAdmin", isAdmin);
 
-            return "page/usereditconfirmation";
+            return "page/userEditConfirmation";
         } catch (Exception e) {
             logger.error("usereditconfirmationでエラーが発生しました", e);
             return error(redirectAttributes);
@@ -185,7 +189,7 @@ public class AdminController extends InternalBooksController {
             // 完了画面用の所属課名のセット
             userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
             model.addAttribute("userDto", userDto);
-            return "page/usereditcomplete";
+            return "page/userEditComplete";
 
         } catch (IllegalArgumentException e) {
             // 更新に失敗した場合、ユーザー編集ページに遷移する
@@ -193,7 +197,7 @@ public class AdminController extends InternalBooksController {
             model.addAttribute("errorMessage", e.getMessage());
             userDto.setDepartmentName(tUserService.getDepartmentNameById(userDto.getDepartmentIdAsInteger()));
             model.addAttribute("userDto", userDto);
-            return "page/useredit";
+            return "page/userEdit";
 
         } catch (Exception e) {
             logger.error("userupdatecompleteでエラーが発生しました", e);
@@ -236,7 +240,7 @@ public class AdminController extends InternalBooksController {
             // ログを出力
             logger.info("userconfirmationscreenにアクセスされました");
 
-            return "page/userdeleteconfirmation";
+            return "page/userDeleteConfirmation";
         } catch (Exception e) {
             return error(redirectAttributes);
         }
@@ -259,19 +263,13 @@ public class AdminController extends InternalBooksController {
             }
 
             // 編集するためDtoUserEditに詰め替える
-            TUserEntity user = tUserService.getUserById(userId);
-
-            DtoUserEdit userDto = new DtoUserEdit();
-            userDto.setUserId(user.getUserId());
-            userDto.setName(user.getName());
-            userDto.setMailAddress(user.getMailAddress());
-            userDto.setDepartmentId(String.valueOf(user.getDepartmentId()));
+            DtoUserEdit userDto = tUserService.getUserEditDtoById(userId);
 
             model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
             model.addAttribute("userDto", userDto);
             model.addAttribute("isAdmin", isAdmin);
 
-            return "page/useredit";
+            return "page/userEdit";
         } catch (Exception e) {
             logger.error("userEditでエラーが発生しました", e);
             return error(redirectAttributes);
@@ -316,7 +314,7 @@ public class AdminController extends InternalBooksController {
             // ログを出力
             logger.info("userdeletecompleteにアクセスされました");
 
-            return "page/userdeletecomplete";
+            return "page/userDeleteComplete";
         } catch (Exception e) {
             logger.error("userdeletecompleteでエラーが発生しました", e);
             return error(redirectAttributes);
@@ -498,15 +496,8 @@ public class AdminController extends InternalBooksController {
                 throw new IllegalStateException("DTOがnullです");
             }
 
-            // DBへ(userId,name,mailAddress,password,departmentId)を保存
-            TUserEntity savedUser = tUserService.userRegistration(userdto);
-            // DBに保存した値をDTOを経由して再度取得
-            DtoUserRegistration tuser = new DtoUserRegistration();
-            tuser.setUserId(String.valueOf(savedUser.getUserId()));
-            tuser.setName(savedUser.getName());
-            tuser.setMailAddress(savedUser.getMailAddress());
-            // 所属課はStringで表示させるためuserdtoからそのままセットする
-            tuser.setDepartmentId(userdto.getDepartmentId());
+            // DBへ(userId,name,mailAddress,password,departmentId)を保存し、登録完了表示用DTOを取得
+            DtoUserRegistration tuser = tUserService.userRegistration(userdto);
 
             // 取得した情報を表示
             model.addAttribute("tuser", tuser);
@@ -559,6 +550,14 @@ public class AdminController extends InternalBooksController {
 
             tBookService.tbookconfirm(bookDto);
 
+            // 確認ページプレビュー用に画像バイト列をセッションに保持
+            MultipartFile imageFile = bookDto.getImageFile();
+            if (imageFile != null && !imageFile.isEmpty()) {
+                session.setAttribute("tempImageBytes", imageFile.getBytes());
+                session.setAttribute("tempImageContentType",
+                        imageFile.getContentType() != null ? imageFile.getContentType() : "image/png");
+            }
+
             System.out.println("imageurl =" + bookDto.getImageUrl());
 
             model.addAttribute("bookdto", bookDto);
@@ -569,6 +568,22 @@ public class AdminController extends InternalBooksController {
             logger.error("bookingconfirmationでエラーが発生しました", e);
             return error(redirectAttributes);
         }
+    }
+
+    /**
+     * 書籍登録確認ページ用 一時画像プレビューエンドポイント
+     */
+    @GetMapping("/temp-image")
+    @ResponseBody
+    public ResponseEntity<byte[]> getTempImage(HttpSession session) {
+        byte[] imageBytes = (byte[]) session.getAttribute("tempImageBytes");
+        if (imageBytes == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String contentType = (String) session.getAttribute("tempImageContentType");
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(imageBytes);
     }
 
     /**
@@ -588,20 +603,16 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
-            // DBへ(tilte,catgory,providerId,providercommnet)を保存
-            TBookEntity savedBook = tBookService.bookEditing(bookDto);
-            // DBに保存した値をDTOを経由して再度取得
-            DtoBookInfo dbook = new DtoBookInfo();
-            dbook.setTitle(savedBook.getTitle());
-            dbook.setProviderId(savedBook.getProviderName());
-            dbook.setCategory(savedBook.getCategories());
-            dbook.setProviderComment(savedBook.getProviderComment());
+            // DBへ(tilte,catgory,providerId,providercommnet)を保存し、登録完了表示用DTOを取得
+            DtoBookInfo dbook = tBookService.bookEditing(bookDto);
 
             // 取得した情報を表示
             model.addAttribute("dbook", dbook);
 
             // 完了後に画像をセッションから削除
             session.removeAttribute("imageBytes");
+            session.removeAttribute("tempImageBytes");
+            session.removeAttribute("tempImageContentType");
             // セッション破棄（フォームを消す）
             status.setComplete();
 
@@ -659,27 +670,11 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
-            // カテゴリーに属するすべての本の情報を取得
-            List<DtoBookInfo> allBooks = tBookService.getBooksByCategoryWithDetails(category);
-
-            // 取得した本の要素数を取得
-            int TOTAL_BOOK_COUNT = allBooks.size();
-
-            // 指定した表示画像数と、取得した要素数で必要なページ数を計算
-            int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / Const.BOOKS_PER_PAGE);
-
-            // ページ範囲を計算
-            int fromIndex = page * Const.BOOKS_PER_PAGE;
-            int toIndex = Math.min(fromIndex + Const.BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
-
-            // 表示対象の本リストを抽出
-            List<DtoBookInfo> pagedBooks = allBooks.subList(fromIndex, toIndex);
-
             // Viewに渡すモデル属性を設定
-            model.addAttribute("bookList", pagedBooks);
+            model.addAttribute("bookList", tBookService.getPagedBooksByCategory(category, page, Const.BOOKS_PER_PAGE));
             model.addAttribute("category", category);
             model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("totalPages", tBookService.getBooksByCategoryTotalPages(category, Const.BOOKS_PER_PAGE));
 
             // セッションにカテゴリーを保存（削除処理で使用）
             session.setAttribute("currentCategory", category);
