@@ -413,31 +413,9 @@ public class AdminController extends InternalBooksController {
     public String UserConfir(@Valid @ModelAttribute("userDto") DtoUserRegistration userDto, BindingResult bindingResult,
             HttpSession session, RedirectAttributes redirectAttributes,
             Model model) {
-    	
-        if (bindingResult.hasErrors()) {
-        	
-        	// バリデーションエラー後もセレクトを表示
-            model.addAttribute("departments", tUserService.getAllDepartments());
-            
-            for (FieldError error : bindingResult.getFieldErrors()) {
-                // コンソールにも表示
-                System.out.println(error.getField() + ":" + error.getDefaultMessage());
-            }
 
-                return "page/UserRegistration";
-         }
-            
-          //重複IDがある場合に表示
-         if(tUserService.getUserId(userDto.getUserId()).isPresent()) {
-        	bindingResult.rejectValue("userId",null,"このIDは存在します");
-             // バリデーションエラー後もセレクトを表示
-             model.addAttribute("departments", tUserService.getAllDepartments());
-                
-                return "page/UserRegistration";
-        	}
-
-        // トークンと管理者権限の検証
         try {
+            // トークンと管理者権限の検証
             boolean isAdmin = validateTokenAndCheckAdmin(session);
             if (!isAdmin) {
                 return adminPermissionError(redirectAttributes);
@@ -445,8 +423,31 @@ public class AdminController extends InternalBooksController {
 
             model.addAttribute("isAdmin", isAdmin);
 
+            if (bindingResult.hasErrors()) {
+
+                // バリデーションエラー後もセレクトを表示
+                model.addAttribute("departments", tUserService.getAllDepartments());
+
+                for (FieldError error : bindingResult.getFieldErrors()) {
+                    // コンソールにも表示
+                    System.out.println(error.getField() + ":" + error.getDefaultMessage());
+                }
+
+                return "page/UserRegistration";
+            }
+
+            // 重複IDがある場合に表示
+            if (tUserService.getUserId(userDto.getUserId()).isPresent()) {
+                bindingResult.rejectValue("userId", null, "このIDは存在します");
+                // バリデーションエラー後もセレクトを表示
+                model.addAttribute("departments", tUserService.getAllDepartments());
+
+                return "page/UserRegistration";
+            }
+
             return "page/UserConfir";
         } catch (Exception e) {
+            logger.error("UserConfirでエラーが発生しました", e);
             return error(redirectAttributes);
         }
     }
