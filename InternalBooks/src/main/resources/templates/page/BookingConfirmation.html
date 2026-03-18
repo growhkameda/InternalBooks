@@ -18,7 +18,7 @@
           <label for="name">書籍名</label>
         </div>
         <div class="col-7 col-sm-8 ms-2">
-          <p th:text="${bookdto.title}" class="form-control bg-white border-dark"></p>
+          <p th:text="${bookdto.title}" class="form-control bg-white border-dark text-break"></p>
         </div>
       </div>
     </div>
@@ -56,7 +56,7 @@
           <label for="offer">コメント</label>
         </div>
         <div class="col-7 col-sm-8">
-          <p th:text="${bookdto.providerComment}" class="form-control bg-white border-dark"
+          <p th:text="${bookdto.providerComment}" class="form-control bg-white border-dark text-break"
             style="height:150px; white-space: pre-wrap;">
         </div>
       </div>
