@@ -85,8 +85,4 @@ public class DtoBookInfo {
         this.categories = categories;
     }
 
-    public boolean isEmpty() {
-        // TODO 自動生成されたメソッド・スタブ
-        return false;
-    }
 }
