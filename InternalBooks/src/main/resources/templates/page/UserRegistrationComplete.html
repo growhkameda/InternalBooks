@@ -30,7 +30,7 @@
 <!-- 社員ID -->
 <div class ="container mt-4">
   <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
+	  <div class = "col-11 col-sm-8 pt-2">
 	      	<label for = "id" class="form-label text-start">社員ID</label>
 	      	<p th:text="${tuser.userId}" class="form-control bg-white border-dark text-break">
 	  </div>
@@ -40,7 +40,7 @@
 <!-- メールアドレス -->
 <div class ="container mt-3">
   <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
+	  <div class = "col-11 col-sm-8 pt-2">
 	      	<label for = "mail" class="form-label text-start">メールアドレス </label>
 	      	<p th:text="${tuser.mailAddress}" class="form-control bg-white border-dark text-break">
 	  </div>
@@ -50,7 +50,7 @@
 <!-- 名前 -->
 <div class ="container mt-3">
   <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
+	  <div class = "col-11 col-sm-8 pt-2">
 	      	<label for = "name" class="form-label text-start">名前</label>
 	      	<p th:text="${tuser.name}" class="form-control bg-white border-dark text-break">
 	  </div>
@@ -60,22 +60,19 @@
 <!-- 所属課 -->
 <div class ="container mt-3">
   <div class = "row justify-content-center">
-	  <div class = "col-8 pt-2">
+	  <div class = "col-11 col-sm-8 pt-2">
 	      	<label for = "department" class="form-label text-start">所属課</label>
 	      	<p th:text="${tuser.departmentId}" class="form-control bg-white border-dark text-break">
 	  </div>
   </div>
 </div>
 
-
-
-<!--         ================== Topへ戻るボタン ================== -->
-		<div class="border-0 mb-5 text-start">
-			<a href="/admin/adminusertop" class="text-black ms-1">
-				<img src="/images/TOP_Return.png" style="width: 40px; height: 40px;">
-			</a>
-		</div>
-
+<!-- ================== Topへ戻るボタン ================== -->
+	<div class="row d-flex justify-content-center mt-4 mb-4 text-start">
+		<a href="/admin/adminusertop" class="col-11 col-sm-8 text-black ms-1">
+			<img src="/images/TOP_Return.png" style="width: 40px; height: 40px;">
+		</a>
+	</div>
 
 </section>
 </body>

@@ -26,7 +26,7 @@
 
 			<div class="container mt-4">
 				<div class="row justify-content-center">
-					<div class="col-8 pt-2">
+					<div class="col-11 col-sm-8 pt-2">
 						<label for="userId" class="form-label text-start">社員ID</label>
 						<span th:errors="*{userId}" class="text-danger ms-3"></span>
 						<input type="text" th:field="*{userId}" readonly class="form-control bg-secondary-subtle">
@@ -36,7 +36,7 @@
 
 			<div class="container mt-4">
 				<div class="row justify-content-center">
-					<div class="col-8 pt-2">
+					<div class="col-11 col-sm-8 pt-2">
 						<label for="name" class="form-label text-start">名前</label>
 						<span th:errors="*{name}" class="text-danger ms-3"></span>
 						<input type="text" th:field="*{name}" class="form-control bg-light">
@@ -46,7 +46,7 @@
 
 			<div class="container mt-4">
 				<div class="row justify-content-center">
-					<div class="col-8 pt-2">
+					<div class="col-11 col-sm-8 pt-2">
 						<label for="mailAddress" class="form-label text-start">メールアドレス</label>
 						<span th:errors="*{mailAddress}" class="text-danger ms-3"></span>
 						<input type="text" th:field="*{mailAddress}" class="form-control bg-light">
@@ -56,7 +56,7 @@
 
 			<div class="container mt-4">
 				<div class="row justify-content-center">
-					<div class="col-8 pt-2">
+					<div class="col-11 col-sm-8 pt-2">
 						<label for="departmentId" class="form-label text-start">所属課</label>
 						<span th:errors="*{departmentId}" class="text-danger ms-3"></span>
 						<select th:field="*{departmentId}" class="form-select bg-light">
@@ -68,17 +68,17 @@
 				</div>
 			</div>
 
-			<!--         ================== 戻るボタン ================== -->
-			<div class="border-0 mb-5 text-start">
-				<a href="/admin/usersearch" class="text-black ms-1">
+			<!-- ================== 戻るボタン ================== -->
+			<div class="row border-0 mt-3 mb-5 d-flex justify-content-center text-start">
+				<a href="/admin/usersearch" class="col-11 col-sm-8 text-black ms-3">
 					<img src="/images/SOME_Return.png" style="width: 40px; height: 40px;">
 				</a>
 			</div>
 
-			<!--         ================== 編集ボタン ================== -->
+			<!-- ================== 編集ボタン ================== -->
 			<div class="container text-center mt-4">
 				<div class="col-12">
-					<button type="submit" class="btn btn-success col-4">編集</button>
+					<button type="submit" class="btn btn-success col-6 col-sm-4">編集</button>
 				</div>
 			</div>
 

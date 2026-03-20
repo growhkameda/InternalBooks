@@ -36,7 +36,7 @@
       <!-- ========== 書籍カード表示 ========== -->
       <div class="d-flex flex-column justify-content-center align-items-center mb-1">
         <!-- 書籍画像エリア -->
-		<div class="col-7 d-flex justify-content-center border overflow-hidden"
+		<div class="col-11 col-sm-7 d-flex justify-content-center border overflow-hidden"
 						 style="border-radius: 15px; aspect-ratio: 1; max-width: 500px;">
 			<div class="p-5">
 		  		<img th:src="@{'/images/' + ${book.bookId} + '.png'}"
@@ -109,8 +109,8 @@
 	  	</div>
 
 	 <div class="row d-flex justify-content-center" th:if="${book.status != '貸出中'}">
-	 	<p th:text="書籍提供者： + ${book.providerName}" class="col-8 mb-1">書籍提供者：武藤</p>
-	 	<p th:text="${book.providerComment}" class="col-8 p-3" style="background-color: #E8ECE8; border-radius: 10px;">
+	 	<p th:text="書籍提供者： + ${book.providerName}" class="col-11 col-sm-8 mb-1">書籍提供者：武藤</p>
+	 	<p th:text="${book.providerComment}" class="col-11 col-sm-8 p-3" style="background-color: #E8ECE8; border-radius: 10px;">
 			書籍提供者コメント
 			この文章はダミーです。文字の大きさ、量、字間、行間等を確認するために入れています。
 			この文章はダミーです。文字の大きさ、量、字間、行間等を確認するために入れています。
@@ -122,8 +122,8 @@
 
 	<form th:action="@{/page/ReturnCompleted}" th:if="${showComment == true}" th:object="${tlend}" method="post">
 		<div th:if="${book.status == '貸出中'}" class="row d-flex justify-content-center mb-4">
-			<label class="col-8" for="comment">感想・コメント</label>
-			<textarea id="comment" class="col-8 ps-2" th:field="*{review}" placeholder="こちらに感想やコメントを記入してください。" 
+			<label class="col-11 col-sm-8" for="comment">感想・コメント</label>
+			<textarea id="comment" class="col-11 col-sm-8 ps-2" th:field="*{review}" placeholder="こちらに感想やコメントを記入してください。" 
 					  style="background-color: #E8ECE8; border-radius: 10px; border: 0px none;;"></textarea>
 		</div>
 	</form>
@@ -131,10 +131,10 @@
       <!-- ========== 一覧へ戻るボタン ========== -->
 	  <!-- 戻るボタンを設置　どこの画面からの遷移で切り替え -->
       <div class="row d-flex justify-content-center border-0 mt-0 mb-5">
-        <a th:if="${screenFlag == 1}" th:href="@{/page/categories_detail(category=${book.categories})}" class="col-8 text-black ms-1">
+        <a th:if="${screenFlag == 1}" th:href="@{/page/categories_detail(category=${book.categories})}" class="col-11 col-sm-8 text-black ms-1">
 			 <img  src="/images/List_Return.png" style="width: 40px; height: 40px;">
         </a>
-		<a th:if="${screenFlag != 1}" href="/page/top" class="col-8 text-black ms-1">
+		<a th:if="${screenFlag != 1}" href="/page/top" class="col-11 col-sm-8 text-black ms-1">
 			<img src="/images/TOP_Return.png" style="width: 40px; height: 40px;">
 		</a>
       </div>
@@ -164,32 +164,32 @@
 
       <!-- ========== 書籍履歴テーブル ========== -->
       <div class="row d-flex justify-content-center mb-4">
-        <h5 class="col-8 fw-bold mb-2">書籍履歴</h5>
+        <h5 class="col-11 col-sm-8 fw-bold mb-2">書籍履歴</h5>
 		<!-- ========== 履歴がない場合 ========== -->
 		 <div class="text-center return" th:if="${#lists.isEmpty(bookHistoryList)}">
             <p class="text-center text-muted">履歴がありません</p>
 		 </div>
 		<!-- ========== 履歴表示 ========== -->
 		<th:block th:each="history : ${bookHistoryList}">
-			<div th:if="${history.returnDate != null}" class="d-flex justify-content-center col-8"
+			<div th:if="${history.returnDate != null}" class="d-flex justify-content-center col-11 col-sm-8"
 				 style="background-color: #94C5AF; border-radius: 10px; height: 70px;">
-				<b class="col-6 d-flex justify-content-start align-items-center">返却</b>
-				<div class="col-4 d-flex flex-column justify-content-center">
+				<b class="col-4 col-sm-6 d-flex justify-content-start align-items-center">返却</b>
+				<div class="col-6 col-sm-4 d-flex flex-column justify-content-center">
 					<p th:text="${history.userName}" class="mb-0">武藤</p>
 					<p th:text="${history.returnDate}" class="mb-0">2026年1月1日</p>
 				</div>
 			</div>
-			<div th:if="${history.lendingDate != null}" class="d-flex justify-content-center col-8 mt-2 mb-4"
+			<div th:if="${history.lendingDate != null}" class="d-flex justify-content-center col-11 col-sm-8 mt-2 mb-4"
 				 style="background-color: #6D8E7B; border-radius: 10px; height: 70px;">
-				<b class="col-6 d-flex justify-content-start align-items-center">貸出</b>
-				<div class="col-4 d-flex flex-column justify-content-center">
+				<b class="col-4 col-sm-6 d-flex justify-content-start align-items-center">貸出</b>
+				<div class="col-6 col-sm-4 d-flex flex-column justify-content-center">
 					<p th:text="${history.userName}" class="mb-0">武藤</p>
 					<p th:text="${history.lendingDate}" class="mb-0">2026年1月1日</p>
 				</div>
 			</div>
 		</th:block>
 		
-		<h5 class="col-8 fw-bold mb-2 mt-5">書籍感想</h5>
+		<h5 class="col-11 col-sm-8 fw-bold mb-2 mt-5">書籍感想</h5>
 		<!-- ========== 感想がない場合 ========== -->
 		<div class="text-center return" 
 			 th:if="${#lists.isEmpty(bookHistoryList) or !hasReviewHistory}">
@@ -198,7 +198,7 @@
 		<th:block th:each="history : ${bookHistoryList}">
 			<!-- ========== 感想表示 ========== -->
 			<div th:if="${!#strings.isEmpty(history.review)}"
-				 class="d-flex flex-column justify-content-center shadow col-8 mb-4" style="background-color: #E5EAE5; border-radius: 10px;">
+				 class="d-flex flex-column justify-content-center shadow col-11 col-sm-8 mb-4" style="background-color: #E5EAE5; border-radius: 10px;">
 				<p th:text="${history.review}" class="col-12 mt-2 mb-0">感想</p>
 				<div class="d-flex mt-3 justify-content-end me-4">
 					<p th:text="${history.userName}" class="me-3">武藤</p>
