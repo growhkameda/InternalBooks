@@ -122,6 +122,17 @@ public class TUserService implements UserDetailsService {
 			return "Error";
 		}
 	}
+	
+	/**
+	 * ユーザーのIDを取得（リスト形式）
+	 */
+	public Optional<TUserEntity> getUserId(String userId) {
+		
+		//String型をInteger型へ変換
+		Integer id = Integer.valueOf(userId);
+		
+		return tUserRepository.findById(id);
+	}
 
 	/**
 	 * ユーザーの所属課を取得（リスト形式）
@@ -153,15 +164,29 @@ public class TUserService implements UserDetailsService {
 		return user;
 	}
 
+	/**
+	 * ユーザーIDからDtoUserEditを生成して返す
+	 */
+	public DtoUserEdit getUserEditDtoById(Integer userId) {
+		TUserEntity user = getUserById(userId);
+		if (user == null) return null;
+		DtoUserEdit dto = new DtoUserEdit();
+		dto.setUserId(user.getUserId());
+		dto.setName(user.getName());
+		dto.setMailAddress(user.getMailAddress());
+		dto.setDepartmentId(String.valueOf(user.getDepartmentId()));
+		return dto;
+	}
+
     /**
      * ユーザー情報をDBへ保存するメソッド
      */
-    public TUserEntity userRegistration(DtoUserRegistration dtuser) {
-    	
+    public DtoUserRegistration userRegistration(DtoUserRegistration dtuser) {
+
     	 MDepartmentEntity deptId = mDepartmentRepository
 		                           .findIdByName((dtuser.getDepartmentId()))
                                    .orElseThrow(() -> new IllegalArgumentException("部署なし"));
-    	
+
     	TUserEntity tuser = new TUserEntity();
     	tuser.setUserId(dtuser.getUserIdAsInteger());
     	tuser.setName(dtuser.getName());
@@ -174,7 +199,12 @@ public class TUserService implements UserDetailsService {
 
 		tUserRepository.save(tuser);
 
-		return tuser;
+		DtoUserRegistration result = new DtoUserRegistration();
+		result.setUserId(String.valueOf(tuser.getUserId()));
+		result.setName(tuser.getName());
+		result.setMailAddress(tuser.getMailAddress());
+		result.setDepartmentId(dtuser.getDepartmentId());
+		return result;
 
 	}
 

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtUtil {
 
-    private String SECRET_KEY = "secret";  // 秘密鍵は本番環境ではより強固にする
+    @Value("${jwt.secret:default-dev-secret}")
+    private String SECRET_KEY;
 
     // トークンからユーザー名を取得
     public String extractUsername(String token) {

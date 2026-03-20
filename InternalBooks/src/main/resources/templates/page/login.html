@@ -9,14 +9,13 @@
 <body>
 <section class="vh-100 d-flex justify-content-center align-items-center">
     <main class="form-signin w-100" style="max-width: 330px;">
-    
+
 <!--        <h1 class= "text-center">図書館システム</h1>-->
-    
-        <!-- ngrok用設定：enctype="application/x-www-form-urlencoded" は本番環境では削除可能 -->
-        <form th:action="@{/action/login}" method="post" enctype="application/x-www-form-urlencoded" class="text-center">
+
+        <form th:action="@{/action/login}" method="post" class="text-center">
 			  <div class="position-relative mb-4">
 			<img class="mb-4 img-fluid"th:src="@{/logo/login.jpg}"alt="Title Logo"style="max-width: 200px;">
-			
+
       <h1 class="position-absolute top-50 start-50 translate-middle  fw-bold text-dark text-center"   style="white-space: nowrap;">GrowLibrary</h1>
         </div>
 <!--            <h1 class="h3 mb-3 fw-normal">ログイン画面</h1>-->

@@ -214,28 +214,11 @@ public class InternalBooksController {
             // フラグ カテゴリー一覧：1
             screenFlag = 1;
 
-            // カテゴリーに属するすべての本の情報を取得
-
-            List<DtoBookInfo> allBooks = tBookService.getBooksByCategoryWithDetails(category);
-
-            // 取得した本の要素数を取得
-            int TOTAL_BOOK_COUNT = allBooks.size();
-
-            // 指定した表示画像数と、取得した要素数で必要なページ数を計算
-            int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / Const.BOOKS_PER_PAGE);
-
-            // ページ範囲を計算
-            int fromIndex = page * Const.BOOKS_PER_PAGE;
-            int toIndex = Math.min(fromIndex + Const.BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
-
-            // 表示対象の本リストを抽出
-            List<DtoBookInfo> pagedBooks = allBooks.subList(fromIndex, toIndex);
-
             // Viewに渡すモデル属性を設定
-            model.addAttribute("bookList", pagedBooks);
+            model.addAttribute("bookList", tBookService.getPagedBooksByCategory(category, page, Const.BOOKS_PER_PAGE));
             model.addAttribute("category", category);
             model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("totalPages", tBookService.getBooksByCategoryTotalPages(category, Const.BOOKS_PER_PAGE));
 
             // カテゴリー一覧からの遷移フラグをセッションに設定
             session.setAttribute("screenFlag", screenFlag);
@@ -332,7 +315,7 @@ public class InternalBooksController {
                 return "redirect:/page/top";
             }
 
-            return "page/searchresult";
+            return "page/SearchResult";
 
         } catch (Exception e) {
             logger.error("検索結果詳細ページでエラーが発生しました", e);
@@ -340,7 +323,7 @@ public class InternalBooksController {
         }
     }
 
-    @PostMapping("page/LendingCompleted")
+    @PostMapping("/page/LendingCompleted")
     public String searchResultLend(
             @ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
             // @RequestParam("bookId") Integer bookId,

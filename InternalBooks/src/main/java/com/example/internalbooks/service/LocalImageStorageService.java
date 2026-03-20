@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,17 +66,14 @@ public class LocalImageStorageService implements ImageStorageService {
     }
 
     /**
-     * 書籍画像を指定したディレクトリへ保存する。
-     * 確認ステップで呼び出され、元のファイル名で一時保存する。
+     * 書籍画像を指定したディレクトリへ一時保存する。
+     * 既存画像の上書きを防ぐため UUID ベースの一時ファイル名を使用する。
      * DB登録後に renameToBookId() で正式名称 ({bookId}.png) にリネームすること。
      */
     @Override
     public String savetbook(MultipartFile file) throws IOException {
 
-        String fileName = file.getOriginalFilename();
-        if (fileName == null || fileName.isBlank()) {
-            throw new IOException("ファイル名が取得できませんでした");
-        }
+        String tmpFileName = "tmp_" + UUID.randomUUID().toString() + ".png";
 
         Path saveDirPath = resolveImageDir();
 
@@ -84,11 +82,11 @@ public class LocalImageStorageService implements ImageStorageService {
             logger.info("画像保存ディレクトリを作成しました: {}", saveDirPath);
         }
 
-        Path saveFilePath = saveDirPath.resolve(fileName).toAbsolutePath();
+        Path saveFilePath = saveDirPath.resolve(tmpFileName).toAbsolutePath();
         file.transferTo(saveFilePath);
-        logger.info("画像ファイルを保存しました: {}", saveFilePath);
+        logger.info("画像ファイルを一時保存しました: {}", saveFilePath);
 
-        return fileName;
+        return tmpFileName;
     }
 
     /**

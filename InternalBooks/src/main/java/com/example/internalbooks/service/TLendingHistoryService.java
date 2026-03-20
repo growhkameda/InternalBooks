@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,19 +20,15 @@ import com.example.internalbooks.repository.TUserRepository;
 @Transactional
 public class TLendingHistoryService {
 
-    @Autowired
-    private TLendingHistoryRepository lendingHistoryRepository;
+    private final TLendingHistoryRepository lendingHistoryRepository;
+    private final TUserRepository userRepository;
+    private final TBookRepository bookRepository;
 
-    @Autowired
-    private TUserRepository userRepository;
-
-    @Autowired
-    private TBookRepository bookRepository;
-
-    // コンストラクタインジェクション
-    public TLendingHistoryService(TLendingHistoryRepository lendingHistoryRepository, TUserRepository userRepository) {
+    public TLendingHistoryService(TLendingHistoryRepository lendingHistoryRepository,
+            TUserRepository userRepository, TBookRepository bookRepository) {
         this.lendingHistoryRepository = lendingHistoryRepository;
         this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
     }
 
     // 書籍IDから履歴を取得
