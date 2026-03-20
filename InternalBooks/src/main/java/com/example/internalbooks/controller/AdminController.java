@@ -228,11 +228,6 @@ public class AdminController extends InternalBooksController {
             // 所属課
             model.addAttribute("userdepart", userWithDepartmentName);
             // ユーザー情報
-            model.addAttribute("users", userWithDepartmentName);
-            // ログインユーザー情報を取得してモデルに追加する
-            model.addAttribute("isAdmin", isAdmin);
-
-            // ユーザー情報
             model.addAttribute("users", user);
             // ログインユーザー情報を取得してモデルに追加する
             model.addAttribute("isAdmin", isAdmin);
@@ -301,11 +296,6 @@ public class AdminController extends InternalBooksController {
 
             // 所属課
             model.addAttribute("userdepart", userWithDepartmentName);
-            // ユーザー情報
-            model.addAttribute("users", user);
-            // ログインユーザー情報を取得してモデルに追加する
-            model.addAttribute("isAdmin", isAdmin);
-
             // ユーザー情報
             model.addAttribute("users", user);
             // ログインユーザー情報を取得してモデルに追加する
@@ -429,8 +419,7 @@ public class AdminController extends InternalBooksController {
                 model.addAttribute("departments", tUserService.getAllDepartments());
 
                 for (FieldError error : bindingResult.getFieldErrors()) {
-                    // コンソールにも表示
-                    System.out.println(error.getField() + ":" + error.getDefaultMessage());
+                    logger.debug("{}:{}", error.getField(), error.getDefaultMessage());
                 }
 
                 return "page/UserRegistration";
@@ -542,8 +531,7 @@ public class AdminController extends InternalBooksController {
             // その他のエラー表示
             if (bindingResult.hasErrors()) {
                 for (FieldError error : bindingResult.getFieldErrors()) {
-                    // コンソールにも表示
-                    System.out.println(error.getField() + ":" + error.getDefaultMessage());
+                    logger.debug("{}:{}", error.getField(), error.getDefaultMessage());
                 }
                 // bookediting.htmlが必要とするモデル属性をセット
                 model.addAttribute("activeUsers", tUserService.getActiveUsers());
@@ -561,7 +549,7 @@ public class AdminController extends InternalBooksController {
                         imageFile.getContentType() != null ? imageFile.getContentType() : "image/png");
             }
 
-            System.out.println("imageurl =" + bookDto.getImageUrl());
+            logger.debug("imageurl ={}", bookDto.getImageUrl());
 
             model.addAttribute("bookdto", bookDto);
 

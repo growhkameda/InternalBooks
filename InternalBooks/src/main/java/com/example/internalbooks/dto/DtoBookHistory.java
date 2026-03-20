@@ -7,13 +7,7 @@ import lombok.Data;
  */
 @Data
 public class DtoBookHistory {
-    /**
-     * ここにフィールドなど記述する感じになると思います(木俣)
-     */
-
-//	private Integer id;
-
-	// 書籍ID
+    // 書籍ID
 	private Integer book_Id;
 
 	// 貸出日

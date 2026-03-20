@@ -281,7 +281,7 @@ public class TBookService {
 
 		} catch (Exception e) {
 			// エラーが発生した場合はnullを返してエラー表示させる
-			System.err.println("書籍検索処理でエラーが発生しました: " + e.getMessage());
+			logger.error("書籍検索処理でエラーが発生しました: {}", e.getMessage());
 			return null;
 		}
 	}
@@ -450,7 +450,7 @@ public class TBookService {
 				imageStorageService.deleteImage(bookId);
 			} catch (Exception e) {
 				// 画像削除エラーはログに記録するが、処理は継続
-				System.err.println("画像削除処理でエラーが発生しました（書籍削除は継続します）: bookId=" + bookId + ", error=" + e.getMessage());
+				logger.error("画像削除処理でエラーが発生しました（書籍削除は継続します）: bookId={}, error={}", bookId, e.getMessage());
 			}
 
 			// 貸出履歴をカスケード削除

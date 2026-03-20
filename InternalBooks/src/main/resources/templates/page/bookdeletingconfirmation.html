@@ -6,76 +6,76 @@
 </head>
 
 <body>
-    <section class="d-flex justify-content-center align-items-start py-5">
-        <div class="container d-flex justify-content-center align-items-start">
-            <div class="w-100" style="max-width: 400px;">
+    <section class="container py-5">
 
-                <!-- ================== ページメインタイトル ================== -->
-                <h1 class="fw-bold mt-5 display-3 mb-5 text-center">書籍削除確認</h1>
+        <!-- ================== ページメインタイトル ================== -->
+        <h1 class="fw-bold mt-5 display-3 mb-5 text-center">書籍削除確認</h1>
 
-                <!-- ================== 書籍画像(現在は画像表示するだけ) ================== -->
-                <div class="text-center p-4">
-                    <img th:src="${bookInfo.imageUrl}" class="img-fluid rounded shadow w-75" alt="書籍画像" />
-                </div>
+        <!-- ================== 書籍画像(現在は画像表示するだけ) ================== -->
+        <div class="d-flex flex-column justify-content-center align-items-center my-3">
+			<div class="col-10 col-sm-9 d-flex justify-content-center border overflow-hidden"
+											style="border-radius: 15px; aspect-ratio: 1; max-width: 500px;">
+				<div class = "p-5">
+            		<img th:src="${bookInfo.imageUrl}" alt="書籍画像" 
+						 class="w-100 h-100 object-fit-contain" style="border-radius: 10px">
+    			</div>
+		    </div>
+		</div>
 
-                <!-- 書籍情報エリア -->
-                <div class="d-flex justify-content-center">
-                    <div class="card-body p-4 pt-1 text-start w-100" style="max-width: 700px;">
+        <!-- 書籍情報エリア -->
+		<div class="row justify-content-center">
+            <div class="col-10 col-sm-8">
+                <div class="card-body p-4 pt-1">
+                    <!-- 書籍名 -->
+                    <div class="mb-4">
+                        <h5 class="card-title fw-bold mb-2 text-dark">書籍名</h5>
+                        <p class="text-black ms-1" th:text="${bookInfo.title}"></p>
+                    </div>
 
-                        <!-- 書籍名 -->
-                        <div class="mb-4">
-                            <h5 class="card-title fw-bold mb-2 text-dark">書籍名</h5>
-                            <p class="text-black ms-1" th:text="${bookInfo.title}"></p>
+                    <!-- カテゴリー -->
+                    <div class="mb-4 mt-4">
+                        <h5 class="card-title fw-bold mb-2 text-dark">カテゴリー</h5>
+                        <span th:each="category : ${bookInfo.categories}"
+                            class="badge bg-primary rounded-pill text-center px-4 py-2 fs-6 me-3"
+                            th:text="${category}">
+                        </span>
+                    </div>
+	
+                    <!-- 書籍提供者名前(マージン調整のため一部インナーCSS使用) -->
+                    <div class="mt-5" style="margin-bottom: 0.2rem !important;">
+                        <p class="text-black text-start ms-2 mb-1 fw-bold">
+                            書籍提供者 : <span th:text="${bookInfo.providerName}"></span>
+                        </p>
+                    </div>
+
+                    <!-- 書籍削除確認メッセージ -->
+                    <div class="mb-0">
+                        <div class="bg-light text-dark fs-6 text-start p-3 mb-3 rounded-3 w-100 min-vh-12">
+                            <span class="text-start" th:text="${bookInfo.providerComment}"></span>
                         </div>
+                    </div>
 
-                        <!-- カテゴリー -->
-                        <div class="mb-4 mt-4">
-                            <h5 class="card-title fw-bold mb-2 text-dark">カテゴリー</h5>
-                            <span th:each="category : ${bookInfo.categories}"
-                                class="badge bg-primary rounded-pill text-center px-4 py-2 fs-6 me-3"
-                                th:text="${category}">
-                            </span>
-                        </div>
-
-                        <!-- 書籍提供者名前(マージン調整のため一部インナーCSS使用) -->
-                        <div class="mt-5" style="margin-bottom: 0.2rem !important;">
-                            <p class="text-black text-start ms-2 mb-1 fw-bold">
-                                書籍提供者 : <span th:text="${bookInfo.providerName}"></span>
-                            </p>
-                        </div>
-
-                        <!-- 書籍削除確認メッセージ -->
-                        <div class="mb-0">
-                            <div class="bg-light text-dark fs-6 text-start p-3 mb-3 rounded-3 w-100 min-vh-12">
-                                <span class="text-start" th:text="${bookInfo.providerComment}"></span>
-                            </div>
-                        </div>
-
-                        <!-- ================== 戻るボタン ================== -->
-                        <div class="border-0 mb-1 text-start">
-                            <a href="javascript:history.back()" class="text-black ms-1">
-                                一覧へ戻る
-                                <i class="bi bi-arrow-return-left ms-1"></i>
-                            </a>
-                        </div>
-
-                        <!-- ========== 削除ボタン ========== -->
-                        <!--武藤さんの確認ポップに変えてもよさそう-->
-                        <div class="text-center mt-5">
-                            <form method="post" th:action="@{/admin/bookdeleting}">
-                                <input type="hidden" name="bookId" th:value="${bookInfo.bookId}">
-                                <button type="submit" class="btn btn-danger btn-lg w-50"
-                                    onclick="return confirm('本当に削除しますか？');">
-                                    削除
-                                </button>
-                            </form>
-                        </div>
-
+                    <!-- ================== 戻るボタン ================== -->
+                    <div class="border-0 mb-1 text-start">
+                        <a href="javascript:history.back()" class="col-10 text-black ms-1">
+							<img src="/images/List_Return.png" style="width: 40px; height: 40px;">
+                        </a>
+                    </div>
+	
+                    <!-- ========== 削除ボタン ========== -->
+                    <!--武藤さんの確認ポップに変えてもよさそう-->
+                    <div class="text-center mt-5">
+                        <form method="post" th:action="@{/admin/bookdeleting}">
+                            <input type="hidden" name="bookId" th:value="${bookInfo.bookId}">
+                            <button type="submit" class="btn btn-lg w-50 text-danger shadow"
+                                onclick="return confirm('本当に削除しますか？');">
+                                削除
+                            </button>
+                        </form>
                     </div>
                 </div>
-
             </div>
-        </div>
+		</div>
     </section>
 </body>
 
