@@ -13,8 +13,10 @@
 		<h2 class="text-center mt-4">ユーザー確認画面</h2>
 		<br>
 
-		<div class="h-25 border bg-body-secondary d-flex align-items-center">
-			<p class="mt-1 ms-3 fw-normal h6">ユーザーの詳細情報は以下の通りです。</p>
+		<div class="container text-center mt-3">
+			<p class="bg-dark-subtle d-inline-block px-3 py-2 rounded">
+				ユーザーの詳細情報は以下の通りです。
+			</p>
 		</div>
 
 		<!-- 社員ID -->
@@ -78,10 +80,12 @@
 
 		<div class="container text-center mt-4">
 			<div class="row d-flex justify-content-between ">
-		<!-- 編集ボタン -->
-				<a th:href="@{/admin/useredit(userId=${userDto.userId})}" class="btn bg-white text-success shadow btn-outline-secondary shadow  ms-6 col-4">編集</a>
-		<!-- 削除ボタン -->
-				<a th:href="@{/admin/userdeleteconfirmation(userId=${userDto.userId})}" class="btn bg-white text-danger shadow btn-outline-secondary shadow  ms-6 col-4">削除</a>
+				<!-- 編集ボタン -->
+				<a th:href="@{/admin/useredit(userId=${userDto.userId})}"
+					class="btn bg-white text-success shadow btn-outline-secondary shadow  ms-6 col-4">編集</a>
+				<!-- 削除ボタン -->
+				<a th:href="@{/admin/userdeleteconfirmation(userId=${userDto.userId})}"
+					class="btn bg-white text-danger shadow btn-outline-secondary shadow  ms-6 col-4">削除</a>
 			</div>
 		</div>
 
