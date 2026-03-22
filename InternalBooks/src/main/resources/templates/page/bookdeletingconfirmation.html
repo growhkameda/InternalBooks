@@ -13,7 +13,7 @@
 
         <!-- ================== 書籍画像(現在は画像表示するだけ) ================== -->
         <div class="d-flex flex-column justify-content-center align-items-center my-3">
-			<div class="col-10 col-sm-9 d-flex justify-content-center border overflow-hidden"
+			<div class="col-11 col-sm-9 d-flex justify-content-center border overflow-hidden"
 											style="border-radius: 15px; aspect-ratio: 1; max-width: 500px;">
 				<div class = "p-5">
             		<img th:src="${bookInfo.imageUrl}" alt="書籍画像" 
@@ -24,8 +24,8 @@
 
         <!-- 書籍情報エリア -->
 		<div class="row justify-content-center">
-            <div class="col-10 col-sm-8">
-                <div class="card-body p-4 pt-1">
+            <div class="col-11 col-sm-8">
+                <div class="card-body pt-1">
                     <!-- 書籍名 -->
                     <div class="mb-4">
                         <h5 class="card-title fw-bold mb-2 text-dark">書籍名</h5>
@@ -57,11 +57,11 @@
 
                     <!-- ================== 戻るボタン ================== -->
                     <div class="border-0 mb-1 text-start">
-                        <a href="javascript:history.back()" class="col-10 text-black ms-1">
+                        <a href="javascript:history.back()" class="col-11 text-black ms-1">
 							<img src="/images/List_Return.png" style="width: 40px; height: 40px;">
                         </a>
                     </div>
-	
+
                     <!-- ========== 削除ボタン ========== -->
                     <!--武藤さんの確認ポップに変えてもよさそう-->
                     <div class="text-center mt-5">
