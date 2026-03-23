@@ -24,6 +24,7 @@ import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
+import com.example.internalbooks.common.Const;
 import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
 
@@ -122,15 +123,16 @@ public class InternalBooksController {
      * カテゴリーリストを表示
      */
     @GetMapping("/page/categories")
-    public String categories(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String categories(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         try {
             // トークンの検証
             validateTokenAndGetUserId(session);
 
-            // カテゴリーリストを取得
-            List<String> categoryList = tBookService.getAllCategories();
-
-            model.addAttribute("categories", categoryList);
+            model.addAttribute("categories", tBookService.getPagedCategories(page, Const.CATEGORIES_PER_PAGE));
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", tBookService.getCategoryTotalPages(Const.CATEGORIES_PER_PAGE));
 
             return "page/categories";
         } catch (Exception e) {
@@ -200,9 +202,6 @@ public class InternalBooksController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        // 1ページに表示する本の数
-        final int BOOKS_PER_PAGE = 6;
-
         try {
             // ユーザー認証（共通処理）
             validateTokenAndGetUserId(session);
@@ -210,28 +209,11 @@ public class InternalBooksController {
             // フラグ カテゴリー一覧：1
             screenFlag = 1;
 
-            // カテゴリーに属するすべての本の情報を取得
-
-            List<DtoBookInfo> allBooks = tBookService.getBooksByCategoryWithDetails(category);
-
-            // 取得した本の要素数を取得
-            int TOTAL_BOOK_COUNT = allBooks.size();
-
-            // 指定した表示画像数と、取得した要素数で必要なページ数を計算
-            int totalPages = (int) Math.ceil((double) TOTAL_BOOK_COUNT / BOOKS_PER_PAGE);
-
-            // ページ範囲を計算
-            int fromIndex = page * BOOKS_PER_PAGE;
-            int toIndex = Math.min(fromIndex + BOOKS_PER_PAGE, TOTAL_BOOK_COUNT);
-
-            // 表示対象の本リストを抽出
-            List<DtoBookInfo> pagedBooks = allBooks.subList(fromIndex, toIndex);
-
             // Viewに渡すモデル属性を設定
-            model.addAttribute("bookList", pagedBooks);
+            model.addAttribute("bookList", tBookService.getPagedBooksByCategory(category, page, Const.BOOKS_PER_PAGE));
             model.addAttribute("category", category);
             model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", totalPages);
+            model.addAttribute("totalPages", tBookService.getBooksByCategoryTotalPages(category, Const.BOOKS_PER_PAGE));
 
             // カテゴリー一覧からの遷移フラグをセッションに設定
             session.setAttribute("screenFlag", screenFlag);
@@ -278,15 +260,14 @@ public class InternalBooksController {
                     model.addAttribute("showButton", showButton);
                     model.addAttribute("showComment", showComment);
                     break;
-                // QRコードからの遷移
+                // 借りるボタンからの遷移
                 case 2:
                     showButton = true;
                     showComment = false;
-                    model.addAttribute("screenFlag", screenFlag);
                     model.addAttribute("showButton", showButton);
                     model.addAttribute("showComment", showComment);
                     break;
-                // 貸出中の場合
+                // 返すボタンからの遷移
                 case 3:
                     showButton = true;
                     showComment = true;
@@ -296,6 +277,7 @@ public class InternalBooksController {
                 default:
                     break;
             }
+            model.addAttribute("screenFlag", screenFlag);
 
             // 書籍検索処理をServiceで処理
             DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
@@ -317,15 +299,18 @@ public class InternalBooksController {
                 // 一覧から遷移した場合
                 dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
-
             model.addAttribute("bookHistoryList", dtoBookHistory);
+            
+            // 書籍感想有無の判定
+            boolean hasReviewHistory = dtoBookHistory.stream().anyMatch(h -> h.getReview() != null);
+            model.addAttribute("hasReviewHistory", hasReviewHistory);
 
             if (bookId == null && qrData == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
                 return "redirect:/page/top";
             }
 
-            return "page/searchresult";
+            return "page/SearchResult";
 
         } catch (Exception e) {
             logger.error("検索結果詳細ページでエラーが発生しました", e);
@@ -333,7 +318,7 @@ public class InternalBooksController {
         }
     }
 
-    @PostMapping("page/LendingCompleted")
+    @PostMapping("/page/LendingCompleted")
     public String searchResultLend(
             @ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
             // @RequestParam("bookId") Integer bookId,
@@ -378,7 +363,6 @@ public class InternalBooksController {
                 // 一覧から遷移した場合
                 dtoBookHistory = lendingHistoryService.getHistoryByBookId(bookId);
             }
-
             model.addAttribute("bookHistoryList", dtoBookHistory);
 
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
@@ -483,7 +467,6 @@ public class InternalBooksController {
             RedirectAttributes redirectAttributes) {
 
         try {
-
             // トークンの検証（共通メソッド）
             validateTokenAndGetUserId(session);
 
@@ -508,6 +491,10 @@ public class InternalBooksController {
 
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
             model.addAttribute("bookHistory", latestHistory);
+            
+            // 書籍感想有無の判定
+            boolean hasReviewHistory = dtoBookHistory.stream().anyMatch(h -> h.getReview() != null);
+            model.addAttribute("hasReviewHistory", hasReviewHistory);
 
             if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");

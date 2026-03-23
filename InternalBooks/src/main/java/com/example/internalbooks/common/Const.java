@@ -32,6 +32,12 @@ public class Const {
 	public final static Integer PLUS_KIZONBOOKID = 1;
 	public final static Integer PLUS_NEWBOOKID = 10001;
 
+	/** 書籍一覧の1ページあたり表示件数 */
+	public static final int BOOKS_PER_PAGE = 6;
+
+	/** カテゴリー一覧の1ページあたり表示件数（2列×5行） */
+	public static final int CATEGORIES_PER_PAGE = 10;
+
 	/**
 	 * ユーザー削除フラグ
 	 * 0: 有効ユーザー

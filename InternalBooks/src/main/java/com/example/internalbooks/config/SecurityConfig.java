@@ -1,7 +1,5 @@
 package com.example.internalbooks.config;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,9 +12,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.internalbooks.filter.JwtAuthenticationFilter;
 
@@ -43,7 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         .requestMatchers("/", "/page/**", "/action/**", "/admin/**", "/test/**", "/webjars/**",
-                                "/logo/**", "/favicon.ico", "/images/**", "/js/**")
+                                "/logo/**", "/favicon.ico", "/images/**", "/js/**", "/actuator/**")
                         .permitAll() // 認証不要のエンドポイント
 
                         .anyRequest().authenticated() // 他のエンドポイントは認証が必要
@@ -51,8 +46,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // フィルターを追加;
-
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         return http.build();
     }
@@ -78,40 +71,5 @@ public class SecurityConfig {
      */
     protected JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(); // JWTフィルターを定義
-    }
-
-    @Bean
-    /**
-     * CORSアクセスのための設定をするメソッド
-     */
-    protected CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        // ========== ngrok用CORS設定 START ==========
-        // 本番環境では以下をコメントアウトして "list.of(*)" に戻すこと
-        // テスト環境で動かすときはngrokのURLを設定する
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:8080",
-                "https://a476e2ff19fa.ngrok-free.app", // 新ngrok用URL（本番時削除）
-                "https://*.ngrok-free.app" // ngrok用ワイルドカード（本番時削除）
-        )); // 許可するオリジン
-
-        // 本番環境用設定（現在はコメントアウト）
-        // configuration.setAllowedOrigins(List.of("*")); // 本番環境用
-        // ========== ngrok用CORS設定 END ==========
-
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 許可するメソッド
-
-        // ========== ngrok用ヘッダー設定 START ==========
-        // 本番環境では "X-Requested-With" を削除可能
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With")); // 許可するヘッダー
-        // ========== ngrok用ヘッダー設定 END ==========
-
-        configuration.setAllowCredentials(true); // 認証情報を含むリクエストを許可
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // 全エンドポイントに適用
-
-        return source;
     }
 }

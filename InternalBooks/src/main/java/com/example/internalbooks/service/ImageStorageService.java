@@ -20,4 +20,11 @@ public interface ImageStorageService {
      * 書籍画像を指定したディレクトリへ保存する。
      */
     public String savetbook(MultipartFile file) throws IOException;
+
+    /**
+     * 仮ファイル名で保存済みの画像を {bookId}.png にリネームする。
+     * DB保存後に確定した bookId でファイルを正式名称に変更するために使用する。
+     */
+    void renameToBookId(String currentFileName, Integer bookId) throws IOException;
+
 }

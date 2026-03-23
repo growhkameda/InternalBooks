@@ -1,133 +1,93 @@
 <!DOCTYPE html>
 <!--
-
 社内図書館システム - QRコードスキャナーページ
-★★★完成済ソースコードを引っ張ってきて修正したため不具合など要検証★★★
-
 -->
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/layout :: layout(~{::title}, ~{::section})}">
 
 <head>
-    <!-- ページタイトル設定 -->
     <title>QRコードスキャナー</title>
 </head>
 
 <body>
-    <!-- メインコンテンツセクション -->
-    <section class="vh-100 d-flex justify-content-center align-items-center">
+    <section class="min-vh-100 d-flex justify-content-center align-items-center py-4">
 
-        <!-- Bootstrap Icons（アイコン表示用） -->
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+        <div class="container d-flex justify-content-center">
+            <div class="w-100" style="max-width: 400px;">
 
-        <div class="row justify-content-center">
-            <div class="col-12">
+                <!-- タイトル -->
+                <h1 class="mb-2 text-center fw-bold">QRコードスキャナー</h1>
+                <p class="text-muted small text-center mb-4">カメラでQRコードを読み取ります</p>
 
-                <!-- メインカードコンテナ -->
-                <div class="card shadow-lg border-0">
+                <!-- カメラ映像表示エリア -->
+                <div id="video-container"
+                    class="position-relative mx-auto rounded-3 bg-light overflow-hidden mb-4 border border-1 border-dark"
+                    style="height: 250px; box-shadow: 0 2px 8px rgba(0, 0, 0, .1);">
 
-                    <!-- カードヘッダー（緑色背景でアイコン付き） -->
-                    <div class="card-header bg-success text-white text-center py-3">
-                        <h2 class="mb-0">
-                            <i class="bi bi-qr-code-scan me-2"></i>
-                            QRコードスキャナー
-                        </h2>
-                        <p class="mb-0 mt-2 opacity-75">カメラでQRコードを読み取ります</p>
+                    <!-- ビデオ要素（カメラ映像表示、初期状態は非表示） -->
+                    <video id="qr-video" class="position-absolute top-0 start-0 w-100 h-100"
+                        style="display: none; object-fit: cover; background-color: black; z-index: 1;"
+                        playsinline muted autoplay>
+                    </video>
+
+                    <!-- スキャンガイド表示（ビデオが非表示の時に表示） -->
+                    <div id="scan-guide"
+                        class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center bg-light">
+                        <i class="bi bi-camera-video text-muted display-4"></i>
+                        <p class="text-muted mt-3 mb-0 text-center small">
+                            「スキャン開始」ボタンを押して<br>
+                            QRコードをカメラに向けてください
+                        </p>
                     </div>
 
-                    <!-- カードボディ（メインコンテンツエリア） -->
-                    <div class="card-body p-4">
-
-                        <!-- カメラ映像表示エリア -->
-                        <div class="text-center mb-4">
-                            <!-- メインビデオコンテナ（固定サイズの枠） -->
-                            <div id="video-container"
-                                class="position-relative mx-auto rounded border border-success border-3 shadow-sm bg-light"
-                                style="width: 100%; max-width: 500px; height: 300px; overflow: hidden;">
-
-                                <!-- モバイルサイズ固定用のスタイル -->
-                                <style>
-                                    #video-container {
-                                        max-width: 100% !important;
-                                        height: 250px !important;
-                                    }
-                                </style>
-
-                                <!-- ビデオ要素（カメラ映像表示、初期状態は非表示） -->
-                                <video id="qr-video" class="position-absolute top-0 start-0 w-100 h-100"
-                                    style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; background-color: black; z-index: 1;"
-                                    playsinline muted autoplay>
-                                </video>
-
-                                <!-- スキャンガイド表示（ビデオが非表示の時に表示） -->
-                                <div id="scan-guide"
-                                    class="position-absolute top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center bg-light">
-                                    <i class="bi bi-camera-video text-muted display-1"></i>
-                                    <p class="text-muted mt-3 mb-0 text-center small">
-                                        「スキャン開始」ボタンを押して<br>
-                                        QRコードをカメラに向けてください
-                                    </p>
-                                </div>
-
-                                <!-- スキャンオーバーレイ（QRコード検出エリアの表示） -->
-                                <div id="scan-overlay" class="position-absolute top-50 start-50 translate-middle"
-                                    style="display: none; z-index: 2;">
-                                    <div class="border border-warning border-3 bg-transparent"
-                                        style="width: 200px; height: 200px; border-style: dashed !important;">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- キャンバス要素（QRコード解析用、非表示） -->
-                            <canvas id="qr-canvas" style="display: none;"></canvas>
+                    <!-- スキャンオーバーレイ（QRコード検出エリアの表示） -->
+                    <div id="scan-overlay" class="position-absolute top-50 start-50 translate-middle"
+                        style="display: none; z-index: 2;">
+                        <div class="border border-warning border-3 bg-transparent"
+                            style="width: 160px; height: 160px; border-style: dashed !important;">
                         </div>
-
-
-
-                        <!-- エラー表示エリア（初期状態は非表示） -->
-                        <div id="error-message" class="alert alert-danger border-0 shadow-sm rounded-3"
-                            style="display: none;">
-                            <div class="d-flex align-items-center">
-                                <i class="bi bi-exclamation-triangle-fill text-danger me-3 fs-2"></i>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1 fw-bold">エラーが発生しました</h6>
-                                    <div id="error-text"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 操作ボタンセクション -->
-                        <div class="text-center mb-4">
-                            <!-- スキャン開始ボタン（青色、全幅） -->
-                            <button id="start-scan-btn" class="btn btn-primary btn-lg w-100 mb-3" type="button"
-                                onclick="startScanning();">
-                                <i class="bi bi-camera me-2"></i>
-                                スキャン開始
-                            </button>
-
-                            <!-- スキャン停止ボタン（赤色、全幅、初期状態は無効） -->
-                            <button id="stop-scan-btn" class="btn btn-danger btn-lg w-100" type="button" disabled
-                                onclick="stopScanning();">
-                                <i class="bi bi-stop-circle me-2"></i>
-                                スキャン停止
-                            </button>
-                        </div>
-
-                        <!-- 戻るボタン -->
-                        <div class="col-12 border-0 mt-3">
-                            <a href="/page/top" class="text-black ms-2">
-                                TOPに戻る
-                                <i class="bi bi-arrow-return-left ms-1"></i>
-                            </a>
-                        </div>
-
                     </div>
                 </div>
+
+                <!-- キャンバス要素（QRコード解析用、非表示） -->
+                <canvas id="qr-canvas" style="display: none;"></canvas>
+
+                <!-- エラー表示エリア（初期状態は非表示） -->
+                <div id="error-message" class="rounded-3 p-3 mb-3"
+                    style="display: none; background-color: #fff8e1; border: 1px solid #ffc107;">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="bi bi-exclamation-triangle-fill fs-4" style="color: #e6a817;"></i>
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1 fw-bold">エラーが発生しました</h6>
+                            <div id="error-text"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作ボタンセクション -->
+                <div class="d-flex flex-column gap-3 mb-4">
+                    <button id="start-scan-btn" type="button"
+                        class="btn w-100 shadow py-3 fw-bold"
+                        style="background-color: white; color: #3CB371; border: 2px solid #3CB371;"
+                        onclick="startScanning();">
+                        <i class="bi bi-camera me-2"></i>スキャン開始
+                    </button>
+                    <button id="stop-scan-btn" type="button"
+                        class="btn w-100 py-3 fw-bold"
+                        style="background-color: #f5f5f5; color: #aaaaaa; border: 2px solid #cccccc; box-shadow: none; cursor: not-allowed;"
+                        disabled onclick="stopScanning();">
+                        <i class="bi bi-stop-circle me-2"></i>スキャン停止
+                    </button>
+                </div>
+
+                <!-- TOPへ戻るボタン -->
+                <div class="d-flex justify-content-start">
+                    <a href="/page/top">
+                        <img src="/images/TOP_Return.png" style="width: 40px; height: 40px;">
+                    </a>
+                </div>
+
             </div>
         </div>
-
-
-
-        <!-- ------------------------JS処理部分---------------------------------->
 
         <!-- jsQRライブラリ（QRコード解析用） -->
         <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
@@ -234,6 +194,9 @@
                         }, 3000);
                     });
 
+                    // stopScanning が await 中に呼ばれた場合、stream は null になっている
+                    if (!stream) return;
+
                     // オーバーレイを表示
                     document.getElementById('scan-overlay').style.display = 'block';
 
@@ -330,13 +293,44 @@
                     startBtn.disabled = isScanning;
                     if (isScanning) {
                         startBtn.innerHTML = '<i class="bi bi-camera me-2"></i>スキャン中...';
+                        // スキャン中：開始ボタンをグレー（disabled）スタイルに
+                        startBtn.style.backgroundColor = '#f5f5f5';
+                        startBtn.style.color = '#aaaaaa';
+                        startBtn.style.border = '2px solid #cccccc';
+                        startBtn.style.boxShadow = 'none';
+                        startBtn.style.cursor = 'not-allowed';
+                        startBtn.classList.remove('shadow');
                     } else {
                         startBtn.innerHTML = '<i class="bi bi-camera me-2"></i>スキャン開始';
+                        // 待機中：開始ボタンを緑（有効）スタイルに
+                        startBtn.style.backgroundColor = 'white';
+                        startBtn.style.color = '#3CB371';
+                        startBtn.style.border = '2px solid #3CB371';
+                        startBtn.style.boxShadow = '';
+                        startBtn.style.cursor = 'pointer';
+                        startBtn.classList.add('shadow');
                     }
                 }
 
                 if (stopBtn) {
                     stopBtn.disabled = !isScanning;
+                    if (isScanning) {
+                        // スキャン中：停止ボタンを緑（有効）スタイルに切り替え
+                        stopBtn.style.backgroundColor = 'white';
+                        stopBtn.style.color = '#3CB371';
+                        stopBtn.style.border = '2px solid #3CB371';
+                        stopBtn.style.boxShadow = '';
+                        stopBtn.style.cursor = 'pointer';
+                        stopBtn.classList.add('shadow');
+                    } else {
+                        // 待機中：停止ボタンをグレー（disabled）スタイルに切り替え
+                        stopBtn.style.backgroundColor = '#f5f5f5';
+                        stopBtn.style.color = '#aaaaaa';
+                        stopBtn.style.border = '2px solid #cccccc';
+                        stopBtn.style.boxShadow = 'none';
+                        stopBtn.style.cursor = 'not-allowed';
+                        stopBtn.classList.remove('shadow');
+                    }
                 }
             }
 
@@ -356,8 +350,6 @@
                     errorDiv.style.display = 'none';
                 }
             }
-
-
 
             // ページを離れる際のクリーンアップ
             window.addEventListener('beforeunload', function () {

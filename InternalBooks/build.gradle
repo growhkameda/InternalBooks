@@ -10,9 +10,8 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 
 configurations {
@@ -31,7 +30,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'jakarta.validation:jakarta.validation-api:3.0.2'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
 	implementation 'javax.xml.bind:jaxb-api:2.3.1'
@@ -41,19 +41,14 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	compileOnly 'org.projectlombok:lombok:1.18.34'
-    annotationProcessor 'org.projectlombok:lombok:1.18.34'
+	compileOnly 'org.projectlombok:lombok:1.18.40'
+    annotationProcessor 'org.projectlombok:lombok:1.18.40'
     
     // Bootstrap（WebJars 最新）
 	implementation 'org.webjars:bootstrap:5.3.6'
 	implementation 'org.webjars:jquery:3.7.1'
 	implementation 'org.webjars:popper.js:2.11.7'
 	
-	// AWS SDK for S3（本番環境用）- BOM方式で管理
-	implementation platform('software.amazon.awssdk:bom:2.20.26')
-	implementation 'software.amazon.awssdk:s3'
-	implementation 'software.amazon.awssdk:auth'
-	implementation 'software.amazon.awssdk:regions'
 }
 
 tasks.named('test') {

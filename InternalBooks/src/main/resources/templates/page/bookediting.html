@@ -9,6 +9,9 @@
 <body>
 <section class = "container justify-content-center mt-5">
 
+<!-- Tom Select CSS -->
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+
     <h1 class= "text-center">書籍登録編集画面</h1>
     <br>
 
@@ -37,23 +40,13 @@
 	  <div class = "col-7 col-md-8">
 		  <!-- バリデーションエラーを表示 -->
 	      	<span th:errors="*{category}" class="text-danger"></span>
-			<input type ="text" list="categoryExamples" th:field="*{category}" class="form-control bg-light">
-			<!-- カテゴリ入力方法を表示 -->
-		   <button type="button"
-		           class="mt-2 btn btn-outline-secondary btn-sm"
-		           onclick="toggleCategory()">
-				カテゴリ一覧	
-		   </button>
-		   <ul id="categoryList" 
-		       class="list-group shadow" 
-		       style="display:none;
-		              position:absolute;
-		              font-size:12px;
-		              top:300px;
-		              right:450px;
-		              width:150px;
-		              z-index:1000;">
-		   </ul>
+			<select id="categorySelect" th:field="*{category}" class="form-select bg-light">
+				<option value="">-- カテゴリーを選択または入力 --</option>
+				<option th:each="cat : ${existingCategories}"
+				        th:value="${cat}"
+				        th:text="${cat}">
+				</option>
+			</select>
 	  </div>
   </div>
 </div>
@@ -67,7 +60,13 @@
 	  <div class = "col-7 col-md-8">
 		  <!-- バリデーションエラーを表示 -->
 	      	<span th:errors="*{providerId}" class="text-danger"></span>
-			<input type ="text" th:field="*{providerId}" class="form-control bg-light">
+			<select id="providerIdSelect" th:field="*{providerId}" class="form-select bg-light">
+				<option value="">-- 選択してください --</option>
+				<option th:each="user : ${activeUsers}"
+				        th:value="${user.name}"
+				        th:text="${user.name}">
+				</option>
+			</select>
 	  </div>
   </div>
 </div>
@@ -153,31 +152,34 @@
 </div>
 </form>
 
- <!-- カテゴリ一覧JavaScript -->
+<!-- Tom Select JS -->
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
-	document.addEventListener("DOMContentLoaded",function(){
-		const categories = ["Java",
-		                    "C言語",
-		                    "Python"];
-		
-	 const list = document.getElementById("categoryList");
-	 
-	 categories.forEach(cat => {
-		 const li =document.createElement("li");
-		 li.className = "list-group-item";
-		 li.textContent = cat;
-		 list.appendChild(li);
-	 });		
-});
+    document.addEventListener("DOMContentLoaded", function () {
+        // 書籍提供者：検索のみ（既存ユーザーから選択）
+        new TomSelect('#providerIdSelect', {
+            create: false,
+            placeholder: '名前で検索...',
+            sortField: { field: 'text', direction: 'asc' },
+            plugins: ['dropdown_input']
+        });
 
-function toggleCategory(){
-	const list = document.getElementById("categoryList");
-	 if(list.style.display === "none") {
-		 list.style.display = "block";
-	}else {
-		list.style.display = "none";
-	}
-}
+        // カテゴリー：既存から検索 + 新規入力も可能
+        new TomSelect('#categorySelect', {
+            create: true,
+            placeholder: 'カテゴリーを検索または新規入力...',
+            sortField: { field: 'text', direction: 'asc' },
+            plugins: ['dropdown_input'],
+            createFilter: function (input) {
+                return input.trim().length > 0;
+            },
+            render: {
+                option_create: function (data, escape) {
+                    return '<div class="create">「<strong>' + escape(data.input) + '</strong>」を新規追加</div>';
+                }
+            }
+        });
+    });
 </script>
 </section>
 </body>

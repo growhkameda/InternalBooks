@@ -33,12 +33,34 @@ out/
 ### VS Code ###
 .vscode/
 
+### Tools ###
+.claude/
+.cursor/
+.cursorignore
+AGENTS.md
+CLAUDE.md
+
+# evidence / 手順書（AWS構成など機密情報を含む可能性）
+docs/*
+InternalBooks/docs/
+
+# 運用スクリプト（機密情報を含む可能性）
+scripts/
+InternalBooks/scripts/
+
+# 資料
+docs/
+
+
 ### OS ###
 .DS_Store
 Thumbs.db
 
 # docker
 data/*
+
+# 本番環境の機密情報（.env.prod.example はコミット対象）
+.env.prod
 !data/.gitkeep
 
 # MySQL data files
@@ -63,5 +85,3 @@ undo_*
 # Eclipse workspace metadata
 .metadata/
 Servers/
-
-InternalBooks/src/main/resources/application.properties

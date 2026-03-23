@@ -27,7 +27,6 @@ public class DtoUserRegistration {
 	// DB用(数字）
 	private Integer departmentNumber;
 
-	@NotBlank(message = "パスワードは必須です")
 	private String password;
 
 	// 初期値の設定

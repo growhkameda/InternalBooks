@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ import com.example.internalbooks.common.Const;
  * TBookテーブルに対してどんな操作をしていくかをTBookリポジトリを介して制御していくサービス
  */
 public class TBookService {
+
+	private static final Logger logger = LoggerFactory.getLogger(TBookService.class);
 
 	// DI用フィールド
 	private final TBookRepository tBookRepository;
@@ -55,17 +59,32 @@ public class TBookService {
 			// カテゴリー情報を登録されている本情報から取得する
 			for (TBookEntity book : bookList) {
 				// カンマ区切りのカテゴリを分割し、重複しないように値を格納
-				String[] categories = book.getCategories().split(",");
-				for (String category : categories) {
-					if (!categoryList.contains(category)) {
-						categoryList.add(category);
-					}
+			String[] categories = book.getCategories().split(",");
+			for (String category : categories) {
+				String trimmed = category.strip();
+				if (!categoryList.contains(trimmed)) {
+					categoryList.add(trimmed);
 				}
+			}
 			}
 		} catch (Exception e) {
 			throw e;
 		}
 		return categoryList;
+	}
+
+	/** 指定ページのカテゴリー一覧を返す */
+	public List<String> getPagedCategories(int page, int pageSize) {
+		List<String> all = getAllCategories();
+		int fromIndex = page * pageSize;
+		if (fromIndex >= all.size()) return new ArrayList<>();
+		int toIndex = Math.min(fromIndex + pageSize, all.size());
+		return all.subList(fromIndex, toIndex);
+	}
+
+	/** カテゴリーの総ページ数を返す */
+	public int getCategoryTotalPages(int pageSize) {
+		return (int) Math.ceil((double) getAllCategories().size() / pageSize);
 	}
 
 	public List<Integer> getCategoriesdetail(String category) {
@@ -82,7 +101,7 @@ public class TBookService {
 				String[] categoriesArray = book_categories.split(",");
 				for (String list_category : categoriesArray) {
 					// 引数のカテゴリーの値が含まれている本情報のみbookid_listに追加する
-					if (list_category.trim().equals(category)) {
+					if (list_category.strip().equals(category.strip())) {
 						bookid_list.add(book.getBookId());
 						break;
 					}
@@ -112,7 +131,7 @@ public class TBookService {
 				String[] categoriesArray = bookCategories.split(",");
 				for (String bookCategory : categoriesArray) {
 					// 引数のカテゴリーに一致する書籍のみ追加
-					if (bookCategory.trim().equals(category)) {
+					if (bookCategory.strip().equals(category.strip())) {
 						// convertEntityToDtoで書籍情報をDTOに変換（status含む）
 						DtoBookInfo dto = convertEntityToDto(book, false);
 						bookList.add(dto);
@@ -323,7 +342,7 @@ public class TBookService {
 	/**
 	 * 書籍登録するメソッド
 	 */
-	public TBookEntity bookEditing(DtoBookInfo dtbook) {
+	public DtoBookInfo bookEditing(DtoBookInfo dtbook) {
 		// 書籍提供者とユーザーIDの紐付け
 		TUserEntity user = tUserRepository.findByName(dtbook.getProviderId())
 				.orElseThrow(() -> new RuntimeException("名前が見つかりません"));
@@ -346,22 +365,61 @@ public class TBookService {
 				nextId = maxId + Const.PLUS_KIZONBOOKID;
 			} else {
 				// 既存のカテゴリ名がない場合
-				Integer maxIdAll = tBookRepository.findMaxBookId();
-				// データがある場合はその最大値に10001をたす。
-				nextId = maxIdAll + Const.PLUS_NEWBOOKID;
+			Integer maxIdAll = tBookRepository.findMaxBookId();
+			// データがある場合はその最大値に10001をたす。DBが空の場合は0として扱う
+			nextId = (maxIdAll != null ? maxIdAll : 0) + Const.PLUS_NEWBOOKID;
 			}
-			// 取得したIDをセット
-			tbook.setBookId(nextId);
-			// DBへセットした値を保存
-			TBookEntity saved = tBookRepository.save(tbook);
-			// ユーザー名をTbookEntityの提供者名にセット
-			saved.setProviderName(user.getName());
-			return saved;
+		// 取得したIDをセット
+		tbook.setBookId(nextId);
+		// DBへセットした値を保存
+		TBookEntity saved = tBookRepository.save(tbook);
+		// ユーザー名をTbookEntityの提供者名にセット
+		saved.setProviderName(user.getName());
 
-		} catch (DataIntegrityViolationException e) {
-			throw new IllegalStateException("登録に失敗しました", e);
+		// 確認ステップで元ファイル名として保存した画像を {bookId}.png にリネーム
+		// リネーム失敗はDB登録に影響させない（ログのみ記録して継続）
+		String currentFileName = dtbook.getImageUrl();
+		if (currentFileName != null && !currentFileName.isBlank()) {
+			try {
+				imageStorageService.renameToBookId(currentFileName, saved.getBookId());
+			} catch (Exception e) {
+				logger.warn("画像のリネームに失敗しました（書籍登録は継続します）: currentFileName={}, bookId={}, error={}",
+						currentFileName, saved.getBookId(), e.getMessage(), e);
+			}
 		}
 
+		return toRegistrationCompleteDto(saved);
+
+	} catch (DataIntegrityViolationException e) {
+		throw new IllegalStateException("登録に失敗しました", e);
+	}
+
+	}
+
+	/** 書籍登録完了画面用にEntityをDTOへ変換する */
+	private DtoBookInfo toRegistrationCompleteDto(TBookEntity saved) {
+		DtoBookInfo dto = new DtoBookInfo();
+		dto.setTitle(saved.getTitle());
+		dto.setProviderId(saved.getProviderName());
+		dto.setCategory(saved.getCategories());
+		dto.setProviderComment(saved.getProviderComment());
+		dto.setBookId(saved.getBookId());
+		dto.setImageUrlFromBookId();
+		return dto;
+	}
+
+	/** 指定カテゴリーの指定ページの書籍リストを返す */
+	public List<DtoBookInfo> getPagedBooksByCategory(String category, int page, int pageSize) {
+		List<DtoBookInfo> all = getBooksByCategoryWithDetails(category);
+		int fromIndex = page * pageSize;
+		if (fromIndex >= all.size()) return new ArrayList<>();
+		int toIndex = Math.min(fromIndex + pageSize, all.size());
+		return all.subList(fromIndex, toIndex);
+	}
+
+	/** 指定カテゴリーの総ページ数を返す */
+	public int getBooksByCategoryTotalPages(String category, int pageSize) {
+		return (int) Math.ceil((double) getBooksByCategoryWithDetails(category).size() / pageSize);
 	}
 
 	/**
