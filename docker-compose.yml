@@ -12,5 +12,5 @@ services:
       MYSQL_DATABASE: internalbooks
       MYSQL_INIT_CONNECT: "SET NAMES utf8mb4;"
     volumes:
-      - ./mysql/data:/var/lib/mysql  # データ永続化    # 本番環境ではマウントする
+    #  - ./mysql/data:/var/lib/mysql  # データ永続化    # 本番環境ではマウントする
       - ./mysql/init-sql:/docker-entrypoint-initdb.d  # 初回実行SQL
