@@ -64,7 +64,7 @@ public class InternalBooksController {
      */
     @GetMapping("/page/login")
     public String Login(Model model) {
-    	model.addAttribute("authDto", new DtoAuthRequest());
+    	model.addAttribute("authDto", new DtoAuthRequest()); // 空のDTOを返す
         return "page/login";
     }
 
@@ -75,6 +75,11 @@ public class InternalBooksController {
     public String login(@Valid @ModelAttribute("authDto") DtoAuthRequest authDto, BindingResult bindingResult,
     		HttpSession session,RedirectAttributes redirectAttributes,
     		Model model) {
+    	
+    	if (bindingResult.hasErrors()) {
+    		model.addAttribute("errorMessage","入力内容を確認してください。");
+    		return "page/login";
+    	}
 
         try {
                 // ログイン処理を実行し成功したらtokenを設定
