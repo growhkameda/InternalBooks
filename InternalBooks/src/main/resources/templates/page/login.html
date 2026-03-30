@@ -12,7 +12,7 @@
 
 <!--        <h1 class= "text-center">図書館システム</h1>-->
 
-        <form th:action="@{/action/login}" method="post" class="text-center">
+        <form th:action="@{/action/login}" th:object="${authDto}" method="post" class="text-center">
 			  <div class="position-relative mb-4">
 			<img class="mb-4 img-fluid"th:src="@{/logo/login.jpg}"alt="Title Logo"style="max-width: 200px;">
 
@@ -21,11 +21,15 @@
 <!--            <h1 class="h3 mb-3 fw-normal">ログイン画面</h1>-->
 
             <div class="form-floating mb-3">
-                <input type="email" name="mailAddress" class="form-control" id="floatingInput" placeholder="name@example.com">
+				<input type="email" th:field="*{mailAddress}" class="form-control" id="floatingInput" placeholder="name@example.com">
+				<!-- バリデーションエラーを表示 -->
+				<span th:errors="*{mailAddress}" class="text-danger ms-3"></span>
                 <label for="floatingInput">Email address</label>
             </div>
             <div class="form-floating mb-3">
-                <input type="password" name="password" class="form-control" id="floatingPassword" placeholder="Password">
+				<input type="password" th:field="*{password}" class="form-control" id="floatingPassword" placeholder="Password">
+				<!-- バリデーションエラーを表示 -->
+				<span th:errors="*{password}" class="text-danger ms-3"></span>
                 <label for="floatingPassword">Password</label>
             </div>
 
