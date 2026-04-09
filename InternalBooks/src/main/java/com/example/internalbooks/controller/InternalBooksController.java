@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +24,14 @@ import com.example.internalbooks.dto.DtoBookHistory;
 import com.example.internalbooks.dto.DtoBookHistoryRegistration;
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
+import com.example.internalbooks.exception.AuthenticationFailedException;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
 
 @Controller
+@Slf4j
 public class InternalBooksController {
 
     // ロガー
@@ -68,37 +71,42 @@ public class InternalBooksController {
         return "page/login";
     }
 
-    /**
-     * ログイン処理
-     */
-    @PostMapping("/action/login")
-    public String login(@Valid @ModelAttribute("authDto") DtoAuthRequest authDto, BindingResult bindingResult,
-    		HttpSession session,RedirectAttributes redirectAttributes,
-    		Model model) {
-    	
-    	if (bindingResult.hasErrors()) {
-    		model.addAttribute("errorMessage","入力内容を確認してください。");
-    		return "page/login";
-    	}
+	/**
+	 * ログイン処理
+	 */
+	@PostMapping("/action/login")
+	public String login(@Valid @ModelAttribute("authDto") DtoAuthRequest authDto, BindingResult bindingResult,
+			HttpSession session, RedirectAttributes redirectAttributes, Model model) {
 
-        try {
-                // ログイン処理を実行し成功したらtokenを設定
-                // 認証が失敗するとエラーがなげられるためCatchにひっかかる
-                String token = authService.login(authDto);
+		// 入力バリデーションエラーがある場合ログイン画面へ遷移
+		if (bindingResult.hasErrors()) {
+			model.addAttribute("errorMessage", "入力内容を確認してください。");
+			return "page/login";
 
-                logger.info("ログイン成功: メールアドレス = {}", authDto.getMailAddress());
+		}
 
-                // セッションにtokenを設定
-                session.setAttribute("token", token);
+		try {
+			// ログイン処理を実行し成功したらtokenを設定
+			// 認証が失敗するとエラーがなげられるためCatchにひっかかる
+			String token = authService.login(authDto);
+			log.info("ログイン成功: メールアドレス = {}", authDto.getMailAddress());
+			// セッションにtokenを設定
+			session.setAttribute("token", token);
+			return "redirect:/page/top";
 
-                return "redirect:/page/top";
+		} catch (AuthenticationFailedException e) {
+			// 認証失敗した場合
+			log.warn("ログイン失敗（認証エラー）: {}", e.getMessage());
+			model.addAttribute("errorMessage", e.getMessage());
+			return "page/login"; // ログイン画面に戻す
 
-        } catch (Exception e) {
-            logger.error("ログイン失敗: メールアドレス = {}", authDto.getMailAddress());
-            return error(redirectAttributes);
-        }
+		} catch (Exception e) {
+			// それ以外の予期せぬエラー（DB接続不可など）
+			log.error("ログイン失敗（システムエラー）: メールアドレス = {}", authDto.getMailAddress(), e);
+			return error(redirectAttributes);
 
-    }
+		}
+	}
 
     /**
      * TOPページに遷移
