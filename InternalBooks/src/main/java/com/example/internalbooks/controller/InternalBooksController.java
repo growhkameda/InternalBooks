@@ -3,18 +3,22 @@ package com.example.internalbooks.controller;
 import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.internalbooks.common.Const;
 import com.example.internalbooks.dto.DtoAuthRequest;
 import com.example.internalbooks.dto.DtoBookHistory;
 import com.example.internalbooks.dto.DtoBookHistoryRegistration;
@@ -22,7 +26,6 @@ import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
-import com.example.internalbooks.common.Const;
 import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
 
@@ -234,9 +237,10 @@ public class InternalBooksController {
      * 検索結果詳細ページに遷移
      * (session情報詰め込みすぎた…いつかServiceに移行しないといけない(木俣))
      */
-    @GetMapping("/page/searchresult")
+    @RequestMapping("/page/searchresult")
     public String searchResult(
             @ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
+            BindingResult bindingResult,
             @RequestParam(name = "bookId", required = false) Integer bookId,
             @RequestParam(name = "qrData", required = false) String qrData,
             HttpSession session,
@@ -307,7 +311,10 @@ public class InternalBooksController {
             model.addAttribute("bookHistoryList", dtoBookHistory);
             
             // 書籍感想有無の判定
-            boolean hasReviewHistory = dtoBookHistory.stream().anyMatch(h -> h.getReview() != null);
+            boolean hasReviewHistory = false;
+            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() == null)) {
+            	hasReviewHistory = true;
+            }
             model.addAttribute("hasReviewHistory", hasReviewHistory);
 
             if (bookId == null && qrData == null) {
@@ -389,7 +396,8 @@ public class InternalBooksController {
 
     @PostMapping("/page/ReturnCompleted")
     public String searchResultReturn(
-            @ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
+    		@Valid @ModelAttribute("tlend") DtoBookHistoryRegistration dtlend,
+    		BindingResult bindingResult,
             @RequestParam("bookId") Integer bookId,
             @RequestParam(name = "qrData", required = false) String qrData,
             HttpSession session,
@@ -413,6 +421,35 @@ public class InternalBooksController {
 
             boolean isAdmin = jwtUtil.extractIsAdmin(token);
             model.addAttribute("isAdmin", isAdmin);
+            
+            boolean hasReviewHistory = false;
+            
+            if (bindingResult.hasErrors()) {
+            	model.addAttribute("tlend", dtlend);
+                model.addAttribute(
+                    "org.springframework.validation.BindingResult.tlend",
+                    bindingResult
+                );
+                model.addAttribute("bookId", dtlend.getBookId());
+                
+                model.addAttribute("showComment", true);
+                model.addAttribute("showButton", true);
+                model.addAttribute("screenFlag", 3);
+                
+                DtoBookInfo bookInfo = tBookService.getBookById(bookId);
+                model.addAttribute("book", bookInfo);
+                model.addAttribute("categories", bookInfo.getCategories());
+                
+                List<DtoBookHistory> history = lendingHistoryService.getHistoryByBookId(bookId);
+                model.addAttribute("bookHistoryList", history);
+                
+                if(history.stream().anyMatch(h -> h.getReview() == null)) {
+                	hasReviewHistory = true;
+                }
+                model.addAttribute("hasReviewHistory", hasReviewHistory);
+                
+                return "page/searchresult";
+            }
 
             // DBへ(userId,name,mailAddress,password,departmentId)を保存
             TLendingHistoryEntity savedLend = lendingHistoryService.returnCompleted(dtlend);
@@ -498,7 +535,10 @@ public class InternalBooksController {
             model.addAttribute("bookHistory", latestHistory);
             
             // 書籍感想有無の判定
-            boolean hasReviewHistory = dtoBookHistory.stream().anyMatch(h -> h.getReview() != null);
+            boolean hasReviewHistory = false;
+            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() == null)) {
+            	hasReviewHistory = true;
+            }
             model.addAttribute("hasReviewHistory", hasReviewHistory);
 
             if (bookId == null) {

@@ -2,6 +2,8 @@ package com.example.internalbooks.dto;
 
 import java.time.LocalDateTime;
 
+import jakarta.validation.constraints.NotBlank;
+
 import lombok.Data;
 
 @Data
@@ -25,5 +27,6 @@ public class DtoBookHistoryRegistration {
 	private Integer userId;
 
 	// レビュー
+	@NotBlank(message = "感想を記入してください")
 	private String review;
 }

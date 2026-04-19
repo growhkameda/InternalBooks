@@ -95,7 +95,6 @@
 				    <input type="hidden" th:field="*{scheduledReturnDate}">
 				    <input type="hidden" th:field="*{returnDate}">
 					<input type="hidden" th:field="*{userId}">
-					<input type="hidden" id="review-hidden" name="review">
 				    <button type="submit" class="w-50 border border-0 text-white"
 					style="background-color: #0F6342; border-bottom-left-radius: 10px;">
 						返す
@@ -122,8 +121,12 @@
 
 	<form th:action="@{/page/ReturnCompleted}" th:if="${showComment == true}" th:object="${tlend}" method="post">
 		<div th:if="${book.status == '貸出中'}" class="row d-flex justify-content-center mb-4">
-			<label class="col-11 col-sm-8" for="comment">感想・コメント</label>
-			<textarea id="comment" class="col-11 col-sm-8 ps-2" th:field="*{review}" placeholder="こちらに感想やコメントを記入してください。" 
+			<div class="d-flex col-11 col-sm-8">
+				<label for="comment">感想・コメント</label>
+				<span th:errors="*{review}" class="ps-4 text-danger"></span>
+			</div>
+			<textarea id="comment" class="col-11 col-sm-8 ps-2" th:field="*{review}"
+		 			  placeholder="こちらに感想やコメントを記入してください。︎︎︎" 
 					  style="background-color: #E8ECE8; border-radius: 10px; border: 0px none;;"></textarea>
 		</div>
 	</form>
@@ -145,7 +148,7 @@
 		<div th:if="${book.status == '貸出中' && screenFlag != 2}">
 		  <form id="return-form-main" method="post" class="d-inline">
 		    <input type="hidden" name="bookId" th:value="${book.bookId}"/>
-		    <button id="rc" type="button" class="btn btn-lg w-25 shadow" style="color: #47B78A">
+		    <button id="rc" type="button" class="btn btn-lg col-5 col-sm-4 fs-6 shadow" style="color: #47B78A">
 		      返す
 		    </button>
 		  </form>
@@ -155,7 +158,7 @@
 		<div th:if="${book.status != '貸出中'}">
 		  <form method="post" th:action="@{/遷移先書いてください}" class="d-inline">
 		    <input type="hidden" name="bookId" th:value="${book.bookId}"/>
-		    <button id="bc" type="button" class="btn btn-lg w-25 shadow" style="color: #47B78A">
+		    <button id="bc" type="button" class="btn btn-lg col-5 col-sm-4 shadow" style="color: #47B78A">
 		      借りる
 		    </button>
 		  </form>
@@ -173,16 +176,16 @@
 		<th:block th:each="history : ${bookHistoryList}">
 			<div th:if="${history.returnDate != null}" class="d-flex justify-content-center col-11 col-sm-8"
 				 style="background-color: #94C5AF; border-radius: 10px; height: 70px;">
-				<b class="col-4 col-sm-6 d-flex justify-content-start align-items-center">返却</b>
-				<div class="col-6 col-sm-4 d-flex flex-column justify-content-center">
+				<b class="col-3 col-sm-6 d-flex justify-content-start align-items-center">返却</b>
+				<div class="col-7 col-sm-4 d-flex flex-column justify-content-center">
 					<p th:text="${history.userName}" class="mb-0">武藤</p>
 					<p th:text="${history.returnDate}" class="mb-0">2026年1月1日</p>
 				</div>
 			</div>
 			<div th:if="${history.lendingDate != null}" class="d-flex justify-content-center col-11 col-sm-8 mt-2 mb-4"
 				 style="background-color: #6D8E7B; border-radius: 10px; height: 70px;">
-				<b class="col-4 col-sm-6 d-flex justify-content-start align-items-center">貸出</b>
-				<div class="col-6 col-sm-4 d-flex flex-column justify-content-center">
+				<b class="col-3 col-sm-6 d-flex justify-content-start align-items-center">貸出</b>
+				<div class="col-7 col-sm-4 d-flex flex-column justify-content-center">
 					<p th:text="${history.userName}" class="mb-0">武藤</p>
 					<p th:text="${history.lendingDate}" class="mb-0">2026年1月1日</p>
 				</div>
@@ -192,7 +195,7 @@
 		<h5 class="col-11 col-sm-8 fw-bold mb-2 mt-5">書籍感想</h5>
 		<!-- ========== 感想がない場合 ========== -->
 		<div class="text-center return" 
-			 th:if="${#lists.isEmpty(bookHistoryList) or !hasReviewHistory}">
+			 th:if="${#lists.isEmpty(bookHistoryList) or hasReviewHistory}">
 	    	<p class="text-center text-muted">この書籍はまだ感想がありません</p>
 		</div>
 		<th:block th:each="history : ${bookHistoryList}">
@@ -293,10 +296,10 @@
       `;
     };
 
-	document.querySelector('#return-form-modal').addEventListener('submit', function() {
+//	document.querySelector('#return-form-modal').addEventListener('submit', function() {
 	  // textareaの値をhiddenにコピー
-	  document.querySelector('#review-hidden').value = document.querySelector('#comment').value;
-	});
+//	  document.querySelector('#review-hidden').value = document.querySelector('#comment').value;
+//	});
 
 	const comDisplay = document.getElementById("comDisplay");
 	const comment = document.getElementById("commentText");
