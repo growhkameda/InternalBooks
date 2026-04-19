@@ -29,9 +29,6 @@ public class TUserEntity implements UserDetails {
     @Column(name = Const.NAME)
     private String name;
 
-//    @Column(name = Const.NAME)
-//    private String name;
-
     @Column(name = Const.MAILADDRESS)
     private String mailAddress;
 
