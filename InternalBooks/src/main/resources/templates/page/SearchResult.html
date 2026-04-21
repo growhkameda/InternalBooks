@@ -95,6 +95,7 @@
 				    <input type="hidden" th:field="*{scheduledReturnDate}">
 				    <input type="hidden" th:field="*{returnDate}">
 					<input type="hidden" th:field="*{userId}">
+					<input type="hidden" id="review-hidden" name="review">
 				    <button type="submit" class="w-50 border border-0 text-white"
 					style="background-color: #0F6342; border-bottom-left-radius: 10px;">
 						返す
@@ -296,10 +297,10 @@
       `;
     };
 
-//	document.querySelector('#return-form-modal').addEventListener('submit', function() {
+	document.querySelector('#return-form-modal').addEventListener('submit', function() {
 	  // textareaの値をhiddenにコピー
-//	  document.querySelector('#review-hidden').value = document.querySelector('#comment').value;
-//	});
+	  document.querySelector('#review-hidden').value = document.querySelector('#comment').value;
+	});
 
 	const comDisplay = document.getElementById("comDisplay");
 	const comment = document.getElementById("commentText");
