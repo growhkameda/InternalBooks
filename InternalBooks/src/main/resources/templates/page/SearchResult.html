@@ -176,17 +176,17 @@
 		<!-- ========== 履歴表示 ========== -->
 		<th:block th:each="history : ${bookHistoryList}">
 			<div th:if="${history.returnDate != null}" class="d-flex justify-content-center col-11 col-sm-8"
-				 style="background-color: #94C5AF; border-radius: 10px; height: 70px;">
-				<b class="col-3 col-sm-6 d-flex justify-content-start align-items-center">返却</b>
-				<div class="col-7 col-sm-4 d-flex flex-column justify-content-center">
+				 style="background-color: #94C5AF; border-radius: 10px; min-height: 70px; padding: 8px 0;">
+				<b class="col-3 col-sm-3 d-flex justify-content-start align-items-center">返却</b>
+				<div class="col-7 col-sm-7 d-flex flex-column justify-content-center">
 					<p th:text="${history.userName}" class="mb-0">武藤</p>
 					<p th:text="${history.returnDate}" class="mb-0">2026年1月1日</p>
 				</div>
 			</div>
 			<div th:if="${history.lendingDate != null}" class="d-flex justify-content-center col-11 col-sm-8 mt-2 mb-4"
-				 style="background-color: #6D8E7B; border-radius: 10px; height: 70px;">
-				<b class="col-3 col-sm-6 d-flex justify-content-start align-items-center">貸出</b>
-				<div class="col-7 col-sm-4 d-flex flex-column justify-content-center">
+				 style="background-color: #6D8E7B; border-radius: 10px; min-height: 70px; padding: 8px 0;">
+				<b class="col-3 col-sm-3 d-flex justify-content-start align-items-center">貸出</b>
+				<div class="col-7 col-sm-7 d-flex flex-column justify-content-center">
 					<p th:text="${history.userName}" class="mb-0">武藤</p>
 					<p th:text="${history.lendingDate}" class="mb-0">2026年1月1日</p>
 				</div>
