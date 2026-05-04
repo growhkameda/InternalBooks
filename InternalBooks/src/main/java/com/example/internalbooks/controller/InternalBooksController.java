@@ -4,7 +4,6 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,8 @@ import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @Slf4j
@@ -449,7 +450,7 @@ public class InternalBooksController {
                 }
                 model.addAttribute("hasReviewHistory", hasReviewHistory);
                 
-                return "page/searchresult";
+                return "page/SearchResult";
             }
 
             // DBへ(userId,name,mailAddress,password,departmentId)を保存
