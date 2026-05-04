@@ -7,8 +7,6 @@ import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,16 +23,15 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.internalbooks.service.TUserService;
-
+import com.example.internalbooks.common.Const;
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.MDepartmentEntity;
 import com.example.internalbooks.entity.TUserEntity;
-import com.example.internalbooks.common.Const;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
+import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.utils.JwtUtil;
 
 /**
