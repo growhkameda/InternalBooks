@@ -65,6 +65,16 @@ public class InternalBooksController {
     }
 
     /**
+     * ログアウト処理
+     */
+    @GetMapping("/action/logout")
+    public String logout(HttpSession session, RedirectAttributes redirectAttributes) {
+        session.invalidate();
+        redirectAttributes.addFlashAttribute("infoMessage", "ログアウトしました。");
+        return "redirect:/page/login";
+    }
+
+    /**
      * ログインページに遷移
      */
     @GetMapping("/page/login")
