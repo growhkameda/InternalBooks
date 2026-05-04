@@ -64,7 +64,6 @@
 		 style="display: none; z-index: 999; transform: translate(-50%, -50%); top: 50%; left: 50%;">
 	  		<p class="text-center mt-5" style="font-size: 20px;">この書籍を借りますか？</p>
 	  		 <div class="d-flex h-25">
-
 				<form id="lending-form-modal" method="post" th:action="@{/page/LendingCompleted}"
 				th:object= "${tlend}" class="d-flex w-50 border-0 align-items-center justify-content-center"
 				style="background-color: #0F6342; border-bottom-left-radius: 10px;">
@@ -151,7 +150,7 @@
 		<div th:if="${book.status == '貸出中' && screenFlag != 2}">
 		  <form id="return-form-main" method="post" class="d-inline">
 		    <input type="hidden" name="bookId" th:value="${book.bookId}"/>
-		    <button id="rc" type="button" class="btn btn-lg col-5 col-sm-4 fs-6 shadow" style="color: #47B78A">
+		    <button id="rc" type="button" class="btn btn-lg col-5 col-sm-4 shadow" style="color: #47B78A; font-size: 18px">
 		      返す
 		    </button>
 		  </form>
