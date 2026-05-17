@@ -323,9 +323,10 @@ public class InternalBooksController {
             model.addAttribute("bookHistoryList", dtoBookHistory);
             
             // 書籍感想有無の判定
-            boolean hasReviewHistory = false;
-            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() == null)) {
-            	hasReviewHistory = true;
+            boolean hasReviewHistory = true;
+            // 1件でも感想が記載されていればfalseを渡し感想を表示する
+            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() != null)) {
+            	hasReviewHistory = false;
             }
             model.addAttribute("hasReviewHistory", hasReviewHistory);
 
@@ -434,7 +435,7 @@ public class InternalBooksController {
             boolean isAdmin = jwtUtil.extractIsAdmin(token);
             model.addAttribute("isAdmin", isAdmin);
             
-            boolean hasReviewHistory = false;
+            boolean hasReviewHistory = true;
             
             if (bindingResult.hasErrors()) {
             	model.addAttribute("tlend", dtlend);
@@ -455,8 +456,8 @@ public class InternalBooksController {
                 List<DtoBookHistory> history = lendingHistoryService.getHistoryByBookId(bookId);
                 model.addAttribute("bookHistoryList", history);
                 
-                if(history.stream().anyMatch(h -> h.getReview() == null)) {
-                	hasReviewHistory = true;
+                if(history.stream().anyMatch(h -> h.getReview() != null)) {
+                	hasReviewHistory = false;
                 }
                 model.addAttribute("hasReviewHistory", hasReviewHistory);
                 
@@ -547,9 +548,10 @@ public class InternalBooksController {
             model.addAttribute("bookHistory", latestHistory);
             
             // 書籍感想有無の判定
-            boolean hasReviewHistory = false;
-            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() == null)) {
-            	hasReviewHistory = true;
+            boolean hasReviewHistory = true;
+            // 貸出完了画面のため、1件でも感想が記載されていればfalseを渡し感想を表示する
+            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() != null)) {
+            	hasReviewHistory = false;
             }
             model.addAttribute("hasReviewHistory", hasReviewHistory);
 
@@ -601,6 +603,13 @@ public class InternalBooksController {
 
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
             model.addAttribute("bookHistory", latestHistory);
+            
+            // 書籍感想有無の判定
+            boolean hasReviewHistory = false;
+            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() == null)) {
+            	hasReviewHistory = true;
+            }
+            model.addAttribute("hasReviewHistory", hasReviewHistory);
 
             if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");
