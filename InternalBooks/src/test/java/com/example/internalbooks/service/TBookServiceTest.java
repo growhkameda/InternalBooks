@@ -28,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.internalbooks.common.Const;
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
@@ -415,14 +416,15 @@ class TBookServiceTest {
     @DisplayName("bookEditing_正常_既存カテゴリヒット時はmaxId+1で採番")
     void bookEditing_existingCategory_assignsNextId() {
         // Arrange: 既存カテゴリ "Tech" の最大ID は 10001 → 次は 10002 になる想定
-        DtoBookInfo inputDto = buildBookInfo("Tech", "AliceProvider", "良い本");
+        DtoBookInfo inputDto = buildBookInfo("Tech", "7", "良い本");
         inputDto.setTitle("New Tech Book");
         inputDto.setImageUrl(null);
         TUserEntity provider = new TUserEntity();
         provider.setUserId(7);
         provider.setName("AliceProvider");
+        provider.setDeleteFlg(Const.DELETE_FLAG_OFF);
 
-        when(tUserRepository.findByName("AliceProvider")).thenReturn(Optional.of(provider));
+        when(tUserRepository.findById(7)).thenReturn(Optional.of(provider));
         when(tBookRepository.findMaxIdByName("Tech")).thenReturn(10001);
         when(tBookRepository.save(any(TBookEntity.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -441,14 +443,15 @@ class TBookServiceTest {
     @DisplayName("bookEditing_正常_新規カテゴリでmaxBookIdありなら全体max+10001で採番")
     void bookEditing_newCategoryWithExistingBooks_assignsNextNewId() {
         // Arrange: カテゴリ "AI" は新規（findMaxIdByName=null）、全体最大IDは 20001
-        DtoBookInfo inputDto = buildBookInfo("AI", "AliceProvider", "コメント");
+        DtoBookInfo inputDto = buildBookInfo("AI", "7", "コメント");
         inputDto.setTitle("New AI Book");
         inputDto.setImageUrl(null);
         TUserEntity provider = new TUserEntity();
         provider.setUserId(7);
         provider.setName("AliceProvider");
+        provider.setDeleteFlg(Const.DELETE_FLAG_OFF);
 
-        when(tUserRepository.findByName("AliceProvider")).thenReturn(Optional.of(provider));
+        when(tUserRepository.findById(7)).thenReturn(Optional.of(provider));
         when(tBookRepository.findMaxIdByName("AI")).thenReturn(null);
         when(tBookRepository.findMaxBookId()).thenReturn(20001);
         when(tBookRepository.save(any(TBookEntity.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -467,14 +470,15 @@ class TBookServiceTest {
     @DisplayName("bookEditing_境界_書籍0件かつ新規カテゴリでも10001で採番")
     void bookEditing_emptyDb_assignsBaseNewId() {
         // Arrange: DB が空（findMaxBookId=null）かつ新規カテゴリ
-        DtoBookInfo inputDto = buildBookInfo("Initial", "AliceProvider", "コメント");
+        DtoBookInfo inputDto = buildBookInfo("Initial", "7", "コメント");
         inputDto.setTitle("First Book Ever");
         inputDto.setImageUrl(null);
         TUserEntity provider = new TUserEntity();
         provider.setUserId(7);
         provider.setName("AliceProvider");
+        provider.setDeleteFlg(Const.DELETE_FLAG_OFF);
 
-        when(tUserRepository.findByName("AliceProvider")).thenReturn(Optional.of(provider));
+        when(tUserRepository.findById(7)).thenReturn(Optional.of(provider));
         when(tBookRepository.findMaxIdByName("Initial")).thenReturn(null);
         when(tBookRepository.findMaxBookId()).thenReturn(null);
         when(tBookRepository.save(any(TBookEntity.class))).thenAnswer(inv -> inv.getArgument(0));
@@ -490,18 +494,48 @@ class TBookServiceTest {
     }
 
     @Test
-    @DisplayName("bookEditing_異常_提供者名が見つからない場合はRuntimeExceptionをスロー")
+    @DisplayName("bookEditing_異常_提供者ユーザーIDが存在しない場合はRuntimeExceptionをスロー")
     void bookEditing_providerNotFound_throwsRuntimeException() {
-        // Arrange: 提供者名がユーザーマスタにない
-        DtoBookInfo inputDto = buildBookInfo("Tech", "UnknownPerson", "コメント");
-        when(tUserRepository.findByName("UnknownPerson")).thenReturn(Optional.empty());
+        // Arrange: ユーザーIDがユーザーマスタにない
+        DtoBookInfo inputDto = buildBookInfo("Tech", "999", "コメント");
+        when(tUserRepository.findById(999)).thenReturn(Optional.empty());
 
         // Act & Assert
         assertThatThrownBy(() -> tBookService.bookEditing(inputDto))
             .isInstanceOf(RuntimeException.class)
-            .hasMessage("名前が見つかりません");
+            .hasMessage("ユーザーが見つかりません");
 
         // 補足検証: 提供者解決の時点で弾かれるため save は呼ばれない
+        verify(tBookRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("bookEditing_異常_論理削除済みユーザーを選んだ場合はIllegalArgumentException")
+    void bookEditing_deletedProvider_throwsIllegalArgumentException() {
+        DtoBookInfo inputDto = buildBookInfo("Tech", "7", "コメント");
+        TUserEntity provider = new TUserEntity();
+        provider.setUserId(7);
+        provider.setName("DeletedUser");
+        provider.setDeleteFlg(Const.DELETE_FLAG_ON);
+        when(tUserRepository.findById(7)).thenReturn(Optional.of(provider));
+
+        assertThatThrownBy(() -> tBookService.bookEditing(inputDto))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("選択されたユーザーは利用できません");
+
+        verify(tBookRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("bookEditing_異常_提供者IDが数値でない場合はIllegalArgumentException")
+    void bookEditing_invalidProviderId_throwsIllegalArgumentException() {
+        DtoBookInfo inputDto = buildBookInfo("Tech", "not-an-id", "コメント");
+
+        assertThatThrownBy(() -> tBookService.bookEditing(inputDto))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("書籍提供者の指定が不正です");
+
+        verify(tUserRepository, never()).findById(anyInt());
         verify(tBookRepository, never()).save(any());
     }
 
@@ -509,14 +543,15 @@ class TBookServiceTest {
     @DisplayName("bookEditing_正常_画像リネーム失敗してもDB登録は完了する")
     void bookEditing_imageRenameFails_butSaveSucceeds() throws Exception {
         // Arrange: 画像ファイル名は指定されているが、リネーム時に例外が発生する
-        DtoBookInfo inputDto = buildBookInfo("Tech", "AliceProvider", "コメント");
+        DtoBookInfo inputDto = buildBookInfo("Tech", "7", "コメント");
         inputDto.setTitle("Resilient Save");
         inputDto.setImageUrl("tmp_xxx.png");
         TUserEntity provider = new TUserEntity();
         provider.setUserId(7);
         provider.setName("AliceProvider");
+        provider.setDeleteFlg(Const.DELETE_FLAG_OFF);
 
-        when(tUserRepository.findByName("AliceProvider")).thenReturn(Optional.of(provider));
+        when(tUserRepository.findById(7)).thenReturn(Optional.of(provider));
         when(tBookRepository.findMaxIdByName("Tech")).thenReturn(10001);
         when(tBookRepository.save(any(TBookEntity.class))).thenAnswer(inv -> inv.getArgument(0));
         // リネームで例外（画像処理は失敗するが DB 登録は継続される仕様）
@@ -536,13 +571,14 @@ class TBookServiceTest {
     @DisplayName("bookEditing_異常_DataIntegrityViolationExceptionはIllegalStateExceptionへラップ")
     void bookEditing_dataIntegrityViolation_wrappedAsIllegalState() {
         // Arrange: save 時に DB の一意制約違反が発生
-        DtoBookInfo inputDto = buildBookInfo("Tech", "AliceProvider", "コメント");
+        DtoBookInfo inputDto = buildBookInfo("Tech", "7", "コメント");
         inputDto.setTitle("Conflict");
         TUserEntity provider = new TUserEntity();
         provider.setUserId(7);
         provider.setName("AliceProvider");
+        provider.setDeleteFlg(Const.DELETE_FLAG_OFF);
 
-        when(tUserRepository.findByName("AliceProvider")).thenReturn(Optional.of(provider));
+        when(tUserRepository.findById(7)).thenReturn(Optional.of(provider));
         when(tBookRepository.findMaxIdByName("Tech")).thenReturn(10001);
         when(tBookRepository.save(any(TBookEntity.class)))
             .thenThrow(new DataIntegrityViolationException("duplicate"));
@@ -683,11 +719,11 @@ class TBookServiceTest {
         return b;
     }
 
-    /** テスト用: 書籍登録 DTO を作る */
-    private DtoBookInfo buildBookInfo(String category, String providerName, String comment) {
+    /** テスト用: 書籍登録 DTO を作る（providerId はユーザーIDの文字列） */
+    private DtoBookInfo buildBookInfo(String category, String providerUserId, String comment) {
         DtoBookInfo dto = new DtoBookInfo();
         dto.setCategory(category);
-        dto.setProviderId(providerName);
+        dto.setProviderId(providerUserId);
         dto.setProviderComment(comment);
         return dto;
     }

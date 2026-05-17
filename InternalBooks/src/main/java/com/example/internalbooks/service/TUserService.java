@@ -86,6 +86,15 @@ public class TUserService implements UserDetailsService {
 	}
 
 	/**
+	 * アクティブユーザーを氏名の昇順で取得する（書籍提供者プルダウン用）
+	 *
+	 * @return 論理削除されていないユーザーリスト（名前昇順）
+	 */
+	public List<TUserEntity> getActiveUsersSortedByName() {
+		return tUserRepository.findByDeleteFlgOrderByNameAsc(Const.DELETE_FLAG_OFF);
+	}
+
+	/**
 	 * ログインユーザを除いたアクティブユーザリストを取得する
 	 *
 	 * @param ログインユーザid

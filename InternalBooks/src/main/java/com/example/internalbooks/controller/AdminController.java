@@ -95,7 +95,7 @@ public class AdminController extends InternalBooksController {
             logger.info("bookediting() にアクセスされました");
 
             model.addAttribute("bookdto", new DtoBookInfo());
-            model.addAttribute("activeUsers", tUserService.getActiveUsers());
+            model.addAttribute("providerUsers", tUserService.getActiveUsersSortedByName());
             model.addAttribute("existingCategories", tBookService.getAllCategories());
 
             return "page/bookediting";
@@ -531,7 +531,7 @@ public class AdminController extends InternalBooksController {
                     logger.debug("{}:{}", error.getField(), error.getDefaultMessage());
                 }
                 // bookediting.htmlが必要とするモデル属性をセット
-                model.addAttribute("activeUsers", tUserService.getActiveUsers());
+                model.addAttribute("providerUsers", tUserService.getActiveUsersSortedByName());
                 model.addAttribute("existingCategories", tBookService.getAllCategories());
                 return "page/bookediting";
             }
