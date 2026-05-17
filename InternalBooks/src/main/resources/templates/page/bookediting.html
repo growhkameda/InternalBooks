@@ -62,9 +62,9 @@
 	      	<span th:errors="*{providerId}" class="text-danger"></span>
 			<select id="providerIdSelect" th:field="*{providerId}" class="form-select bg-light">
 				<option value="">-- 選択してください --</option>
-				<option th:each="user : ${activeUsers}"
-				        th:value="${user.name}"
-				        th:text="${user.name}">
+				<option th:each="user : ${providerUsers}"
+				        th:value="${user.userId}"
+				        th:text="|${user.name}（${user.mailAddress}）|">
 				</option>
 			</select>
 	  </div>
