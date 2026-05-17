@@ -303,6 +303,12 @@ public class InternalBooksController {
             // 書籍検索処理をServiceで処理
             DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
             if (book == null) {
+                // QR起点のエラーは qrsearch に戻して再スキャンを促す
+                if (qrData != null) {
+                    redirectAttributes.addFlashAttribute("errorMessage",
+                            "QRコードを読み取れませんでした。書籍のQRコードを枠内に合わせて、もう一度スキャンしてください。");
+                    return "redirect:/page/qrsearch";
+                }
                 redirectAttributes.addFlashAttribute("error", "書籍が取得できませんでした");
                 return "redirect:/page/top";
             }
@@ -336,8 +342,18 @@ public class InternalBooksController {
 
             return "page/SearchResult";
 
+        } catch (AuthenticationFailedException e) {
+            // 認証関連の例外は既存通りログイン画面へ
+            logger.warn("検索結果詳細ページで認証エラーが発生しました: {}", e.getMessage());
+            return error(redirectAttributes);
         } catch (Exception e) {
             logger.error("検索結果詳細ページでエラーが発生しました", e);
+            // QR起点（数値変換失敗・予期しない例外など）の場合は qrsearch に戻す
+            if (qrData != null) {
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "QRコードを読み取れませんでした。書籍のQRコードを枠内に合わせて、もう一度スキャンしてください。");
+                return "redirect:/page/qrsearch";
+            }
             return error(redirectAttributes);
         }
     }
