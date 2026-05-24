@@ -343,10 +343,20 @@ public class TBookService {
 	 * 書籍登録するメソッド
 	 */
 	public DtoBookInfo bookEditing(DtoBookInfo dtbook) {
-		// 書籍提供者とユーザーIDの紐付け
-		TUserEntity user = tUserRepository.findByName(dtbook.getProviderId())
-				.orElseThrow(() -> new RuntimeException("名前が見つかりません"));
-		// 紐付けたユーザーIDをDTOにセット
+		Integer providerUserId;
+		try {
+			providerUserId = Integer.valueOf(dtbook.getProviderId().trim());
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("書籍提供者の指定が不正です", e);
+		}
+
+		TUserEntity user = tUserRepository.findById(providerUserId)
+				.orElseThrow(() -> new RuntimeException("ユーザーが見つかりません"));
+
+		if (!Integer.valueOf(Const.DELETE_FLAG_OFF).equals(user.getDeleteFlg())) {
+			throw new IllegalArgumentException("選択されたユーザーは利用できません");
+		}
+
 		dtbook.setId(user.getUserId());
 
 		try {

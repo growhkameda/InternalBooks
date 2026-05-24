@@ -303,6 +303,12 @@ public class InternalBooksController {
             // 書籍検索処理をServiceで処理
             DtoBookInfo book = tBookService.processBookSearchRequest(bookId, qrData);
             if (book == null) {
+                // QR起点のエラーは qrsearch に戻して再スキャンを促す
+                if (qrData != null) {
+                    redirectAttributes.addFlashAttribute("errorMessage",
+                            "QRコードを読み取れませんでした。書籍のQRコードを枠内に合わせて、もう一度スキャンしてください。");
+                    return "redirect:/page/qrsearch";
+                }
                 redirectAttributes.addFlashAttribute("error", "書籍が取得できませんでした");
                 return "redirect:/page/top";
             }
@@ -323,9 +329,10 @@ public class InternalBooksController {
             model.addAttribute("bookHistoryList", dtoBookHistory);
             
             // 書籍感想有無の判定
-            boolean hasReviewHistory = false;
-            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() == null)) {
-            	hasReviewHistory = true;
+            boolean hasReviewHistory = true;
+            // 1件でも感想が記載されていればfalseを渡し感想を表示する
+            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() != null)) {
+            	hasReviewHistory = false;
             }
             model.addAttribute("hasReviewHistory", hasReviewHistory);
 
@@ -336,8 +343,18 @@ public class InternalBooksController {
 
             return "page/SearchResult";
 
+        } catch (AuthenticationFailedException e) {
+            // 認証関連の例外は既存通りログイン画面へ
+            logger.warn("検索結果詳細ページで認証エラーが発生しました: {}", e.getMessage());
+            return error(redirectAttributes);
         } catch (Exception e) {
             logger.error("検索結果詳細ページでエラーが発生しました", e);
+            // QR起点（数値変換失敗・予期しない例外など）の場合は qrsearch に戻す
+            if (qrData != null) {
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "QRコードを読み取れませんでした。書籍のQRコードを枠内に合わせて、もう一度スキャンしてください。");
+                return "redirect:/page/qrsearch";
+            }
             return error(redirectAttributes);
         }
     }
@@ -434,7 +451,7 @@ public class InternalBooksController {
             boolean isAdmin = jwtUtil.extractIsAdmin(token);
             model.addAttribute("isAdmin", isAdmin);
             
-            boolean hasReviewHistory = false;
+            boolean hasReviewHistory = true;
             
             if (bindingResult.hasErrors()) {
             	model.addAttribute("tlend", dtlend);
@@ -455,8 +472,8 @@ public class InternalBooksController {
                 List<DtoBookHistory> history = lendingHistoryService.getHistoryByBookId(bookId);
                 model.addAttribute("bookHistoryList", history);
                 
-                if(history.stream().anyMatch(h -> h.getReview() == null)) {
-                	hasReviewHistory = true;
+                if(history.stream().anyMatch(h -> h.getReview() != null)) {
+                	hasReviewHistory = false;
                 }
                 model.addAttribute("hasReviewHistory", hasReviewHistory);
                 
@@ -547,9 +564,10 @@ public class InternalBooksController {
             model.addAttribute("bookHistory", latestHistory);
             
             // 書籍感想有無の判定
-            boolean hasReviewHistory = false;
-            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() == null)) {
-            	hasReviewHistory = true;
+            boolean hasReviewHistory = true;
+            // 貸出完了画面のため、1件でも感想が記載されていればfalseを渡し感想を表示する
+            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() != null)) {
+            	hasReviewHistory = false;
             }
             model.addAttribute("hasReviewHistory", hasReviewHistory);
 
@@ -601,6 +619,13 @@ public class InternalBooksController {
 
             DtoBookHistory latestHistory = dtoBookHistory.isEmpty() ? null : dtoBookHistory.get(0);
             model.addAttribute("bookHistory", latestHistory);
+            
+            // 書籍感想有無の判定
+            boolean hasReviewHistory = false;
+            if(dtoBookHistory.stream().anyMatch(h -> h.getReview() == null)) {
+            	hasReviewHistory = true;
+            }
+            model.addAttribute("hasReviewHistory", hasReviewHistory);
 
             if (bookId == null) {
                 redirectAttributes.addFlashAttribute("error", "書籍IDが取得できませんでした");

@@ -147,6 +147,21 @@ class TUserServiceTest {
         assertThat(result).hasSize(2).containsExactlyInAnyOrder(active1, active2);
     }
 
+    @Test
+    @DisplayName("getActiveUsersSortedByName_正常_削除フラグ0かつ名前昇順で返す")
+    void getActiveUsersSortedByName_returnsSortedActiveUsers() {
+        TUserEntity bob = buildUser(2, "b@example.com", 0);
+        bob.setName("Bob");
+        TUserEntity ann = buildUser(1, "a@example.com", 0);
+        ann.setName("Ann");
+        when(tUserRepository.findByDeleteFlgOrderByNameAsc(0)).thenReturn(Arrays.asList(ann, bob));
+
+        List<TUserEntity> result = tUserService.getActiveUsersSortedByName();
+
+        assertThat(result).containsExactly(ann, bob);
+        verify(tUserRepository).findByDeleteFlgOrderByNameAsc(0);
+    }
+
     // ─── getUsersExceptCurrent ────────────────────────────────────────────────
 
     @Test
