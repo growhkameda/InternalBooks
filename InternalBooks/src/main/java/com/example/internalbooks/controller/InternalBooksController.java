@@ -435,16 +435,7 @@ public class InternalBooksController {
             RedirectAttributes redirectAttributes) {
 
     	
-        try {
-        	
-        	System.out.println(
-        		    session.getAttribute("RETURN_COMPLETED_FLAG")
-        		);
-
-        		System.out.println(
-        		    session.getAttribute(Const.RETURN_COMPLETED_FLAG)
-        		);
-        	
+        try {	
         	
         	//古川追記：ブラウザバック後の再送信などで同じ返却処理が再実行されることを防ぐ
         	// 二重返却防止処理
