@@ -45,5 +45,8 @@ public class Const {
 	 */
 	public static final int DELETE_FLAG_OFF = 0;
 	public static final int DELETE_FLAG_ON = 1;
+	
+	
+	public static final String RETURN_COMPLETED_FLAG = "RETURN_COMPLETED_FLAG";
 
 }

@@ -2,9 +2,6 @@ package com.example.internalbooks.controller;
 
 import java.util.List;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +27,8 @@ import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -180,6 +179,8 @@ public class InternalBooksController {
 
             // 貸出中書籍からの遷移フラグをセッションに設定
             session.setAttribute("screenFlag", screenFlag);
+            //古川追記：ブラウザバックによる二重返却を防止するフラグを設定
+            session.setAttribute(Const. RETURN_COMPLETED_FLAG,true);
 
             return "page/checkedout";
         } catch (Exception e) {
@@ -315,8 +316,8 @@ public class InternalBooksController {
             model.addAttribute("book", book);
             model.addAttribute("categories", book.getCategories());
 
-            // 書籍履歴を取得
-            List<DtoBookHistory> dtoBookHistory;
+        	// 書籍履歴を取得
+        	List<DtoBookHistory> dtoBookHistory;
 
             if (bookId == null && qrData != null) {
                 // QRコードから遷移した場合
@@ -433,7 +434,16 @@ public class InternalBooksController {
             Model model,
             RedirectAttributes redirectAttributes) {
 
-        try {
+    	
+        try {	
+        	
+        	//古川追記：ブラウザバック後の再送信などで同じ返却処理が再実行されることを防ぐ
+        	// 二重返却防止処理
+        	if (session.getAttribute(Const. RETURN_COMPLETED_FLAG) == null) {
+        	    redirectAttributes.addFlashAttribute("errorMessage","この書籍はすでに返却処理されています。");
+        	    return "redirect:/page/top";
+        	}
+        	
             // torkenの検証
             String token = (String) session.getAttribute("token");
             Integer userId = jwtUtil.extractUserId(token);
@@ -482,6 +492,10 @@ public class InternalBooksController {
 
             // DBへ(userId,name,mailAddress,password,departmentId)を保存
             TLendingHistoryEntity savedLend = lendingHistoryService.returnCompleted(dtlend);
+            
+
+            
+            
             // DBに保存した値をDTOを経由して再度取得
             DtoBookHistoryRegistration tlend = new DtoBookHistoryRegistration();
             tlend.setBookId(savedLend.getBookId());
@@ -519,6 +533,10 @@ public class InternalBooksController {
             }
 
             redirectAttributes.addAttribute("bookId", bookId);
+            
+            //古川追記：ブラウザバックによる二重返却を防止するフラグを削除
+            session.removeAttribute(Const. RETURN_COMPLETED_FLAG);
+            
             return "redirect:/page/ReturnCompleted";
         } catch (Exception e) {
             return error(redirectAttributes);
@@ -632,7 +650,11 @@ public class InternalBooksController {
                 return "redirect:/page/top";
             }
 
+            
+
+            
             return "page/ReturnCompleted";
+            
         } catch (Exception e) {
             return error(redirectAttributes);
         }
