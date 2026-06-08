@@ -11,7 +11,11 @@
 
     <!-- ================== ページメインタイトル ================== -->
     <div class="container-sm text-center mt-4">
-  		<h1 class="fw-bold mt-4 display-4 mb-4">検索結果詳細</h1>
+  		<h1 class="fw-bold mt-4 display-4 mb-4" th:switch="${screenFlag}">
+			<span th:case="1">本の詳細</span>
+			<span th:case="2">本を借りる</span>
+			<span th:case="3">本を返す</span>
+		</h1>
     </div>
 
     <!-- ================== 書籍情報がない場合の表示 ================== -->
