@@ -187,14 +187,9 @@ public class TBookService {
 		// 書籍提供者名を取得して設定
 		if (book.getProviderId() != null) {
 			TUserEntity provider = tUserService.getUserById(book.getProviderId());
-			if (provider != null) {
-				dto.setProviderName(provider.getName());
-			} else {
-			// ユーザーが見つからない場合はグロウ太郎と表示
-			dto.setProviderName(Const.COMMON_PROVIDER_NAME);
-			}
+			dto.setProviderName(provider.getName());
 		} else {
-			// providerIdがnullの場合もグロウ太郎と表示
+			// providerIdがnullの場合「グロウ　太郎」と表示
 			dto.setProviderName(Const.COMMON_PROVIDER_NAME);
 		}
 
