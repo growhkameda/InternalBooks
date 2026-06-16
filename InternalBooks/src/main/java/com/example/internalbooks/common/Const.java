@@ -18,6 +18,7 @@ public class Const {
 	public final static String CATEGORIES = "categories";
 	public final static String BORROWER_ID = "borrower_id";
 	public final static String PROVIDER_ID = "provider_id";
+	public final static String COMMON_PROVIDER_NAME = "グロウ 太郎";
 
 	public final static String PROVIDER_COMMENT = "provider_comment";
 	public final static String MEMO = "memo";

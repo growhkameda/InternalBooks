@@ -59,7 +59,7 @@ public class TUserService implements UserDetailsService {
 	 * @param userId ユーザID
 	 * @return ユーザ情報
 	 */
-	public TUserEntity getUserById(Integer userId) throws UsernameNotFoundException {
+	public TUserEntity getUserById(Integer userId) {
 		Optional<TUserEntity> user = tUserRepository.findById(userId); // メールでユーザーを検索
 		if (user.isEmpty()) {
 			return null;

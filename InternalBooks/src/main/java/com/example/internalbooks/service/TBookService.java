@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.internalbooks.common.Const;
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
@@ -22,7 +23,6 @@ import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TBookRepository;
 import com.example.internalbooks.repository.TLendingHistoryRepository;
 import com.example.internalbooks.repository.TUserRepository;
-import com.example.internalbooks.common.Const;
 
 @Service
 @Transactional
@@ -186,15 +186,11 @@ public class TBookService {
 
 		// 書籍提供者名を取得して設定
 		if (book.getProviderId() != null) {
-			try {
-				TUserEntity provider = tUserService.getUserById(book.getProviderId());
-				if (provider != null) {
-					dto.setProviderName(provider.getName());
-				}
-			} catch (Exception e) {
-				// ユーザーが見つからない場合はnullのまま
-				dto.setProviderName(null);
-			}
+			TUserEntity provider = tUserService.getUserById(book.getProviderId());
+			dto.setProviderName(provider.getName());
+		} else {
+			// providerIdがnullの場合「グロウ　太郎」と表示
+			dto.setProviderName(Const.COMMON_PROVIDER_NAME);
 		}
 
 		// 返却 感想・コメント
