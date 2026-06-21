@@ -40,8 +40,7 @@ CREATE TABLE `t_book` (
 
 LOCK TABLES `t_book` WRITE;
 /*!40000 ALTER TABLE `t_book` DISABLE KEYS */;
-INSERT INTO `t_book` VALUES
-INSERT INTO t_book (book_id, title, category, col4, col5, description, col7) VALUES
+INSERT INTO `t_book` VALUES 
 (10010001, 'スッキリわかる サーブレット&JSP 入門', 'Java', NULL, NULL, 'webアプリ開発の基礎をJava標準技術で学ぶ。「あるあるエラー」「お悩みパターン」全51種類の原因・解決法付', NULL),
 (10010002, 'スッキリわかるJava入門', 'Java', NULL, NULL, '初心者が必ず選ぶ新定番 コレクションを追加！基本文法やオブジェクト指向の「なぜ？」が必ずわかる！', NULL),
 (10010003, 'スッキリわかるJava入門', 'Java', NULL, NULL, '手軽につまずかず・実務に役立つ内容に沿って・「オブジェクト指向」の本質と面白さを理解しながらJava学習。', NULL),
