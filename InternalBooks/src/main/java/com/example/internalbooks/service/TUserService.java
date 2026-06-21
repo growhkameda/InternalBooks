@@ -59,7 +59,7 @@ public class TUserService implements UserDetailsService {
 	 * @param userId ユーザID
 	 * @return ユーザ情報
 	 */
-	public TUserEntity getUserById(Integer userId) throws UsernameNotFoundException {
+	public TUserEntity getUserById(Integer userId) {
 		Optional<TUserEntity> user = tUserRepository.findById(userId); // メールでユーザーを検索
 		if (user.isEmpty()) {
 			return null;
@@ -83,6 +83,15 @@ public class TUserService implements UserDetailsService {
 	 */
 	public List<TUserEntity> getActiveUsers() {
 		return tUserRepository.findByDeleteFlg(Const.DELETE_FLAG_OFF);
+	}
+
+	/**
+	 * アクティブユーザーを氏名の昇順で取得する（書籍提供者プルダウン用）
+	 *
+	 * @return 論理削除されていないユーザーリスト（名前昇順）
+	 */
+	public List<TUserEntity> getActiveUsersSortedByName() {
+		return tUserRepository.findByDeleteFlgOrderByNameAsc(Const.DELETE_FLAG_OFF);
 	}
 
 	/**
