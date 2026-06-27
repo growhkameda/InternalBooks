@@ -18,6 +18,7 @@ public class Const {
 	public final static String CATEGORIES = "categories";
 	public final static String BORROWER_ID = "borrower_id";
 	public final static String PROVIDER_ID = "provider_id";
+	public final static String COMMON_PROVIDER_NAME = "グロウ 太郎";
 
 	public final static String PROVIDER_COMMENT = "provider_comment";
 	public final static String MEMO = "memo";
@@ -45,5 +46,8 @@ public class Const {
 	 */
 	public static final int DELETE_FLAG_OFF = 0;
 	public static final int DELETE_FLAG_ON = 1;
+	
+	
+	public static final String RETURN_COMPLETED_FLAG = "RETURN_COMPLETED_FLAG";
 
 }
