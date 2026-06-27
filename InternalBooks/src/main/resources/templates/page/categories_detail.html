@@ -15,6 +15,11 @@
 				padding: 0 20px;
 			}
 
+			/* 書籍画像の四隅を角丸にする（貸出可能・貸出中の両方に適用） */
+			.fixed-size-img {
+				border-radius: 8px;
+			}
+
 			.pagination-buttons {
 				display: flex;
 				justify-content: space-between;
@@ -48,7 +53,7 @@
     <div class="container fixed-page-width">
 		<div id="image-gallery" class="row" style="justify-content: flex-start; margin-bottom: 40px;">
 		 	<!-- bookList をループ -->
-			<div th:each="book : ${bookList}" class="col-md-4 mb-4">
+			<div th:each="book : ${bookList}" class="col-4 mb-4">
 			    <!-- 貸出可能：クリック可能 -->
 			    <a th:if="${book.status == '貸出可能'}"
 			       th:href="@{/page/searchresult(bookId=${book.bookId})}"
