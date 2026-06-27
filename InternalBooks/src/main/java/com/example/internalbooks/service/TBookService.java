@@ -184,14 +184,19 @@ public class TBookService {
 		// 書籍提供者コメントを設定
 		dto.setProviderComment(book.getProviderComment());
 
-		// 書籍提供者名を取得して設定
+		// 書籍提供者名を取得して設定（providerが取得できない/名前が空の場合は共通名にフォールバック）
+		String providerName = null;
 		if (book.getProviderId() != null) {
 			TUserEntity provider = tUserService.getUserById(book.getProviderId());
-			dto.setProviderName(provider.getName());
-		} else {
-			// providerIdがnullの場合「グロウ　太郎」と表示
-			dto.setProviderName(Const.COMMON_PROVIDER_NAME);
+			if (provider != null) {
+				providerName = provider.getName();
+			}
 		}
+		if (providerName == null || providerName.isBlank()) {
+			// providerIdがnull／提供者が存在しない／名前が空の場合「グロウ　太郎」と表示
+			providerName = Const.COMMON_PROVIDER_NAME;
+		}
+		dto.setProviderName(providerName);
 
 		// 返却 感想・コメント
 		dto.setMemo(book.getMemo());
