@@ -325,6 +325,10 @@ public class AdminController extends InternalBooksController {
 
             // bookIdに基づいて書籍情報を取得
             DtoBookInfo bookInfo = tBookService.getBookById(bookId);
+            if ("貸出中".equals(bookInfo.getStatus())){
+            	redirectAttributes.addFlashAttribute("error", "貸出中の書籍は削除できません");
+				return "redirect:/admin/bookdeletingcategories";
+            }
             model.addAttribute("bookInfo", bookInfo);
 
             // セッションからカテゴリーを取得

@@ -10,7 +10,10 @@
 		<div class="container d-flex justify-content-center align-items-center">
 			<div class="w-100" style="max-width: 400px;">
 				<h1 class="mb-4 text-center">カテゴリー</h1>
-
+				<!-- エラー表示エリア -->
+				<div class="alert alert-danger text-center" th:if="${error}" role="alert">
+                    <span th:text="${error}"></span>
+				</div>
 
 				<!--2列レイアウト -->
 				<div class="row g-3">
