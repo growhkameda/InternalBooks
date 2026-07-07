@@ -325,6 +325,29 @@ public class TBookService {
 		}
 		return "貸出可能";
 	}
+	
+	
+	/**
+	 * 指定された書籍IDが指定されたユーザーIDによって借りられているかを確認するメソッド
+	 */
+	public boolean isBookBorrowedByUser(Integer bookId, Integer userId) {
+		TBookEntity bookEntity = tBookRepository.findById(bookId).orElse(null);
+		if (bookEntity == null) {
+			return false;
+		}
+		if (bookEntity.getBorrowerId() != null) {
+			return userId.equals(bookEntity.getBorrowerId());
+		}
+		// borrowerIdがnullでも、履歴テーブル上で未返却のなら借用者を判定（データ不整合への対抗策）
+		List<TLendingHistoryEntity> histories = lendingHistoryRepository.findByBookId(bookId);
+		if (!histories.isEmpty()) {
+			TLendingHistoryEntity latest = histories.get(0);
+			if (latest.getReturnDate() == null) {
+				return userId.equals(latest.getUserId());
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * 書籍画像を処理するメソッド
