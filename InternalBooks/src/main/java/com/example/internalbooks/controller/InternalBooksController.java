@@ -316,9 +316,9 @@ public class InternalBooksController {
             }
             
             // 貸出中書籍にはアクセスできないように制御
-            Integer longinUserId = validateTokenAndGetUserId(session);
+            Integer loginUserId = validateTokenAndGetUserId(session);
             if ("貸出中".equals(book.getStatus())) {
-	            if (!tBookService.isBookBorrowedByUser(book.getBookId(), longinUserId)) {
+	            if (!tBookService.isBookBorrowedByUser(book.getBookId(), loginUserId)) {
 					redirectAttributes.addFlashAttribute("error", "この書籍は貸出中のためアクセスできません");
 					return "redirect:/page/top";
 				}

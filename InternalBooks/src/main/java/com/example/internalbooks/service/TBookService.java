@@ -335,7 +335,18 @@ public class TBookService {
 		if (bookEntity == null) {
 			return false;
 		}
-		return userId.equals(bookEntity.getBorrowerId());
+		if (bookEntity.getBorrowerId() != null) {
+			return userId.equals(bookEntity.getBorrowerId());
+		}
+		// borrowerIdがnullでも、履歴テーブル上で未返却のなら借用者を判定（データ不整合への対抗策）
+		List<TLendingHistoryEntity> histories = lendingHistoryRepository.findByBookId(bookId);
+		if (!histories.isEmpty()) {
+			TLendingHistoryEntity latest = histories.get(0);
+			if (latest.getReturnDate() == null) {
+				return userId.equals(latest.getUserId());
+			}
+		}
+		return false;
 	}
 
 	/**
