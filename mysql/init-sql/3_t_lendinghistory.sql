@@ -31,27 +31,8 @@ CREATE TABLE `t_lendinghistory` (
   `user_id` int NOT NULL,
   `review` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`,`book_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `t_lendinghistory`
---
-
-LOCK TABLES `t_lendinghistory` WRITE;
-/*!40000 ALTER TABLE `t_lendinghistory` DISABLE KEYS */;
-INSERT INTO `t_lendinghistory` VALUES
-(1, 10010001, '2026-01-10 10:00:00', '2026-01-17 10:00:00', '2026-01-16 15:00:00', 1, '非常に参考になった'),
-(2, 10010001, '2026-01-20 10:00:00', '2026-01-27 10:00:00', '2026-01-27 09:00:00', 2, 'ストリームAPIの箇所を重点的に読んだ'),
-(3, 10010001, '2026-02-01 10:00:00', '2026-02-08 10:00:00', '2026-02-08 12:00:00', 1, '写経して理解が深まった'),
-(4, 10010001, '2026-02-15 10:00:00', '2026-02-22 10:00:00', '2026-02-21 18:00:00', 2, '再読。ラムダ式の理解に役立つ'),
-(5, 10010001, '2026-03-01 10:00:00', '2026-03-08 10:00:00', '2026-03-07 10:00:00', 1, '入門書として最適'),
-(6, 10010001, '2026-03-20 17:00:00', '2026-03-27 17:00:00', NULL, 1, NULL),
-(7, 10010002, '2026-03-10 10:00:00', '2026-03-17 10:00:00', NULL, 1, NULL),
-(8, 10020001, '2026-03-10 10:00:00', '2026-03-17 10:00:00', NULL, 2, NULL),
-(9, 10020003, '2026-03-20 10:00:00', '2026-03-27 10:00:00', NULL, 1, NULL);
-/*!40000 ALTER TABLE `t_lendinghistory` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
