@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -217,7 +218,7 @@ public class TBookService {
 		if (!histories.isEmpty()) {
 			TLendingHistoryEntity latestHistory = histories.get(0);
 			if (latestHistory.getScheduledReturnDate() != null) {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)", Locale.JAPAN);
 				dto.setScheduledReturnDate(latestHistory.getScheduledReturnDate().format(formatter));
 			} else {
 				dto.setScheduledReturnDate("-");
