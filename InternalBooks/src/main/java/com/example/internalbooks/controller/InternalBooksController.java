@@ -138,6 +138,16 @@ public class InternalBooksController {
         }
 
     }
+    @GetMapping("/page/aboutMizuno")
+    public String aboutMizuno(HttpSession session, RedirectAttributes redirectAttributes) {
+        try {
+            // トークンの検証（ログイン済みユーザーのみアクセス可）
+            validateTokenAndGetUserId(session);
+            return "page/aboutMizuno";
+        } catch (Exception e) {
+            return error(redirectAttributes);
+        }
+    }
 
     /**
      * カテゴリーリストを表示
