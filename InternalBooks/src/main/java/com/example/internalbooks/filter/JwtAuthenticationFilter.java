@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -43,9 +44,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = null;
         String jwtToken = null;
 
-        // JWT トークンは "Bearer " で始まることを確認
+        // Authorizationヘッダーがあればそれを優先し、無ければセッションに保存されたトークンを使用する
+        // （ブラウザの通常ページ遷移ではAuthorizationヘッダーが送られないため、
+        // 　セッションベースのページアクセスではここを通さないとSecurityContextに認証情報が乗らない）
         if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
             jwtToken = requestTokenHeader.substring(7);
+        } else {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                jwtToken = (String) session.getAttribute("token");
+            }
+        }
+
+        if (jwtToken != null) {
             try {
                 username = jwtUtil.extractUsername(jwtToken);
             } catch (IllegalArgumentException e) {
@@ -54,7 +65,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 logger.warn("JWT Token has expired");
             }
         } else {
-            logger.warn("JWT Token does not begin with Bearer String");
+            logger.warn("JWT Token not found in Authorization header or session");
         }
 
         // トークンを取得し、ユーザー名を確認

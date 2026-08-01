@@ -1,5 +1,7 @@
 package com.example.internalbooks.config;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,10 +12,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.FlashMap;
+import org.springframework.web.servlet.support.SessionFlashMapManager;
 
 import com.example.internalbooks.filter.JwtAuthenticationFilter;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -37,17 +46,49 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRFを無効化
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/", "/page/**", "/action/**", "/admin/**", "/test/**", "/webjars/**",
-                                "/logo/**", "/favicon.ico", "/images/**", "/js/**", "/actuator/**")
+                        .requestMatchers("/", "/page/login", "/action/login", "/webjars/**",
+                                "/logo/**", "/favicon.ico", "/images/**", "/js/**", "/actuator/health")
                         .permitAll() // 認証不要のエンドポイント
+
+                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN") // 管理者専用エンドポイント
 
                         .anyRequest().authenticated() // 他のエンドポイントは認証が必要
                 )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(loginRedirectEntryPoint("セッションが切れました。再度ログインしてください。"))
+                        .accessDeniedHandler(loginRedirectAccessDeniedHandler("管理者権限が必要です。")))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class); // フィルターを追加;
 
         return http.build();
+    }
+
+    /**
+     * 未認証アクセス時にログインページへリダイレクトするエントリーポイント
+     */
+    private AuthenticationEntryPoint loginRedirectEntryPoint(String message) {
+        return (request, response, authException) -> redirectToLoginWithMessage(request, response, message);
+    }
+
+    /**
+     * 権限不足アクセス時にログインページへリダイレクトするハンドラ
+     */
+    private AccessDeniedHandler loginRedirectAccessDeniedHandler(String message) {
+        return (request, response, accessDeniedException) -> redirectToLoginWithMessage(request, response, message);
+    }
+
+    private void redirectToLoginWithMessage(HttpServletRequest request, HttpServletResponse response, String message)
+            throws IOException {
+        String loginPath = request.getContextPath() + "/page/login";
+
+        // errorMessageをFlash属性としてセッションに保持し、リダイレクト先のログイン画面で表示する
+        FlashMap flashMap = new FlashMap();
+        flashMap.put("errorMessage", message);
+        flashMap.setTargetRequestPath(loginPath);
+        new SessionFlashMapManager().saveOutputFlashMap(flashMap, request, response);
+
+        response.sendRedirect(loginPath);
     }
 
     @Bean
