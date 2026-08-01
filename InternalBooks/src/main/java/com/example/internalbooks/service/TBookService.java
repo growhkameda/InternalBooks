@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -217,7 +218,7 @@ public class TBookService {
 		if (!histories.isEmpty()) {
 			TLendingHistoryEntity latestHistory = histories.get(0);
 			if (latestHistory.getScheduledReturnDate() != null) {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)", Locale.JAPAN);
 				dto.setScheduledReturnDate(latestHistory.getScheduledReturnDate().format(formatter));
 			} else {
 				dto.setScheduledReturnDate("-");
@@ -324,6 +325,29 @@ public class TBookService {
 			}
 		}
 		return "貸出可能";
+	}
+	
+	
+	/**
+	 * 指定された書籍IDが指定されたユーザーIDによって借りられているかを確認するメソッド
+	 */
+	public boolean isBookBorrowedByUser(Integer bookId, Integer userId) {
+		TBookEntity bookEntity = tBookRepository.findById(bookId).orElse(null);
+		if (bookEntity == null) {
+			return false;
+		}
+		if (bookEntity.getBorrowerId() != null) {
+			return userId.equals(bookEntity.getBorrowerId());
+		}
+		// borrowerIdがnullでも、履歴テーブル上で未返却のなら借用者を判定（データ不整合への対抗策）
+		List<TLendingHistoryEntity> histories = lendingHistoryRepository.findByBookId(bookId);
+		if (!histories.isEmpty()) {
+			TLendingHistoryEntity latest = histories.get(0);
+			if (latest.getReturnDate() == null) {
+				return userId.equals(latest.getUserId());
+			}
+		}
+		return false;
 	}
 
 	/**

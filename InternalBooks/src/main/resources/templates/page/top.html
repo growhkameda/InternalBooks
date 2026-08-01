@@ -18,7 +18,13 @@
     	        <div class="" style="width: 330px;">
 <!--            <div class="w-100" style="max-width: 330px;">-->
         	        <h1 class="mb-4 text-center">Top</h1>
-
+					
+					<!-- エラー表示エリア -->
+					<div class="alert alert-danger text-center" th:if="${error}" role="alert">
+						<h6 class="mb-1 fw-bold">エラーが発生しました</h6>
+					    <div th:text="${error}"></div>
+					</div>
+					
                 	<!-- ボタンを縦に並べ、中央に配置 -->
                 	    <div class="d-flex justify-content-between mb-3">
                         <!-- 正方形ボタン（借りる） -->

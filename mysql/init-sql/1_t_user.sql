@@ -191,11 +191,7 @@ INSERT INTO `t_user` VALUES
 ('400209', '竹内　菜々花', '$2a$10$BZfz/XFu.DCB9v8TfzcWh.2zCoC.2eDIWrhc8HtgyWV3uHoVe1s7m', 'nana.takepost@gmail.com', 0, 12, 0),
 ('400210', '虎澤　柚奈', '$2a$10$R94yQT7zPnPMn8un3AXkfuQ5aA1.p/KpACZjjSx1WQGDDoxSwUUZe', '84y.torazawa@gmail.com', 0, 11, 0),
 ('410001', '徳田　海', '$2a$10$7uCTqhsmMb2wmnMUvxrLzuUwnHMmsbR37TgRfj0LASsm4CKGKGEa6', 'seabullet@icloud.com', 0, 7, 0),
-('400211', 'deletenormal003', 'a', 'a', 0, 0, 0),
-('400212', 'deletenormal003', 'a', 'a', 0, 0, 0),
-('400213', 'deletenormal003', 'a', 'a', 0, 0, 0),
-('4002122','admin','$2a$10$QNW1k/8Ngi8cX0i6Zel2HOwFVZPmW9Qn1SGizlEizKzKIkOIzO/Tq','admin@gmail.com',1,3,0),
-('400215', 'deletenormal003', 'a', 'a', 0, 0, 0);
+('4002122','admin','$2a$10$QNW1k/8Ngi8cX0i6Zel2HOwFVZPmW9Qn1SGizlEizKzKIkOIzO/Tq','admin@gmail.com',1,3,0);
 /*!40000 ALTER TABLE `t_user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

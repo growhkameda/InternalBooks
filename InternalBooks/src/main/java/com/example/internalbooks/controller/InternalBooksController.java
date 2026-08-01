@@ -2,6 +2,9 @@ package com.example.internalbooks.controller;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +30,6 @@ import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.service.TLendingHistoryService;
 import com.example.internalbooks.utils.JwtUtil;
 
-import jakarta.servlet.http.HttpSession;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
@@ -262,7 +263,7 @@ public class InternalBooksController {
 
         try {
             // JWT認証トークンの検証（共通メソッド）
-            validateTokenAndGetUserId(session);
+            Integer loginUserId = validateTokenAndGetUserId(session);
 
             model.addAttribute("bookdto", new DtoBookHistoryRegistration());
 
@@ -312,6 +313,14 @@ public class InternalBooksController {
                 }
                 redirectAttributes.addFlashAttribute("error", "書籍が取得できませんでした");
                 return "redirect:/page/top";
+            }
+            
+            // 貸出中書籍にはアクセスできないように制御
+            if ("貸出中".equals(book.getStatus())) {
+	            if (!tBookService.isBookBorrowedByUser(book.getBookId(), loginUserId)) {
+					redirectAttributes.addFlashAttribute("error", "この書籍は貸出中のためアクセスできません");
+					return "redirect:/page/top";
+				}
             }
             model.addAttribute("book", book);
             model.addAttribute("categories", book.getCategories());
