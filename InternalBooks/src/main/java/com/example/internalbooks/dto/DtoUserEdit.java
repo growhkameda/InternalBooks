@@ -3,6 +3,8 @@ package com.example.internalbooks.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import lombok.Data;
 
 @Data
@@ -11,6 +13,7 @@ public class DtoUserEdit {
     private Integer userId;
 
     @NotBlank(message = "名前を入力してください。")
+    @Size(max = 255, message = "名前は255文字以内で入力してください")
     private String name;
 
     @NotBlank(message = "メールアドレスを入力してください。")
