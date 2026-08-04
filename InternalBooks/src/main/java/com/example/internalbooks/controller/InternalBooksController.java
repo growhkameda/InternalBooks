@@ -267,7 +267,7 @@ public class InternalBooksController {
 
         try {
             // JWT認証トークンの検証（共通メソッド）
-            validateTokenAndGetUserId(session);
+            Integer loginUserId = validateTokenAndGetUserId(session);
 
             model.addAttribute("bookdto", new DtoBookHistoryRegistration());
 
@@ -320,7 +320,6 @@ public class InternalBooksController {
             }
             
             // 貸出中書籍にはアクセスできないように制御
-            Integer loginUserId = validateTokenAndGetUserId(session);
             if ("貸出中".equals(book.getStatus())) {
 	            if (!tBookService.isBookBorrowedByUser(book.getBookId(), loginUserId)) {
 					redirectAttributes.addFlashAttribute("error", "この書籍は貸出中のためアクセスできません");

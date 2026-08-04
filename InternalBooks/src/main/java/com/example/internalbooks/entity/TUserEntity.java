@@ -1,6 +1,7 @@
 package com.example.internalbooks.entity;
 
 import java.util.Collection;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +10,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.internalbooks.common.Const;
@@ -51,10 +53,12 @@ public class TUserEntity implements UserDetails {
     @Override
     /**
      * 権限の取得
+     * roleカラム(1=管理者)からROLE_ADMIN/ROLE_USERを返す
      * @return 権限情報
      */
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        String authority = (role != null && role == 1) ? "ROLE_ADMIN" : "ROLE_USER";
+        return List.of(new SimpleGrantedAuthority(authority));
     }
 
     @Override
