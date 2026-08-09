@@ -149,8 +149,13 @@ public class AdminController extends InternalBooksController {
             if (!isAdmin)
                 return adminPermissionError(redirectAttributes);
 
-            // エラーがある場合、編集画面へ遷移する
+        // エラーがある場合、編集画面へ遷移する
             if (bindingResult.hasErrors()) {
+                model.addAttribute("userDto", userDto);
+                model.addAttribute(
+                        "org.springframework.validation.BindingResult.userDto",
+                        bindingResult
+                    );
                 model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
                 model.addAttribute("errorMessage", "入力内容を確認してください。");
                 return "page/userEdit";
