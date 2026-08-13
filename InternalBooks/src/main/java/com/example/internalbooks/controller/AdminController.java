@@ -439,6 +439,14 @@ public class AdminController extends InternalBooksController {
 
                 return "page/UserRegistration";
             }
+            
+            // 重複メールアドレスがある場合に表示
+            if (tUserService.isMailAddressRegistered(userDto.getMailAddress())) {
+                bindingResult.rejectValue("mailAddress", null, "このメールアドレスは既に使用されています");
+                model.addAttribute("departments", tUserService.getAllDepartments());
+                
+                return "page/UserRegistration";
+            }
 
             return "page/UserConfir";
         } catch (Exception e) {
