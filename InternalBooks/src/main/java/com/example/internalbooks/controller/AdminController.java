@@ -52,7 +52,7 @@ public class AdminController extends InternalBooksController {
     // コンストラクタインジェクション
     public AdminController(JwtUtil jwtUtil, AuthService authService, TBookService tBookService,
             TUserService tUserService) {
-        super(jwtUtil, authService, tBookService);
+        super(jwtUtil, authService, tBookService, tUserService);
         this.tUserService = tUserService;
         this.tBookService = tBookService;
     }
