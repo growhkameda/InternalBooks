@@ -14,7 +14,8 @@
                 <li class="nav-item d-flex">
                     <a class="nav-link active me-3" aria-current="page" href="/page/qrsearch">借りる</a>
 					<a class="nav-link active me-3" aria-current="page" href="/page/checkedout">返す</a>
-					<a class="nav-link active" aria-current="page" href="/page/categories">カテゴリー</a>
+					<a class="nav-link active me-3" aria-current="page" href="/page/categories">カテゴリー</a>
+					<a class="nav-link active" aria-current="page" href="/user/page/changePassword">パスワード変更</a>
                 </li>
             </ul>
 			<a th:if="${session.token != null}" href="/action/logout" class="nav-link text-white d-flex align-items-center">
