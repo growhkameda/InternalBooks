@@ -144,6 +144,13 @@ public class TUserService implements UserDetailsService {
 		
 		return tUserRepository.findById(id);
 	}
+	
+	/**
+	 * メールアドレスが既に登録済みかどうかを判定する
+	 */
+	public boolean isMailAddressRegistered(String mailAddress) {
+	    return tUserRepository.findByMailAddress(mailAddress).isPresent();
+	}
 
 	/**
 	 * ユーザーの所属課を取得（リスト形式）
