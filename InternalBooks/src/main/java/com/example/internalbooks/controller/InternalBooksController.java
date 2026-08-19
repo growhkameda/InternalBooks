@@ -23,13 +23,11 @@ import com.example.internalbooks.dto.DtoAuthRequest;
 import com.example.internalbooks.dto.DtoBookHistory;
 import com.example.internalbooks.dto.DtoBookHistoryRegistration;
 import com.example.internalbooks.dto.DtoBookInfo;
-import com.example.internalbooks.dto.DtoChangePassword;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.exception.AuthenticationFailedException;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
 import com.example.internalbooks.service.TLendingHistoryService;
-import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.utils.JwtUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -44,14 +42,12 @@ public class InternalBooksController {
     private final JwtUtil jwtUtil;
     private final AuthService authService;
     private final TBookService tBookService;
-	private final TUserService tUserService;
 
     // コンストラクタインジェクション
-    public InternalBooksController(JwtUtil jwtUtil, AuthService authService, TBookService tBookService, TUserService tUserService) {
+    public InternalBooksController(JwtUtil jwtUtil, AuthService authService, TBookService tBookService) {
         this.jwtUtil = jwtUtil;
         this.authService = authService;
         this.tBookService = tBookService;
-        this.tUserService = tUserService;
     }
 
     @Autowired
@@ -673,64 +669,6 @@ public class InternalBooksController {
         }
 
     }
-    
-    /**
-     * パスワード変更ページに遷移
-     */
-    @GetMapping("/page/changePassword")
-    public String changePassword(Model model) {
-    	model.addAttribute("changePasswordDto", new DtoChangePassword());
-    	return "page/changePassword";
-    }
-    
-    /**
-	 * パスワード変更処理
-	 */
-    @PostMapping("/action/changePassword")
-    public String changePasswordAction(
-    		@Valid @ModelAttribute("changePasswordDto") DtoChangePassword changePasswordDto,
-    		BindingResult bindingResult,
-    		RedirectAttributes redirectAttributes,
-    		Model model) {
-    	
-    	if (bindingResult.hasErrors()) {
-			model.addAttribute("errorMessage", "パスワード変更に失敗しました。\n入力内容を確認してください。");
-			return "page/changePassword";
-		}
-    	
-    	try {
-			// パスワード変更処理
-			tUserService.changePassword(changePasswordDto);
-			// 完了画面に表示するメールアドレスを取得
-			redirectAttributes.addFlashAttribute("mailAddress", changePasswordDto.getMailAddress());
-			return "redirect:/page/changePasswordCompleted";
-		
-    	} catch (IllegalArgumentException e) {
-    		model.addAttribute("errorMessage", e.getMessage());
-    		return "page/changePassword";
-    		
-		} catch (Exception e) {
-			model.addAttribute("errorMessage", e.getMessage());
-			logger.error("パスワード変更処理でエラーが発生しました", e);
-			return "page/changePassword";
-    	}
-    }
-    
-    /**
-	 * パスワード変更完了ページに遷移
-	 */
-    @GetMapping("/page/changePasswordCompleted")
-    public String changePasswordCompleted(
-    		RedirectAttributes redirectAttributes) {
-    	
-    	try {
-    		logger.info("changePasswordCompletedにアクセスされました");
-    		
-    		return "page/changePasswordCompleted";
-    	} catch (Exception e) {
-			return error(redirectAttributes);
-    	}
-	}
 
     /**
      * エラー処理
