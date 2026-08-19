@@ -67,7 +67,7 @@ public class TUserController extends InternalBooksController {
 			}
 			
 			tUserService.changePassword(loginUserId, changePasswordDto);
-			// パスワード変更成功フラグをセッションに設定
+			// パスワード変更成功フラグを立てる
 			session.setAttribute("passswordChanged", true);
 			logger.info("パスワード変更に成功しました。userId={}", loginUserId);
 			return "page/changePasswordCompleted";
