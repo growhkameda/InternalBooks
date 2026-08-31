@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.internalbooks.common.Const;
+import com.example.internalbooks.dto.DtoChangePassword;
 import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.MDepartmentEntity;
 import com.example.internalbooks.entity.TUserEntity;
+import com.example.internalbooks.exception.AuthenticationFailedException;
 import com.example.internalbooks.repository.MDepartmentRepository;
 import com.example.internalbooks.repository.TUserRepository;
 
@@ -52,7 +54,7 @@ public class TUserService implements UserDetailsService {
 		}
 		return user; // LoginUser を返す
 	}
-
+	
 	/**
 	 * ユーザIDからTUser情報を取得するメソッド
 	 *
@@ -269,5 +271,51 @@ public class TUserService implements UserDetailsService {
 	 */
 	public List<MDepartmentEntity> getAllDepartments() {
 		return mDepartmentRepository.findAll();
+	}
+	
+	/**
+	 * パスワード変更
+	 */
+	@Transactional
+	public void changePassword(Integer loginUserId, DtoChangePassword changePasswordDto) {
+		Optional<TUserEntity> user = tUserRepository.findById(loginUserId);
+		if (user.isEmpty()) {
+			throw new AuthenticationFailedException("該当するユーザーが存在しません");
+		}
+		
+		if (!changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmNewPassword())) {
+			throw new IllegalArgumentException("新しいパスワードと確認用パスワードが一致しません");
+		}
+		
+		validatePasswordPolicy(changePasswordDto.getNewPassword());
+		
+		TUserEntity userEntity = user.get();
+		userEntity.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+		
+		tUserRepository.save(userEntity);
+	}
+	
+	/**
+	 * パスワードポリシーの検証
+	 */
+	private void validatePasswordPolicy(String password) {
+		if (password.length() < 8) {
+			throw new IllegalArgumentException("パスワードは8文字以上である必要があります");
+		}
+		if (password.matches(".*\\s.*")) {
+			throw new IllegalArgumentException("パスワードには空白文字を含めることはできません");
+		}
+		if (!password.matches(".*[A-Z].*")) {
+			throw new IllegalArgumentException("パスワードには少なくとも1つの大文字が含まれている必要があります");
+		}
+		if (!password.matches(".*[a-z].*")) {
+			throw new IllegalArgumentException("パスワードには少なくとも1つの小文字が含まれている必要があります");
+		}
+		if (!password.matches(".*\\d.*")) {
+			throw new IllegalArgumentException("パスワードには少なくとも1つの数字が含まれている必要があります");
+		}
+		if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
+			throw new IllegalArgumentException("パスワードには少なくとも1つの特殊文字が含まれている必要があります");
+		}
 	}
 }
