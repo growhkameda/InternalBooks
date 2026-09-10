@@ -251,9 +251,6 @@ public class TUserService implements UserDetailsService {
 		existingUser.setMailAddress(userDto.getMailAddress());
 		existingUser.setDepartmentId(userDto.getDepartmentIdAsInteger());
 
-		// パスワードを現在のEmailで上書き（常に同期）
-		existingUser.setPassword(passwordEncoder.encode(userDto.getMailAddress()));
-
 		// DBへ書き込み
 		tUserRepository.save(existingUser);
 
