@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,7 @@ public class TLendingHistoryService {
         List<DtoBookHistory> dtoList = new ArrayList<>();
         for (TLendingHistoryEntity e : entities) {
             DtoBookHistory dto = new DtoBookHistory();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)", Locale.JAPAN);
             dto.setLendingDate(
                     e.getLendingDate() != null ? e.getLendingDate().format(formatter) : "-");
             dto.setScheduledReturnDate(
@@ -121,7 +122,7 @@ public class TLendingHistoryService {
      */
     public List<DtoBookHistory> getScheduledReturnDatesByBookIds(List<Integer> bookIds) {
         List<DtoBookHistory> bookHistoryList = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)", Locale.JAPAN);
 
         for (Integer bookId : bookIds) {
             DtoBookHistory history = new DtoBookHistory();

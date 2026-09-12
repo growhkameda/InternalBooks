@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import com.example.internalbooks.dto.DtoAuthRequest;
 import com.example.internalbooks.entity.TUserEntity;
+import com.example.internalbooks.exception.AuthenticationFailedException;
 import com.example.internalbooks.utils.JwtUtil;
 
 @ExtendWith(MockitoExtension.class)
@@ -74,8 +75,8 @@ class AuthServiceTest {
         when(userDetailsService.loadUserByUsername("deleted@example.com")).thenReturn(deleted);
 
         assertThatThrownBy(() -> authService.login(req))
-            .isInstanceOf(RuntimeException.class)
-            .hasMessage("Invalid credentials");
+            .isInstanceOf(AuthenticationFailedException.class)
+            .hasMessage("このアカウントは現在利用できません。");
     }
 
     @Test
@@ -86,8 +87,8 @@ class AuthServiceTest {
             .thenThrow(new BadCredentialsException("bad credentials"));
 
         assertThatThrownBy(() -> authService.login(req))
-            .isInstanceOf(RuntimeException.class)
-            .hasMessage("Invalid credentials");
+            .isInstanceOf(AuthenticationFailedException.class)
+            .hasMessage("メールアドレスまたはパスワードが正しくありません。");
     }
 
     // ─── helpers ─────────────────────────────────────────────────────────────

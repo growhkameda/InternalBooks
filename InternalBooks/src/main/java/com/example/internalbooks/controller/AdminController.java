@@ -7,8 +7,6 @@ import jakarta.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,16 +23,15 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.internalbooks.service.TUserService;
-
+import com.example.internalbooks.common.Const;
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.dto.DtoUserEdit;
 import com.example.internalbooks.dto.DtoUserRegistration;
 import com.example.internalbooks.entity.MDepartmentEntity;
 import com.example.internalbooks.entity.TUserEntity;
-import com.example.internalbooks.common.Const;
 import com.example.internalbooks.service.AuthService;
 import com.example.internalbooks.service.TBookService;
+import com.example.internalbooks.service.TUserService;
 import com.example.internalbooks.utils.JwtUtil;
 
 /**
@@ -98,7 +95,7 @@ public class AdminController extends InternalBooksController {
             logger.info("bookediting() にアクセスされました");
 
             model.addAttribute("bookdto", new DtoBookInfo());
-            model.addAttribute("activeUsers", tUserService.getActiveUsers());
+            model.addAttribute("providerUsers", tUserService.getActiveUsersSortedByName());
             model.addAttribute("existingCategories", tBookService.getAllCategories());
 
             return "page/bookediting";
@@ -152,8 +149,13 @@ public class AdminController extends InternalBooksController {
             if (!isAdmin)
                 return adminPermissionError(redirectAttributes);
 
-            // エラーがある場合、編集画面へ遷移する
+        // エラーがある場合、編集画面へ遷移する
             if (bindingResult.hasErrors()) {
+                model.addAttribute("userDto", userDto);
+                model.addAttribute(
+                        "org.springframework.validation.BindingResult.userDto",
+                        bindingResult
+                    );
                 model.addAttribute("mDepartmentList", tUserService.getAllDepartments());
                 model.addAttribute("errorMessage", "入力内容を確認してください。");
                 return "page/userEdit";
@@ -228,11 +230,6 @@ public class AdminController extends InternalBooksController {
             // 所属課
             model.addAttribute("userdepart", userWithDepartmentName);
             // ユーザー情報
-            model.addAttribute("users", userWithDepartmentName);
-            // ログインユーザー情報を取得してモデルに追加する
-            model.addAttribute("isAdmin", isAdmin);
-
-            // ユーザー情報
             model.addAttribute("users", user);
             // ログインユーザー情報を取得してモデルに追加する
             model.addAttribute("isAdmin", isAdmin);
@@ -306,11 +303,6 @@ public class AdminController extends InternalBooksController {
             // ログインユーザー情報を取得してモデルに追加する
             model.addAttribute("isAdmin", isAdmin);
 
-            // ユーザー情報
-            model.addAttribute("users", user);
-            // ログインユーザー情報を取得してモデルに追加する
-            model.addAttribute("isAdmin", isAdmin);
-
             // ログを出力
             logger.info("userdeletecompleteにアクセスされました");
 
@@ -338,6 +330,10 @@ public class AdminController extends InternalBooksController {
 
             // bookIdに基づいて書籍情報を取得
             DtoBookInfo bookInfo = tBookService.getBookById(bookId);
+            if ("貸出中".equals(bookInfo.getStatus())){
+            	redirectAttributes.addFlashAttribute("error", "貸出中の書籍は削除できません");
+				return "redirect:/admin/bookdeletingcategories";
+            }
             model.addAttribute("bookInfo", bookInfo);
 
             // セッションからカテゴリーを取得
@@ -429,8 +425,7 @@ public class AdminController extends InternalBooksController {
                 model.addAttribute("departments", tUserService.getAllDepartments());
 
                 for (FieldError error : bindingResult.getFieldErrors()) {
-                    // コンソールにも表示
-                    System.out.println(error.getField() + ":" + error.getDefaultMessage());
+                    logger.debug("{}:{}", error.getField(), error.getDefaultMessage());
                 }
 
                 return "page/UserRegistration";
@@ -442,6 +437,14 @@ public class AdminController extends InternalBooksController {
                 // バリデーションエラー後もセレクトを表示
                 model.addAttribute("departments", tUserService.getAllDepartments());
 
+                return "page/UserRegistration";
+            }
+            
+            // 重複メールアドレスがある場合に表示
+            if (tUserService.isMailAddressRegistered(userDto.getMailAddress())) {
+                bindingResult.rejectValue("mailAddress", null, "このメールアドレスは既に使用されています");
+                model.addAttribute("departments", tUserService.getAllDepartments());
+                
                 return "page/UserRegistration";
             }
 
@@ -542,11 +545,10 @@ public class AdminController extends InternalBooksController {
             // その他のエラー表示
             if (bindingResult.hasErrors()) {
                 for (FieldError error : bindingResult.getFieldErrors()) {
-                    // コンソールにも表示
-                    System.out.println(error.getField() + ":" + error.getDefaultMessage());
+                    logger.debug("{}:{}", error.getField(), error.getDefaultMessage());
                 }
                 // bookediting.htmlが必要とするモデル属性をセット
-                model.addAttribute("activeUsers", tUserService.getActiveUsers());
+                model.addAttribute("providerUsers", tUserService.getActiveUsersSortedByName());
                 model.addAttribute("existingCategories", tBookService.getAllCategories());
                 return "page/bookediting";
             }
@@ -561,7 +563,7 @@ public class AdminController extends InternalBooksController {
                         imageFile.getContentType() != null ? imageFile.getContentType() : "image/png");
             }
 
-            System.out.println("imageurl =" + bookDto.getImageUrl());
+            logger.debug("imageurl ={}", bookDto.getImageUrl());
 
             model.addAttribute("bookdto", bookDto);
 

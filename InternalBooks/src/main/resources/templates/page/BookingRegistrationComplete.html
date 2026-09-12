@@ -31,7 +31,7 @@
 		<div class="col-11 col-sm-7 d-flex justify-content-center border overflow-hidden"
 					style="border-radius: 15px; aspect-ratio: 1; max-width: 500px;">
 		   	  <div class = "p-5">
-					 <img th:src="@{'/images/' + ${bookdto.imageUrl}}" alt="アップロード画像" 
+					 <img th:src="@{'/images/' + ${dbook.bookId} + '.png'}" alt="アップロード画像"
 				 		  class="w-100 h-100 object-fit-contain" style="border-radius: 10px">
 		      </div>
 		</div>

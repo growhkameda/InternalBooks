@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.internalbooks.common.Const;
 import com.example.internalbooks.dto.DtoBookInfo;
 import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
@@ -22,7 +24,6 @@ import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TBookRepository;
 import com.example.internalbooks.repository.TLendingHistoryRepository;
 import com.example.internalbooks.repository.TUserRepository;
-import com.example.internalbooks.common.Const;
 
 @Service
 @Transactional
@@ -184,18 +185,19 @@ public class TBookService {
 		// 書籍提供者コメントを設定
 		dto.setProviderComment(book.getProviderComment());
 
-		// 書籍提供者名を取得して設定
+		// 書籍提供者名を取得して設定（providerが取得できない/名前が空の場合は共通名にフォールバック）
+		String providerName = null;
 		if (book.getProviderId() != null) {
-			try {
-				TUserEntity provider = tUserService.getUserById(book.getProviderId());
-				if (provider != null) {
-					dto.setProviderName(provider.getName());
-				}
-			} catch (Exception e) {
-				// ユーザーが見つからない場合はnullのまま
-				dto.setProviderName(null);
+			TUserEntity provider = tUserService.getUserById(book.getProviderId());
+			if (provider != null) {
+				providerName = provider.getName();
 			}
 		}
+		if (providerName == null || providerName.isBlank()) {
+			// providerIdがnull／提供者が存在しない／名前が空の場合「グロウ　太郎」と表示
+			providerName = Const.COMMON_PROVIDER_NAME;
+		}
+		dto.setProviderName(providerName);
 
 		// 返却 感想・コメント
 		dto.setMemo(book.getMemo());
@@ -216,7 +218,7 @@ public class TBookService {
 		if (!histories.isEmpty()) {
 			TLendingHistoryEntity latestHistory = histories.get(0);
 			if (latestHistory.getScheduledReturnDate() != null) {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)");
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日(E)", Locale.JAPAN);
 				dto.setScheduledReturnDate(latestHistory.getScheduledReturnDate().format(formatter));
 			} else {
 				dto.setScheduledReturnDate("-");
@@ -281,7 +283,7 @@ public class TBookService {
 
 		} catch (Exception e) {
 			// エラーが発生した場合はnullを返してエラー表示させる
-			System.err.println("書籍検索処理でエラーが発生しました: " + e.getMessage());
+			logger.error("書籍検索処理でエラーが発生しました: {}", e.getMessage());
 			return null;
 		}
 	}
@@ -324,6 +326,29 @@ public class TBookService {
 		}
 		return "貸出可能";
 	}
+	
+	
+	/**
+	 * 指定された書籍IDが指定されたユーザーIDによって借りられているかを確認するメソッド
+	 */
+	public boolean isBookBorrowedByUser(Integer bookId, Integer userId) {
+		TBookEntity bookEntity = tBookRepository.findById(bookId).orElse(null);
+		if (bookEntity == null) {
+			return false;
+		}
+		if (bookEntity.getBorrowerId() != null) {
+			return userId.equals(bookEntity.getBorrowerId());
+		}
+		// borrowerIdがnullでも、履歴テーブル上で未返却のなら借用者を判定（データ不整合への対抗策）
+		List<TLendingHistoryEntity> histories = lendingHistoryRepository.findByBookId(bookId);
+		if (!histories.isEmpty()) {
+			TLendingHistoryEntity latest = histories.get(0);
+			if (latest.getReturnDate() == null) {
+				return userId.equals(latest.getUserId());
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * 書籍画像を処理するメソッド
@@ -343,10 +368,20 @@ public class TBookService {
 	 * 書籍登録するメソッド
 	 */
 	public DtoBookInfo bookEditing(DtoBookInfo dtbook) {
-		// 書籍提供者とユーザーIDの紐付け
-		TUserEntity user = tUserRepository.findByName(dtbook.getProviderId())
-				.orElseThrow(() -> new RuntimeException("名前が見つかりません"));
-		// 紐付けたユーザーIDをDTOにセット
+		Integer providerUserId;
+		try {
+			providerUserId = Integer.valueOf(dtbook.getProviderId().trim());
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("書籍提供者の指定が不正です", e);
+		}
+
+		TUserEntity user = tUserRepository.findById(providerUserId)
+				.orElseThrow(() -> new RuntimeException("ユーザーが見つかりません"));
+
+		if (!Integer.valueOf(Const.DELETE_FLAG_OFF).equals(user.getDeleteFlg())) {
+			throw new IllegalArgumentException("選択されたユーザーは利用できません");
+		}
+
 		dtbook.setId(user.getUserId());
 
 		try {
@@ -450,7 +485,7 @@ public class TBookService {
 				imageStorageService.deleteImage(bookId);
 			} catch (Exception e) {
 				// 画像削除エラーはログに記録するが、処理は継続
-				System.err.println("画像削除処理でエラーが発生しました（書籍削除は継続します）: bookId=" + bookId + ", error=" + e.getMessage());
+				logger.error("画像削除処理でエラーが発生しました（書籍削除は継続します）: bookId={}, error={}", bookId, e.getMessage());
 			}
 
 			// 貸出履歴をカスケード削除

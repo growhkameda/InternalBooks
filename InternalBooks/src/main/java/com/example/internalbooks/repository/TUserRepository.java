@@ -48,4 +48,12 @@ public interface TUserRepository extends JpaRepository<TUserEntity, Integer> {
      * @return 指定削除フラグのユーザーリスト
      */
     List<TUserEntity> findByDeleteFlg(Integer deleteFlg);
+
+    /**
+     * 削除フラグで検索し、氏名の昇順で並べる（書籍提供者プルダウン用）
+     *
+     * @param deleteFlg 0:有効ユーザー, 1:削除済みユーザー
+     * @return 指定削除フラグのユーザーリスト（名前昇順）
+     */
+    List<TUserEntity> findByDeleteFlgOrderByNameAsc(Integer deleteFlg);
 }
