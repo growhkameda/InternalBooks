@@ -540,8 +540,17 @@ public class AdminController extends InternalBooksController {
                         "imageFile",
                         "imageFile.empty",
                         "画像を選択してください");
+            } else {
+                // 画像以外のファイルが選択された場合のエラー表示
+                String contentType = bookDto.getImageFile().getContentType();
+                if (contentType == null || !contentType.startsWith("image/")) {
+                    bindingResult.rejectValue(
+                            "imageFile",
+                            "imageFile.invalidType",
+                            "画像ファイルを選択してください");
+                }
             }
-
+            
             // その他のエラー表示
             if (bindingResult.hasErrors()) {
                 for (FieldError error : bindingResult.getFieldErrors()) {
