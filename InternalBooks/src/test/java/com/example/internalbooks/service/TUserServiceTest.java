@@ -465,7 +465,6 @@ class TUserServiceTest {
 
         when(tUserRepository.findById(existingUserId)).thenReturn(Optional.of(existingUser));
         when(tUserRepository.findByMailAddress(newMail)).thenReturn(Optional.empty());
-        //when(passwordEncoder.encode(newMail)).thenReturn("newhash");
         when(tUserRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         DtoUserEdit editDto = buildEditDto(existingUserId, "Bob", newMail, "2");
@@ -476,7 +475,6 @@ class TUserServiceTest {
         // Assert: 既存ユーザーの値が上書きされ、save が呼ばれる
         verify(tUserRepository).save(any(TUserEntity.class));
         assertThat(existingUser.getMailAddress()).isEqualTo(newMail);
-        //assertThat(existingUser.getPassword()).isEqualTo("newhash");
     }
 
     @Test
@@ -490,7 +488,6 @@ class TUserServiceTest {
         when(tUserRepository.findById(existingUserId)).thenReturn(Optional.of(existingUser));
         // findByMailAddress が「同じユーザー（自分）」を返すケース
         when(tUserRepository.findByMailAddress(myMail)).thenReturn(Optional.of(existingUser));
-        //when(passwordEncoder.encode(myMail)).thenReturn("hash");
         when(tUserRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         DtoUserEdit editDto = buildEditDto(existingUserId, "Me", myMail, "2");
