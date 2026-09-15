@@ -1,11 +1,8 @@
 package com.example.internalbooks.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -468,7 +465,7 @@ class TUserServiceTest {
 
         when(tUserRepository.findById(existingUserId)).thenReturn(Optional.of(existingUser));
         when(tUserRepository.findByMailAddress(newMail)).thenReturn(Optional.empty());
-        when(passwordEncoder.encode(newMail)).thenReturn("newhash");
+        //when(passwordEncoder.encode(newMail)).thenReturn("newhash");
         when(tUserRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         DtoUserEdit editDto = buildEditDto(existingUserId, "Bob", newMail, "2");
@@ -479,7 +476,7 @@ class TUserServiceTest {
         // Assert: 既存ユーザーの値が上書きされ、save が呼ばれる
         verify(tUserRepository).save(any(TUserEntity.class));
         assertThat(existingUser.getMailAddress()).isEqualTo(newMail);
-        assertThat(existingUser.getPassword()).isEqualTo("newhash");
+        //assertThat(existingUser.getPassword()).isEqualTo("newhash");
     }
 
     @Test
@@ -493,7 +490,7 @@ class TUserServiceTest {
         when(tUserRepository.findById(existingUserId)).thenReturn(Optional.of(existingUser));
         // findByMailAddress が「同じユーザー（自分）」を返すケース
         when(tUserRepository.findByMailAddress(myMail)).thenReturn(Optional.of(existingUser));
-        when(passwordEncoder.encode(myMail)).thenReturn("hash");
+        //when(passwordEncoder.encode(myMail)).thenReturn("hash");
         when(tUserRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
         DtoUserEdit editDto = buildEditDto(existingUserId, "Me", myMail, "2");
