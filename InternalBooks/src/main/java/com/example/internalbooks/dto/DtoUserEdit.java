@@ -25,9 +25,19 @@ public class DtoUserEdit {
     private String departmentId;
 
     private String departmentName;
+    
+    private Boolean passwordReset;
 
     // StringをIntegerへ変換するメソッド
     public Integer getDepartmentIdAsInteger() {
         return (departmentId != null && !departmentId.isEmpty()) ? Integer.valueOf(departmentId) : null;
+    }
+    
+    public Boolean getPasswordReset() {
+        return passwordReset;
+    }
+
+    public void setPasswordReset(Boolean passwordReset) {
+        this.passwordReset = passwordReset;
     }
 }
