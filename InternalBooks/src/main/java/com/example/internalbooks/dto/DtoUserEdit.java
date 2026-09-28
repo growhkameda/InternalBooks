@@ -33,11 +33,11 @@ public class DtoUserEdit {
         return (departmentId != null && !departmentId.isEmpty()) ? Integer.valueOf(departmentId) : null;
     }
     
-    public Boolean getPasswordReset() {
-        return passwordReset;
-    }
+//    public Boolean getPasswordReset() {
+//        return passwordReset;
+//    }
 
-    public void setPasswordReset(Boolean passwordReset) {
-        this.passwordReset = passwordReset;
-    }
+//    public void setPasswordReset(Boolean passwordReset) {
+//        this.passwordReset = passwordReset;
+//    }
 }
