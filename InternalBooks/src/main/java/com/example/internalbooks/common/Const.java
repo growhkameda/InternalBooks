@@ -49,5 +49,6 @@ public class Const {
 	
 	
 	public static final String RETURN_COMPLETED_FLAG = "RETURN_COMPLETED_FLAG";
+	public static final String LENDING_COMPLETED_FLAG = "LENDING_COMPLETED_FLAG";
 
 }

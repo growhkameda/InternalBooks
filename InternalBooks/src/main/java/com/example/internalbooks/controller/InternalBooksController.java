@@ -205,6 +205,9 @@ public class InternalBooksController {
             // QRコードからの遷移フラグをセッションに設定
             session.setAttribute("screenFlag", screenFlag);
 
+            // ブラウザバックによる貸出の二重送信を防止するフラグを設定
+            session.setAttribute(Const.LENDING_COMPLETED_FLAG, true);
+
             return "page/qrsearch";
         } catch (Exception e) {
             // 認証失敗時はログインページにリダイレクト
@@ -379,6 +382,13 @@ public class InternalBooksController {
             RedirectAttributes redirectAttributes) {
 
         try {
+            // ブラウザバック後の再送信などで同じ貸出処理が再実行されることを防ぐ
+            // 二重貸出防止処理
+            if (session.getAttribute(Const.LENDING_COMPLETED_FLAG) == null) {
+                redirectAttributes.addFlashAttribute("errorMessage", "この書籍はすでに貸出処理されています。");
+                return "redirect:/page/qrsearch";
+            }
+
             // torkenの検証
             String token = (String) session.getAttribute("token");
             Integer bookId;
@@ -398,6 +408,9 @@ public class InternalBooksController {
             model.addAttribute("isAdmin", isAdmin);
 
             lendingHistoryService.rentalCompleted(dtlend);
+
+            // ブラウザバックによる二重貸出を防止するフラグを削除
+            session.removeAttribute(Const.LENDING_COMPLETED_FLAG);
 
             DtoBookInfo bookInfo = tBookService.getBookById(bookId);
             model.addAttribute("book", bookInfo);
@@ -426,6 +439,10 @@ public class InternalBooksController {
 
             redirectAttributes.addAttribute("bookId", bookId);
 
+        } catch (IllegalStateException e) {
+            // 既に貸出中の書籍への二重貸出エラー
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/page/qrsearch";
         } catch (Exception e) {
             return error(redirectAttributes);
         }
