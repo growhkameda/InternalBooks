@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.internalbooks.dto.DtoBookHistory;
 import com.example.internalbooks.dto.DtoBookHistoryRegistration;
+import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TBookRepository;
@@ -60,6 +61,13 @@ public class TLendingHistoryService {
      * 貸出時にレビューをDBへ保存するメソッド
      */
     public TLendingHistoryEntity rentalCompleted(DtoBookHistoryRegistration dtlend) {
+
+        // 二重貸出防止：既に貸出中の書籍への重複登録を防ぐ
+        TBookEntity book = bookRepository.findById(dtlend.getBookId())
+                .orElseThrow(() -> new IllegalArgumentException("書籍が見つかりません"));
+        if (book.getBorrowerId() != null) {
+            throw new IllegalStateException("この書籍は既に貸出中です");
+        }
 
         TLendingHistoryEntity tlend = new TLendingHistoryEntity();
 

@@ -21,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.internalbooks.dto.DtoBookHistory;
 import com.example.internalbooks.dto.DtoBookHistoryRegistration;
+import com.example.internalbooks.entity.TBookEntity;
 import com.example.internalbooks.entity.TLendingHistoryEntity;
 import com.example.internalbooks.entity.TUserEntity;
 import com.example.internalbooks.repository.TBookRepository;
@@ -56,6 +57,10 @@ class TLendingHistoryServiceTest {
     void rentalCompleted_setsLendingAndReturnDates() {
         // Arrange
         DtoBookHistoryRegistration inputDto = buildDto(10, 1);
+        TBookEntity book = new TBookEntity();
+        book.setBookId(10);
+        book.setBorrowerId(null);
+        when(bookRepository.findById(10)).thenReturn(Optional.of(book));
         when(lendingHistoryRepository.saveAndFlush(any())).thenAnswer(inv -> inv.getArgument(0));
 
         // Act: 実行直前と直後の時刻を取得しておき、setされた日時がその範囲に入るか確認する
@@ -76,6 +81,10 @@ class TLendingHistoryServiceTest {
         final Integer targetBookId = 10;
         final Integer borrowerUserId = 1;
         DtoBookHistoryRegistration inputDto = buildDto(targetBookId, borrowerUserId);
+        TBookEntity book = new TBookEntity();
+        book.setBookId(targetBookId);
+        book.setBorrowerId(null);
+        when(bookRepository.findById(targetBookId)).thenReturn(Optional.of(book));
         when(lendingHistoryRepository.saveAndFlush(any())).thenAnswer(inv -> inv.getArgument(0));
 
         // Act
