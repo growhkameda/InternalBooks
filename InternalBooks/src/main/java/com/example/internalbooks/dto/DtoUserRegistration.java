@@ -3,6 +3,7 @@ package com.example.internalbooks.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import lombok.Data;
 
@@ -12,9 +13,11 @@ public class DtoUserRegistration {
 	@NotBlank(message = "ユーザーIDは必須です")
 	// regexp = "\\d+"で１文字以上の数字を表す
 	@Pattern(regexp = "\\d+", message = "社員IDは数字で入力してください")
+	@Size(max = 6 , message = "ユーザーIDは6桁以下で入力してください")
 	private String userId;
 
 	@NotBlank(message = "名前は必須です")
+	@Size(max = 255 , message = "名前は255文字以内で入力してください") 
 	private String name;
 
 	@NotBlank(message = "メールアドレスは必須です")
