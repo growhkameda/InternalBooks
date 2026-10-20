@@ -2,10 +2,12 @@ package com.example.internalbooks.dto;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Data;
-import jakarta.validation.constraints.NotBlank;
 
 /**
  * 書籍情報を格納するDTO
@@ -19,6 +21,7 @@ public class DtoBookInfo {
 
     // 書籍タイトル
     @NotBlank(message = "書籍名は必須です")
+    @Size(max = 255 , message = "書籍名は255文字以内で入力してください")
     private String title;
 
     // カテゴリー
@@ -52,6 +55,7 @@ public class DtoBookInfo {
 
     // 書籍提供者のコメント
     @NotBlank(message = "コメントは必須です")
+    @Size(max = 255 , message = "コメントは255文字以内で入力してください")
     private String providerComment;
 
     // 返却予定日（貸出中書籍の表示用）
