@@ -605,8 +605,7 @@ public class AdminController extends InternalBooksController {
      */
     @PostMapping("/bookingregistrationcomplete")
     public String BookingRegistrationcomplete(@ModelAttribute("bookdto") DtoBookInfo bookDto, SessionStatus status,
-            HttpSession session, RedirectAttributes redirectAttributes,
-            Model model) {
+            HttpSession session, RedirectAttributes redirectAttributes) {
 
         // トークンと管理者権限の検証
         try {
@@ -615,13 +614,11 @@ public class AdminController extends InternalBooksController {
                 return adminPermissionError(redirectAttributes);
             }
 
-            model.addAttribute("isAdmin", isAdmin);
-
             // DBへ(tilte,catgory,providerId,providercommnet)を保存し、登録完了表示用DTOを取得
             DtoBookInfo dbook = tBookService.bookEditing(bookDto);
 
-            // 取得した情報を表示
-            model.addAttribute("dbook", dbook);
+            // リダイレクト先の完了画面で表示するためフラッシュ属性に設定
+            redirectAttributes.addFlashAttribute("dbook", dbook);
 
             // 完了後に画像をセッションから削除
             session.removeAttribute("imageBytes");
@@ -630,12 +627,39 @@ public class AdminController extends InternalBooksController {
             // セッション破棄（フォームを消す）
             status.setComplete();
 
-            return "page/BookingRegistrationComplete";
+            // リロードによる二重登録を防ぐため、完了画面はGETへリダイレクトして表示する（PRGパターン）
+            return "redirect:/admin/bookingregistrationcomplete";
         } catch (Exception e) {
             logger.error("bookingregistrationcompleteでエラーが発生しました", e);
             return error(redirectAttributes);
         }
 
+    }
+
+    /**
+     * 書籍登録完了画面を表示
+     */
+    @GetMapping("/bookingregistrationcomplete")
+    public String showBookingRegistrationComplete(HttpSession session, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        // トークンと管理者権限の検証
+        try {
+            boolean isAdmin = validateTokenAndCheckAdmin(session);
+            if (!isAdmin) {
+                return adminPermissionError(redirectAttributes);
+            }
+
+            // リロード時はフラッシュ属性が消えているため管理者トップへ戻す
+            if (!model.containsAttribute("dbook")) {
+                return "redirect:/admin/adminusertop";
+            }
+
+            return "page/BookingRegistrationComplete";
+        } catch (Exception e) {
+            logger.error("bookingregistrationcomplete表示でエラーが発生しました", e);
+            return error(redirectAttributes);
+        }
     }
 
     /**
